@@ -1,2 +1,4 @@
-# computer-networking
-Computer Networking Notes
+# Dev
+```sh
+hugo server --themesDir ../
+```
