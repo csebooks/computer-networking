@@ -1,13 +1,12 @@
 ---
 title: 'Application Layer'
 weight: 2
----Network applications are the _raisons d’être_ of a computer network—if we couldn’t conceive of any useful applications, there wouldn’t be any need for networking infra- structure and protocols to support them. Since the Internet’s inception, numerous useful and entertaining applications have indeed been created. These applications have been the driving force behind the Internet’s success, motivating people in homes, schools, govern- ments, and businesses to make the Internet an integral part of their daily activities.
+---
+Network applications are the _raisons d’être_ of a computer network—if we couldn’t conceive of any useful applications, there wouldn’t be any need for networking infra- structure and protocols to support them. Since the Internet’s inception, numerous useful and entertaining applications have indeed been created. These applications have been the driving force behind the Internet’s success, motivating people in homes, schools, govern- ments, and businesses to make the Internet an integral part of their daily activities.
 
 Internet applications include the classic text-based applications that became pop- ular in the 1970s and 1980s: text e-mail, remote access to computers, file transfers, and newsgroups. They include _the_ killer application of the mid-1990s, the World Wide Web, encompassing Web surfing, search, and electronic commerce. Since the begin- ning of new millennium, new and highly compelling applications continue to emerge, including voice over IP and video conferencing such as Skype, Facetime, and Google Hangouts; user generated video such as YouTube and movies on demand such as Netflix; and multiplayer online games such as Second Life and World of Warcraft. During this same period, we have seen the emergence of a new generation of social networking applications—such as Facebook, Instagram, and Twitter—which have created human networks on top of the Internet’s network or routers and communi- cation links. And most recently, along with the arrival of the smartphone and the ubiquity of 4G/5G wireless Internet access, there has been a profusion of location based mobile apps, including popular check-in, dating, and road-traffic forecasting apps (such as Yelp, Tinder, and Waz), mobile payment apps (such as WeChat and Apple Pay) and messaging apps (such as WeChat and WhatsApp). Clearly, there has been no slowing down of new and exciting Internet applications. Perhaps some of the readers of this text will create the next generation of killer Internet applications!
 
 **Application Layer**
-
-2CHAPTER
 
 In this chapter, we study the conceptual and implementation aspects of network applications. We begin by defining key application-layer concepts, including net- work services required by applications, clients and servers, processes, and trans- port-layer interfaces. We examine several network applications in detail, including the Web, e-mail, DNS, peer-to-peer (P2P) file distribution, and video streaming. We then cover network application development, over both TCP and UDP. In particular, we study the socket interface and walk through some simple client-server applications in Python. We also provide several fun and interesting socket programming assign- ments at the end of the chapter.
 
@@ -20,50 +19,7 @@ At the core of network application development is writing programs that run on d
 
 Thus, when developing your new application, you need to write software that will run on multiple end systems. This software could be written, for example, in C, Java, or Python. Importantly, you do not need to write software that runs on net- work-core devices, such as routers or link-layer switches. Even if you wanted to write application software for these network-core devices, you wouldn’t be able to do so. As we learned in Chapter 1, and as shown earlier in Figure 1.24, network-core devices do not function at the application layer but instead function at lower layers— specifically at the network layer and below. This basic design—namely, confining application software to the end systems—as shown in Figure 2.1, has facilitated the rapid development and deployment of a vast array of network applications.Transport
 
-Network
-
-Data Link
-
-Physical
-
-Transport
-
-Network
-
-Data Link
-
-Physical
-
-Transport
-
-Network
-
-Data Link
-
-Physical
-
-**Content Provider Network**
-
-**National or Global ISP**
-
-**Datacenter Network**
-
-**Datacenter Network**
-
-**Mobile Network**
-
-**Enterprise Network**
-
-**Local or Regional ISP**
-
-**Application**
-
-**Application**
-
-**Application**
-
-**Home Network**
-
+![](1.png)
 **Figure 2.1**  ♦   Communication for a network application takes place between end systems at the application layer## Network Application ArchitecturesBefore diving into software coding, you should have a broad architectural plan for your application. Keep in mind that an application’s architecture is distinctly differ- ent from the network architecture (e.g., the five-layer Internet architecture discussed in Chapter 1). From the application developer’s perspective, the network architec- ture is fixed and provides a specific set of services to applications. The **application architecture
 , on the other hand, is designed by the application developer and dic- tates how the application is structured over the various end systems. In choosing the application architecture, an application developer will likely draw on one of the two predominant architectural paradigms used in modern network applications: the client-server architecture or the peer-to-peer (P2P) architecture.
 
@@ -75,11 +31,12 @@ In a **P2P architecture**, there is minimal (or no) reliance on dedicated server
 
 One of the most compelling features of P2P architectures is their **self- scalability**. For example, in a P2P file-sharing application, although each peer generates workload by requesting files, each peer also adds service capacity to the system by distributing files to other peers. P2P architectures are also cost effective, since they normally don’t require significant server infrastructure and server band- width (in contrast with clients-server designs with datacenters). However, P2P appli- cations face challenges of security, performance, and reliability due to their highly decentralized structure.
 
-## Processes CommunicatingBefore building your network application, you also need a basic understanding of how the programs, running in multiple end systems, communicate with each other. In the jargon of operating systems, it is not actually programs but **processes
+## Processes Communicating
+Before building your network application, you also need a basic understanding of how the programs, running in multiple end systems, communicate with each other. In the jargon of operating systems, it is not actually programs but **processes
  that
 
 **a. Client-server architecture b. Peer-to-peer architecture**
-
+![](2.png)
 **Figure 2.2**  ♦  (a) Client-server architecture; (b) P2P architecturecommunicate. A process can be thought of as a program that is running within an end system. When processes are running on the same end system, they can communicate with each other with interprocess communication, using rules that are governed by the end system’s operating system. But in this book, we are not particularly interested in how processes in the same host communicate, but instead in how processes run- ning on _different_ hosts (with potentially different operating systems) communicate.
 
 Processes on two different end systems communicate with each other by exchanging **messages** across the computer network. A sending process creates and sends messages into the network; a receiving process receives these messages and possibly responds by sending messages back. Figure 2.1 illustrates that processes communicating with each other reside in the application layer of the five-layer pro- tocol stack.
@@ -96,30 +53,9 @@ In the Web, a browser process initializes contact with a Web server process; hen
 
 As noted above, most applications consist of pairs of communicating processes, with the two processes in each pair sending messages to each other. Any message sent from one process to another must go through the underlying network. A process sends messages into, and receives messages from, the network through a software interface called a **socket**. Let’s consider an analogy to help us understand processes and sockets. A process is analogous to a house and its socket is analogous to its door. When a process wants to send a message to another process on another host, it shoves the message out its door (socket). This sending process assumes that there is a trans- portation infrastructure on the other side of its door that will transport the message to the door of the destination process. Once the message arrives at the destination host, the message passes through the receiving process’s door (socket), and the receiving process then acts on the message.
 
-Figure 2.3 illustrates socket communication between two processes that com- municate over the Internet. (Figure 2.3 assumes that the underlying transport protocol used by the processes is the Internet’s TCP protocol.) As shown in this figure, a socket is the interface between the application layer and the transport layer within a host. It is also referred to as the **Application Programming Interface (API)** between the application and the network, since the socket is the programming interface with which network applications are built. The application developer has control of everything on the application-layer side of the socket but has little control of the transport-layer side of the socket. The only control that the application developer has on the transport- layer side is (1) the choice of transport protocol and (2) perhaps the ability to fix a few
+Figure 2.3 illustrates socket communication between two processes that com- municate over the Internet. (Figure 2.3 assumes that the underlying transport protocol used by the processes is the Internet’s TCP protocol.) As shown in this figure, a socket is the interface between the application layer and the transport layer within a host. It is also referred to as the **Application Programming Interface (API)** between the application and the network, since the socket is the programming interface with which network applications are built. The application developer has control of everything on the application-layer side of the socket but has little control of the transport-layer side of the socket. The only control that the application developer has on the transport- layer side is (1) the choice of transport protocol and (2) perhaps the ability to fix a few process.
 
-Process
-
-**Host or server**
-
-**Host or server**
-
-Controlled by application developer
-
-Controlled by application developer
-
-Process
-
-TCP with buffers, variables Internet
-
-Controlled by operating system
-
-Controlled by operating system
-
-TCP with buffers, variables
-
-Socket Socket
-
+![](3.png)
 **Figure 2.3**  ♦   Application processes, sockets, and underlying transport protocoltransport-layer parameters such as maximum buffer and maximum segment sizes (to be covered in Chapter 3). Once the application developer chooses a transport protocol (if a choice is available), the application is built using the transport-layer services provided by that protocol. We’ll explore sockets in some detail in Section 2.7.
 
 **Addressing Processes**
@@ -164,26 +100,7 @@ The TCP service model includes a connection-oriented service and a reliable data
 
 • _Reliable data transfer service._ The communicating processes can rely on TCP to deliver all data sent without error and in the proper order. When one side of the application passes a stream of bytes into a socket, it can count on TCP to deliver the same stream of bytes to the receiving socket, with no missing or duplicate bytes.
 
-Application Data Loss Throughput Time-Sensitive
-
-File transfer/download No loss Elastic No
-
-E-mail No loss Elastic No
-
-Web documents No loss Elastic (few kbps) No
-
-Internet telephony/ Video conferencing
-
-Loss-tolerant Audio: few kbps–1 Mbps Video: 10 kbps–5 Mbps
-
-Yes: 100s of msec
-
-Streaming stored Loss-tolerant Same as above Yes: few seconds audio/video
-
-Interactive games Loss-tolerant Few kbps–10 kbps Yes: 100s of msec
-
-Smartphone messaging No loss Elastic Yes and no
-
+![](4.png)
 **Figure 2.4**  ♦  Requirements of selected network applicationsTCP also includes a congestion-control mechanism, a service for the general welfare of the Internet rather than for the direct benefit of the communicating pro- cesses. The TCP congestion-control mechanism throttles a sending process (client or server) when the network is congested between sender and receiver. As we will see in Chapter 3, TCP congestion control also attempts to limit each TCP connection to its fair share of network bandwidth.
 
 **UDP Services**
@@ -202,47 +119,12 @@ We have organized transport protocol services along four dimensions: reliable da
 
 Figure 2.5 indicates the transport protocols used by some popular Internet appli- cations. We see that e-mail, remote terminal access, the Web, and file transfer all use TCP. These applications have chosen TCP primarily because TCP provides reliable data transfer, guaranteeing that all data will eventually get to its destination. Because Internet telephony applications (such as Skype) can often tolerate some loss but require a minimal rate to be effective, developers of Internet telephony applications
 
-Application Application-Layer Protocol Underlying Transport Protocol
 
-Electronic mail
-
-Remote terminal access
-
-Web
-
-File transfer
-
-Streaming multimedia
-
-Internet telephony
-
-SMTP \[RFC 5321\]
-
-Telnet \[RFC 854\]
-
-HTTP 1.1 \[RFC 7230\]
-
-FTP \[RFC 959\]
-
-HTTP (e.g., YouTube), DASH
-
-SIP \[RFC 3261\], RTP \[RFC 3550\], or proprietary (e.g., Skype)
-
-TCP
-
-TCP
-
-TCP
-
-TCP
-
-TCP
-
-UDP or TCP
-
+![](5.png)
 **Figure 2.5**  ♦   Popular Internet applications, their application-layer protocols, and their underlying transport protocolsusually prefer to run their applications over UDP, thereby circumventing TCP’s congestion control mechanism and packet overheads. But because many firewalls are configured to block (most types of) UDP traffic, Internet telephony applications often are designed to use TCP as a backup if UDP communication fails.
 
-## Application-Layer ProtocolsWe have just learned that network processes communicate with each other by sending messages into sockets. But how are these messages structured? What are the meanings of the various fields in the messages? When do the processes send the messages? These questions bring us into the realm of application-layer protocols. An **application-layer protocol
+## Application-Layer Protocols
+We have just learned that network processes communicate with each other by sending messages into sockets. But how are these messages structured? What are the meanings of the various fields in the messages? When do the processes send the messages? These questions bring us into the realm of application-layer protocols. An **application-layer protocol**
  defines how an application’s processes, running on different end systems, pass messages to each other. In particular, an application-layer protocol defines:
 
 • The types of messages exchanged, for example, request messages and response messages
@@ -265,8 +147,9 @@ Until the early 1990s, the Internet was used primarily by researchers, academics
 
 Perhaps what appeals the most to users is that the Web operates _on demand_. Users receive what they want, when they want it. This is unlike traditional broadcastradio and television, which force users to tune in when the content provider makes the content available. In addition to being available on demand, the Web has many other wonderful features that people love and cherish. It is enormously easy for any individual to make information available over the Web—everyone can become a publisher at extremely low cost. Hyperlinks and search engines help us navigate through an ocean of information. Photos and videos stimulate our senses. Forms, JavaScript, video, and many other devices enable us to interact with pages and sites. And the Web and its protocols serve as a platform for YouTube, Web-based e-mail (such as Gmail), and most mobile Internet applications, including Instagram and Google Maps.
 
-## Overview of HTTPThe **HyperText Transfer Protocol (HTTP)
-, the Web’s application-layer protocol, is at the heart of the Web. It is defined in \[RFC 1945\], \[RFC 7230\] and \[RFC 7540\]. HTTP is implemented in two programs: a client program and a server program. The client program and server program, executing on different end systems, talk to each other by exchanging HTTP messages. HTTP defines the structure of these messages and how the client and server exchange the messages. Before explaining HTTP in detail, we should review some Web terminology.
+## Overview of HTTP
+**The HyperText Transfer Protocol (HTTP)**
+,the Web’s application-layer protocol, is at the heart of the Web. It is defined in \[RFC 1945\], \[RFC 7230\] and \[RFC 7540\]. HTTP is implemented in two programs: a client program and a server program. The client program and server program, executing on different end systems, talk to each other by exchanging HTTP messages. HTTP defines the structure of these messages and how the client and server exchange the messages. Before explaining HTTP in detail, we should review some Web terminology.
 
 A **Web page** (also called a document) consists of objects. An **object** is simply a file—such as an HTML file, a JPEG image, a Javascrpt file, a CCS style sheet file, or a video clip—that is addressable by a single URL. Most Web pages consist of a **base HTML file** and several referenced objects. For example, if a Web page contains HTML text and five JPEG images, then the Web page has six objects: the base HTML file plus the five images. The base HTML file refer- ences the other objects in the page with the objects’ URLs. Each URL has two components: the hostname of the server that houses the object and the object’s path name. For example, the URL
 
@@ -280,27 +163,13 @@ HTTP uses TCP as its underlying transport protocol (rather than running on top o
 
 It is important to note that the server sends requested files to clients without storing any state information about the client. If a particular client asks for the same object twice in a period of a few seconds, the server does not respond by saying that it just served the object to the client; instead, the server resends the object, as it has completely forgotten what it did earlier. Because an HTTP server maintains
 
-HTTP re quest
-
-HTTP re sp
-
-onse
-
-HTTP response
-
-HTTP request
-
-PC running Internet Explorer
-
-Android smartphone running Google Chrome
-
-Server running Apache Web server
-
+![](6.png)
 **Figure 2.6**  ♦  HTTP request-response behaviorno information about the clients, HTTP is said to be a **stateless protocol**. We also remark that the Web uses the client-server application architecture, as described in Section 2.1. A Web server is always on, with a fixed IP address, and it services requests from potentially millions of different browsers.
 
 The original version of HTTP is called HTTP/1.0 and dates back to the early 1990’s \[RFC 1945\]. As of 2020, the majority of HTTP transactions take place over HTTP/1.1 \[RFC 7230\]. However, increasingly browsers and Web servers also sup- port a new version of HTTP called HTTP/2 \[RFC 7540\]. At the end of this section, we’ll provide an introduction to HTTP/2.
 
-## Non-Persistent and Persistent ConnectionsIn many Internet applications, the client and server communicate for an extended period of time, with the client making a series of requests and the server respond- ing to each of the requests. Depending on the application and on how the application is being used, the series of requests may be made back-to-back, peri- odically at regular intervals, or intermittently. When this client-server interaction is taking place over TCP, the application developer needs to make an important decision—should each request/response pair be sent over a _separate_ TCP connec- tion, or should all of the requests and their corresponding responses be sent over the _same_ TCP connection? In the former approach, the application is said to use **non-persistent connections**; and in the latter approach, **persistent connections
+## Non-Persistent and Persistent Connections
+In many Internet applications, the client and server communicate for an extended period of time, with the client making a series of requests and the server respond- ing to each of the requests. Depending on the application and on how the application is being used, the series of requests may be made back-to-back, peri- odically at regular intervals, or intermittently. When this client-server interaction is taking place over TCP, the application developer needs to make an important decision—should each request/response pair be sent over a _separate_ TCP connec- tion, or should all of the requests and their corresponding responses be sent over the _same_ TCP connection? In the former approach, the application is said to use **non-persistent connections**; and in the latter approach, **persistent connections
 . To gain a deep understanding of this design issue, let’s examine the advantages and dis- advantages of persistent connections in the context of a specific application, namely, HTTP, which can use both non-persistent connections and persistent connections. Although HTTP uses persistent connections in its default mode, HTTP clients and servers can be configured to use non-persistent connections instead.
 
 **HTTP with Non-Persistent Connections**
@@ -333,22 +202,7 @@ Before continuing, let’s do a back-of-the-envelope calculation to estimate the
 
 Non-persistent connections have some shortcomings. First, a brand-new connection must be established and maintained for _each requested object_. For each of these connections, TCP buffers must be allocated and TCP variables must be kept in both the client and server. This can place a significant burden on the Web server, which may be serving requests from hundreds of different clients simultaneously. Second,
 
-Time at client
-
-Time at server
-
-Initiate TCP connection
-
-RTT
-
-Request file
-
-RTT
-
-Entire file received
-
-Time to transmit file
-
+![](7.png)
 **Figure 2.7**  ♦   Back-of-the-envelope calculation for the time needed to request and receive an HTML fileas we just described, each object suffers a delivery delay of two RTTs—one RTT to establish the TCP connection and one RTT to request and receive an object.
 
 With HTTP/1.1 persistent connections, the server leaves the TCP connection open after sending a response. Subsequent requests and responses between the same client and server can be sent over the same connection. In particular, an entire Web page (in the example above, the base HTML file and the 10 images) can be sent over a single persistent TCP connection. Moreover, multiple Web pages residing on the same server can be sent from the server to the same client over a single persistent TCP connection. These requests for objects can be made back-to-back, without wait- ing for replies to pending requests (pipelining). Typically, the HTTP server closes a connection when it isn’t used for a certain time (a configurable timeout interval). When the server receives the back-to-back requests, it sends the objects back-to- back. The default mode of HTTP uses persistent connections with pipelining. We’ll quantitatively compare the performance of non-persistent and persistent connections in the homework problems of Chapters 2 and 3. You are also encouraged to see \[Heidemann 1997; Nielsen 1997; RFC 7540\].
@@ -366,35 +220,15 @@ We can learn a lot by taking a close look at this simple request message. First 
 
 Now let’s look at the header lines in the example. The header line Host: www.someschool.edu specifies the host on which the object resides. You might think that this header line is unnecessary, as there is already a TCP connection in place to the host. But, as we’ll see in Section 2.2.5, the information provided by the host header line is required by Web proxy caches. By including the Connection: close header line, the browser is telling the server that it doesn’t want to bother with persistent connections; it wants the server to close the connection after sending the requested object. The User-agent: header line specifies the user agent, that is, the browser type that is making the request to the server. Here the user agent is Mozilla/5.0, a Firefox browser. This header line is useful because the server can actu- ally send different versions of the same object to different types of user agents. (Each of the versions is addressed by the same URL.) Finally, the Accept-language: header indicates that the user prefers to receive a French version of the object, if such an object exists on the server; otherwise, the server should send its default version. The Accept-language: header is just one of many content negotiation headers available in HTTP.
 
-Having looked at an example, let’s now look at the general format of a request message, as shown in Figure 2.8. We see that the general format closely follows our earlier example. You may have noticed, however, that after the header lines (and the additional carriage return and line feed) there is an “entity body.” The entity body
+Having looked at an example, let’s now look at the general format of a request message, as shown in Figure 2.8. We see that the general format closely follows our earlier example. You may have noticed, however, that after the header lines (and the additional carriage return and line feed) there is an “entity body.”
 
-method sp sp cr lf
-
-cr lfheader field name:
-
-Header lines
-
-Blank line
-
-Entity body
-
-Request line
-
-valuesp
-
-cr lf
-
-cr lf
-
-header field name: valuesp
-
-URL Version
-
+![](8.png)
 **Figure 2.8**  ♦  General format of an HTTP request messageis empty with the GET method, but is used with the POST method. An HTTP client often uses the POST method when the user fills out a form—for example, when a user provides search words to a search engine. With a POST message, the user is still requesting a Web page from the server, but the specific contents of the Web page depend on what the user entered into the form fields. If the value of the method field is POST, then the entity body contains what the user entered into the form fields.
 
 We would be remiss if we didn’t mention that a request generated with a form does not necessarily have to use the POST method. Instead, HTML forms often use the GET method and include the inputted data (in the form fields) in the requested URL. For example, if a form uses the GET method, has two fields, and the inputs to the two fields are monkeys and bananas, then the URL will have the structure www.somesite.com/animalsearch?monkeys&bananas. In your day-to- day Web surfing, you have probably noticed extended URLs of this sort.
 
-The HEAD method is similar to the GET method. When a server receives a request with the HEAD method, it responds with an HTTP message but it leaves out the requested object. Application developers often use the HEAD method for debug- ging. The PUT method is often used in conjunction with Web publishing tools. It allows a user to upload an object to a specific path (directory) on a specific Web server. The PUT method is also used by applications that need to upload objects to Web servers. The DELETE method allows a user, or an application, to delete an object on a Web server.
+The HEAD method is similar to the GET method. 
+When a server receives a request with the HEAD method, it responds with an HTTP message but it leaves out the requested object. Application developers often use the HEAD method for debug- ging. The PUT method is often used in conjunction with Web publishing tools. It allows a user to upload an object to a specific path (directory) on a specific Web server. The PUT method is also used by applications that need to upload objects to Web servers. The DELETE method allows a user, or an application, to delete an object on a Web server.
 
 **HTTP Response Message**
 
@@ -412,32 +246,7 @@ Having looked at an example, let’s now examine the general format of a respons
 
 • 301 Moved Permanently: Requested object has been permanently moved; the new URL is specified in Location: header of the response message. The client software will automatically retrieve the new URL.
 
-version sp sp cr lf
-
-cr lfheader field name:
-
-Header lines
-
-Blank line
-
-Entity body
-
-Status line
-
-value
-
-cr
-
-sp
-
-sp lf
-
-cr lf
-
-header field name: value
-
-status code phrase
-
+![](9.png)
 **Figure 2.9**  ♦  General format of an HTTP response message• 400 Bad Request: This is a generic error code indicating that the request could not be understood by the server.
 
 • 404 Not Found: The requested document does not exist on this server.
@@ -465,66 +274,7 @@ How does a browser decide which header lines to include in a request message? Ho
 
 As shown in Figure 2.10, cookie technology has four components: (1) a cookie header line in the HTTP response message; (2) a cookie header line in the HTTP request message; (3) a cookie file kept on the user’s end system and managed by the user’s browser; and (4) a back-end database at the Web site. Using Figure 2.10, let’s walk through an example of how cookies work. Suppose Susan, who always
 
-**Client host Server host**
-
-usual http request msg
-
-usual http
-
-resp onse
-
-**Set-c ookie**
-
-**: 167 8**
-
-usual http request msg
-
-**cookie: 1678**
-
-usual http
-
-resp onse
-
-msg
-
-usual http request msg
-
-**cookie: 1678**
-
-usual http
-
-resp onse
-
-msg
-
-Time
-
-One week later
-
-ebay: 8734
-
-Server creates ID 1678 for user
-
-Time
-
-Cookie file
-
-Key:
-
-amazon: 1678 ebay: 8734
-
-amazon: 1678 ebay: 8734
-
-Cookie-specific action
-
-access
-
-access
-
-entry in backend database
-
-Cookie-specific action
-
+![](10.png)
 **Figure 2.10**  ♦  Keeping user state with cookiesaccesses the Web using Internet Explorer from her home PC, contacts Amazon.com for the first time. Let us suppose that in the past she has already visited the eBay site. When the request comes into the Amazon Web server, the server creates a unique identification number and creates an entry in its back-end database that is indexed by the identification number. The Amazon Web server then responds to Susan’s browser, including in the HTTP response a Set-cookie: header, which contains the identification number. For example, the header line might be:
 
 Set-cookie: 1678
@@ -541,7 +291,8 @@ From this discussion, we see that cookies can be used to identify a user. The fi
 
 Although cookies often simplify the Internet shopping experience for the user, they are controversial because they can also be considered as an invasion of privacy. As we just saw, using a combination of cookies and user-supplied account informa- tion, a Web site can learn a lot about a user and potentially sell this information to a third party.
 
-## Web CachingA **Web cache**—also called a **proxy server
+## Web CachingA
+ **Web cache**—also called a **proxy server**
 —is a network entity that satisfies HTTP requests on the behalf of an origin Web server. The Web cache has its own disk storage and keeps copies of recently requested objects in this storage. As shown in Figure 2.11, a user’s browser can be configured so that all of the user’s HTTP requests are first directed to the Web cache \[RFC 7234\]. Once a browser is configured, each browser request for an object is first directed to the Web cache. As an example, suppose a browser is requesting the object http://www.someschool.edu/ campus.gif. Here is what happens:
 
 1\. The browser establishes a TCP connection to the Web cache and sends an HTTP request for the object to the Web cache.
@@ -550,26 +301,7 @@ Although cookies often simplify the Internet shopping experience for the user, t
 
 3\. If the Web cache does not have the object, the Web cache opens a TCP connec- tion to the origin server, that is, to www.someschool.edu. The Web cache
 
-HTTP request
-
-HTTP response
-
-HTTP request
-
-HTTP response
-
-HTTP requestHTTP response
-
-HTTP requestHTTP response
-
-Client Origin server
-
-Origin server
-
-Client
-
-Proxy server
-
+![](11.png)
 **Figure 2.11**  ♦  Clients requesting objects through a Web cachethen sends an HTTP request for the object into the cache-to-server TCP connec- tion. After receiving this request, the origin server sends the object within an HTTP response to the Web cache.
 
 4\. When the Web cache receives the object, it stores a copy in its local storage and sends a copy, within an HTTP response message, to the client browser (over the existing TCP connection between the client browser and the Web cache).
@@ -586,12 +318,7 @@ The total response time—that is, the time from the browser’s request of an o
 
 **Institutional network**
 
-15 Mbps access link
-
-100 Mbps LAN
-
-Origin servers
-
+![](12.png)
 **Figure 2.12**  ♦  Bottleneck between an institutional network and the Internet
 
 a very crude calculation to estimate this delay. The traffic intensity on the LAN (see Section 1.4.2) is
@@ -610,14 +337,7 @@ Now consider the alternative solution of not upgrading the access link but inste
 
 **Institutional network**
 
-15 Mbps access link
-
-Institutional cache
-
-100 Mbps LAN
-
-Origin servers
-
+![](13.png)
 **Figure 2.13**  ♦  Adding a cache to the institutional networktraffic intensity less than 0.8 corresponds to a small delay, say, tens of milliseconds, on a 15 Mbps link. This delay is negligible compared with the two-second Internet delay. Given these considerations, average delay therefore is
 
 0.4 # (0.01 seconds) + 0.6 # (2.01 seconds)
@@ -688,34 +408,7 @@ Mail servers form the core of the e-mail infrastructure. Each recipient, such as
 
 SMTP is the principal application-layer protocol for Internet electronic mail. It uses the reliable data transfer service of TCP to transfer mail from the sender’s mail server to the recipient’s mail server. As with most application-layer protocols, SMTP has two sides: a client side, which executes on the sender’s mail server, and a server side, which executes on the recipient’s mail server. Both the client and server sides of
 
-Outgoing message queue
-
-Key:
-
-User mailbox
-
-SM TP
-
-User agent
-
-User agent
-
-User agent
-
-User agent
-
-User agent
-
-User agent
-
-Mail server
-
-Mail server
-
-Mail serverSM TP
-
-SMTP
-
+![](14.png)
 **Figure 2.14**  ♦  A high-level view of the Internet e-mail systemSMTP run on every mail server. When a mail server sends mail to other mail servers, it acts as an SMTP client. When a mail server receives mail from other mail servers, it acts as an SMTP server.
 
 ## SMTP
@@ -742,22 +435,8 @@ ers for sending mail, even when the two mail servers are located at opposite end
 Let’s now take a closer look at how SMTP transfers a message from a send- ing mail server to a receiving mail server. We will see that the SMTP proto- col has many similarities with protocols that are used for face-to-face human interaction. First, the client SMTP (running on the sending mail server host) has TCP establish a connection to port 25 at the server SMTP (running on the receiv- ing mail server host). If the server is down, the client tries again later. Once this connection is established, the server and client perform some application- layer handshaking—just as humans often introduce themselves before trans- ferring information from one to another, SMTP clients and servers introduce themselves before transferring information. During this SMTP handshaking phase, the SMTP client indicates the e-mail address of the sender (the person who gener- ated the message) and the e-mail address of the recipient. Once the SMTP client and server have introduced themselves to each other, the client sends the message. SMTP can count on the reliable data transfer service of TCP to get the message to the server without errors. The client then repeats this process over the same TCP connection if it has other messages to send to the server; otherwise, it instructs TCP to close the connection.
 
 Let’s next take a look at an example transcript of messages exchanged between an SMTP client (C) and an SMTP server (S). The hostname of the client is crepes.fr and the hostname of the server is hamburger.edu. The ASCII text lines prefaced with C: are exactly the lines the client sends into its TCP socket, and the ASCII text lines prefaced with S: are exactly the lines the server sends into its TCP socket. The following transcript begins as soon as the TCP connection is established.
-
-S: 220 hamburger.edu C: HELO crepes.fr
-
-SMTP
-
-Alice’s mail server
-
-Bob’s mail server
-
-Alice’s agent
-
-Bob’s agent2 4 6Message queue
-
-Key:
-
-User mailbox**Figure 2.15**  ♦  Alice sends a message to BobS: 250 Hello crepes.fr, pleased to meet you C: MAIL FROM: <alice@crepes.fr> S: 250 alice@crepes.fr ... Sender ok C: RCPT TO: <bob@hamburger.edu> S: 250 bob@hamburger.edu ... Recipient ok C: DATA S: 354 Enter mail, end with ”.” on a line by itself C: Do you like ketchup? C: How about pickles? C: . S: 250 Message accepted for delivery C: QUIT S: 221 hamburger.edu closing connection
+![](15.png)
+**Figure 2.15**  ♦  Alice sends a message to BobS: 250 Hello crepes.fr, pleased to meet you C: MAIL FROM: <alice@crepes.fr> S: 250 alice@crepes.fr ... Sender ok C: RCPT TO: <bob@hamburger.edu> S: 250 bob@hamburger.edu ... Recipient ok C: DATA S: 354 Enter mail, end with ”.” on a line by itself C: Do you like ketchup? C: How about pickles? C: . S: 250 Message accepted for delivery C: QUIT S: 221 hamburger.edu closing connection
 
 In the example above, the client sends a message (“Do you like ketchup? How about pickles?”) from mail server crepes.fr to mail server hamburger.edu. As part of the dialogue, the client issued five commands: HELO (an abbreviation for HELLO), MAIL FROM, RCPT TO, DATA, and QUIT. These commands are self-explanatory. The client also sends a line consisting of a single period, which indicates the end of the message to the server. (In ASCII jar- gon, each message ends with CRLF.CRLF, where CR and LF stand for carriage return and line feed, respectively.) The server issues replies to each command, with each reply having a reply code and some (optional) English-language expla- nation. We mention here that SMTP uses persistent connections: If the sending mail server has several messages to send to the same receiving mail server, it can send all of the messages over the same TCP connection. For each message, the client begins the process with a new MAIL FROM: crepes.fr, designates the end of message with an isolated period, and issues QUIT only after all messages have been sent.
 
@@ -784,22 +463,7 @@ Today, there are two common ways for Bob to retrieve his e-mail from a mail serv
 # DNS—The Internet’s Directory Service
 We human beings can be identified in many ways. For example, we can be iden- tified by the names that appear on our birth certificates. We can be identified by our social security numbers. We can be identified by our driver’s license numbers.
 
-SMTP
-
-Alice’s mail server
-
-Bob’s mail server
-
-Alice’s agent
-
-Bob’s agentSMTP
-
-or HTTP
-
-HTTP or
-
-IMAP
-
+![](16.png)
 **Figure 2.16**  ♦  E-mail protocols and their communicating entitiesAlthough each can be used to identify people, within a given context one identifier may be more appropriate than another. For example, the computers at the IRS (the infamous tax-collecting agency in the United States) prefer to use fixed-length social security numbers rather than birth certificate names. On the other hand, ordinary people prefer the more mnemonic birth certificate names rather than social security numbers. (Indeed, can you imagine saying, “Hi. My name is 132-67-9875. Please meet my husband, 178-87-1146.”)
 
 Just as humans can be identified in many ways, so too can Internet hosts. One identifier for a host is its **hostname**. Hostnames—such as www.facebook.com, www.google.com, gaia.cs.umass.edu—are mnemonic and are therefore appreciated by humans. However, hostnames provide little, if any, information about the location within the Internet of the host. (A hostname such as www.eurecom. fr, which ends with the country code .fr, tells us that the host is probably in France, but doesn’t say much more.) Furthermore, because hostnames can consist of variable-length alphanumeric characters, they would be difficult to process by rout- ers. For these reasons, hosts are also identified by so-called **IP addresses**.
@@ -865,50 +529,19 @@ In order to deal with the issue of scale, the DNS uses a large number of servers
 
 • **Authoritative DNS servers.** Every organization with publicly accessible hosts (such as Web servers and mail servers) on the Internet must provide publicly accessible DNS records that map the names of those hosts to IP addresses. An organization’s authoritative DNS server houses these DNS records. An organi- zation can choose to implement its own authoritative DNS server to hold these records; alternatively, the organization can pay to have these records stored in an
 
-edu DNS serversorg DNS serverscom DNS servers
-
-nyu.edu DNS servers
-
-facebook.com DNS servers
-
-amazon.com DNS servers
-
-pbs.org DNS servers
-
-umass.edu DNS servers
-
-Root DNS servers
-
+![](17.png)
 **Figure 2.17**  ♦  Portion of the hierarchy of DNS serversauthoritative DNS server of some service provider. Most universities and large companies implement and maintain their own primary and secondary (backup) authoritative DNS server.
 
 The root, TLD, and authoritative DNS servers all belong to the hierarchy of DNS servers, as shown in Figure 2.17. There is another important type of DNS server called the **local DNS server**. A local DNS server does not strictly belong to the hierarchy of servers but is nevertheless central to the DNS architecture. Each ISP—such as a residential ISP or an institutional ISP—has a local DNS server (also called a default name server). When a host connects to an ISP, the ISP provides the host with the IP addresses of one or more of its local DNS servers (typically through DHCP, which is discussed in Chapter 4). You can easily determine the IP address of your local DNS server by accessing network status windows in Win- dows or UNIX. A host’s local DNS server is typically “close to” the host. For an institutional ISP, the local DNS server may be on the same LAN as the host; for a residential ISP, it is typically separated from the host by no more than a few rout- ers. When a host makes a DNS query, the query is sent to the local DNS server, which acts a proxy, forwarding the query into the DNS server hierarchy, as we’ll discuss in more detail below.
 
 Let’s take a look at a simple example. Suppose the host cse.nyu.edu desires the IP address of gaia.cs.umass.edu. Also suppose that NYU’s local DNS server for cse.nyu.edu is called dns.nyu.edu and that an authoritative DNS server for gaia.cs.umass.edu is called dns.umass.edu. As shown in
 
-0 Servers
-
-1–10 Servers
-
-11–20 Servers
-
-21+ Servers
-
-Key:
-
+![](18.png)
 **Figure 2.18**  ♦  DNS root servers in 2020Figure 2.19, the host cse.nyu.edu first sends a DNS query message to its local DNS server, dns.nyu.edu. The query message contains the hostname to be trans- lated, namely, gaia.cs.umass.edu. The local DNS server forwards the query message to a root DNS server. The root DNS server takes note of the edu suffix and returns to the local DNS server a list of IP addresses for TLD servers responsible for edu. The local DNS server then resends the query message to one of these TLD servers. The TLD server takes note of the umass.edu suffix and responds with the IP address of the authoritative DNS server for the University of Massachusetts, namely, dns.umass.edu. Finally, the local DNS server resends the query mes- sage directly to dns.umass.edu, which responds with the IP address of gaia .cs.umass.edu. Note that in this example, in order to obtain the mapping for one hostname, eight DNS messages were sent: four query messages and four reply mes- sages! We’ll soon see how DNS caching reduces this query traffic.
 
 Our previous example assumed that the TLD server knows the authoritative DNS server for the hostname. In general, this is not always true. Instead, the TLD server
 
-Requesting host cse.nyu.edu
-
-Local DNS server TLD DNS server dns.nyu.edu
-
-Root DNS server8756
-
-Authoritative DNS server dns.umass.edu
-
-gaia.cs.umass.edu
-
+![](19.png)
 **Figure 2.19**  ♦  Interaction of the various DNS serversmay know only of an intermediate DNS server, which in turn knows the authorita- tive DNS server for the hostname. For example, suppose again that the University of Massachusetts has a DNS server for the university, called dns.umass.edu. Also suppose that each of the departments at the University of Massachusetts has its own DNS server, and that each departmental DNS server is authoritative for all hosts in the department. In this case, when the intermediate DNS server, dns.umass.edu, receives a query for a host with a hostname ending with cs.umass.edu, it returns to dns.nyu.edu the IP address of dns.cs.umass.edu, which is authoritative for all hostnames ending with cs.umass.edu. The local DNS server dns.nyu .edu then sends the query to the authoritative DNS server, which returns the desired mapping to the local DNS server, which in turn returns the mapping to the requesting host. In this case, a total of 10 DNS messages are sent!
 
 The example shown in Figure 2.19 makes use of both **recursive queries** and **iterative queries**. The query sent from cse.nyu.edu to dns.nyu.edu is a recursive query, since the query asks dns.nyu.edu to obtain the mapping on its behalf. However, the subsequent three queries are iterative since all of the replies are directly returned to dns.nyu.edu. In theory, any DNS query can be itera- tive or recursive. For example, Figure 2.20 shows a DNS query chain for which all of the queries are recursive. In practice, the queries typically follow the pattern in Figure 2.19: The query from the requesting host to the local DNS server is recursive, and the remaining queries are iterative.
@@ -919,21 +552,13 @@ Our discussion thus far has ignored **DNS caching**, a critically important feat
 
 As an example, suppose that a host apricot.nyu.edu queries dns.nyu.edu for the IP address for the hostname cnn.com. Furthermore, suppose that a few hours later, another NYU host, say, kiwi.nyu.edu, also queries dns.nyu.edu with the same hostname. Because of caching, the local DNS server will be able to immediately return the IP address of cnn.com to this second requesting host without having to query any other DNS servers. A local DNS server canRequesting host cse.nyu.edu
 
-Local DNS server TLD DNS server dns.nyu.edu
-
-Root DNS server847
-
-Authoritative DNS server dns.umass.edu
-
-gaia.cs.umass.edu
-
-6 3
-
+![](20.png)
 **Figure 2.20**  ♦  Recursive queries in DNS
 
 also cache the IP addresses of TLD servers, thereby allowing the local DNS server to bypass the root DNS servers in a query chain. In fact, because of caching, root servers are bypassed for all but a very small fraction of DNS queries.
 
-## DNS Records and MessagesThe DNS servers that together implement the DNS distributed database store **resource records (RRs)
+## DNS Records and Messages
+The DNS servers that together implement the DNS distributed database store **resource records (RRs)
 , including RRs that provide hostname-to-IP address map- pings. Each DNS reply message carries one or more resource records. In this and the following subsection, we provide a brief overview of DNS resource records and messages; more details can be found in \[Albitz 1993\] or in the DNS RFCs \[RFC 1034; RFC 1035\].A resource record is a four-tuple that contains the following fields:
 
 (Name, Value, Type, TTL)
@@ -956,36 +581,7 @@ Earlier in this section, we referred to DNS query and reply messages. These are 
 
 • The _question section_ contains information about the query that is being made. This section includes (1) a name field that contains the name that is being que- ried, and (2) a type field that indicates the type of question being asked about the name—for example, a host address associated with a name (Type A) or the mail server for a name (Type MX).
 
-Identification
-
-Number of questions
-
-Number of authority RRs
-
-Name, type fields for a query
-
-12 bytes
-
-RRs in response to query
-
-Records for authoritative servers
-
-Additional “helpful” info that may be used
-
-Flags
-
-Number of answer RRs
-
-Number of additional RRs
-
-Authority (variable number of resource records)
-
-Additional information (variable number of resource records)
-
-Answers (variable number of resource records)
-
-Questions (variable number of questions)
-
+![](21.png)
 **Figure 2.21**  ♦  DNS message format• In a reply from a DNS server, the _answer section_ contains the resource records for the name that was originally queried. Recall that in each resource record there is the Type (for example, A, NS, CNAME, and MX), the Value, and the TTL. A reply can return multiple RRs in the answer, since a hostname can have multiple IP addresses (for example, for replicated Web servers, as discussed earlier in this section).
 
 • The _authority section_ contains records of other authoritative servers.
@@ -1023,36 +619,7 @@ The applications described in this chapter thus far—including the Web, e-mail,
 
 To compare client-server architectures with peer-to-peer architectures, and illustrate the inherent self-scalability of P2P, we now consider a simple quantitative model for distributing a file to a fixed set of peers for both architecture types. As shown in Figure 2.22, the server and the peers are connected to the Internet with access
 
-Internet
-
-File: F Server
-
-u_s_
-
-u1 u2
-
-u3
-
-d1
-
-d2
-
-d3
-
-u4
-
-u5u6
-
-d4
-
-d5
-
-d6
-
-u_N_
-
-d_N_
-
+![](22.png)
 **Figure 2.22**  ♦  An illustrative file distribution problemlinks. Denote the upload rate of the server’s access link by _us_, the upload rate of the _i_th peer’s access link by _ui_, and the download rate of the _i_th peer’s access link by _di_. Also denote the size of the file to be distributed (in bits) by _F_ and the number of peers that want to obtain a copy of the file by _N_. The **distribution time** is the time it takes to get a copy of the file to all _N_ peers. In our analysis of the distribution time below, for both client-server and P2P architectures, we make the simplifying (and generally accurate \[Akella 2003\]) assumption that the Internet core has abundant bandwidth, implying that all of the bottlenecks are in access networks. We also sup- pose that the server and clients are not participating in any other network applica- tions, so that all of their upload and download access bandwidth can be fully devoted to distributing this file.
 
 Let’s first determine the distribution time for the client-server architecture, which we denote by _Dcs_. In the client-server architecture, none of the peers aids in distributing the file. We make the following observations:
@@ -1119,54 +686,12 @@ _i_\=1 _ui_ s (2.3)Figure 2.23 compares the minimum distribution time for the cl
 
 BitTorrent is a popular P2P protocol for file distribution \[Chao 2011\]. In BitTorrent lingo, the collection of all peers participating in the distribution of a particular file is called a _torrent_. Peers in a torrent download equal-size _chunks_ of the file from one another, with a typical chunk size of 256 KBytes. When a peer first joins a torrent, it has no chunks. Over time it accumulates more and more chunks. While it downloads chunks it also uploads chunks to other peers. Once a peer has acquired the entire file, it may (selfishly) leave the torrent, or (altruistically) remain in the torrent and continue to upload chunks to other peers. Also, any peer may leave the torrent at any time with only a subset of chunks, and later rejoin the torrent.
 
-0 5 10 15 20 25 300
-
-N
-
-M in
-
-im um
-
-d is
-
-tr ib
-
-ut io
-
-n tim
-
-e0.5
-
-1.5
-
-2.5
-
-1.0
-
-3.0
-
-2.0
-
-3.5
-
-Client-Server
-
-P2P
-
+![](23.png)
 **Figure 2.23**  ♦  Distribution time for P2P and client-server architecturesLet’s now take a closer look at how BitTorrent operates. Since BitTorrent is a rather complicated protocol and system, we’ll only describe its most important mechanisms, sweeping some of the details under the rug; this will allow us to see the forest through the trees. Each torrent has an infrastructure node called a _tracker_. When a peer joins a torrent, it registers itself with the tracker and periodically informs the tracker that it is still in the torrent. In this manner, the tracker keeps track of the peers that are participating in the torrent. A given torrent may have fewer than ten or more than a thousand peers participating at any instant of time.
 
 As shown in Figure 2.24, when a new peer, Alice, joins the torrent, the tracker randomly selects a subset of peers (for concreteness, say 50) from the set of partici- pating peers, and sends the IP addresses of these 50 peers to Alice. Possessing this list of peers, Alice attempts to establish concurrent TCP connections with all the peers on this list. Let’s call all the peers with which Alice succeeds in establishing a TCP connection “neighboring peers.” (In Figure 2.24, Alice is shown to have only three neighboring peers. Normally, she would have many more.) As time evolves, some of these peers may leave and other peers (outside the initial 50) may attempt to establish TCP connections with Alice. So a peer’s neighboring peers will fluctuate over time.
 
-Tracker
-
-Trading chunks
-
-Peer
-
-Obtain list of peers
-
-Alice
-
+![](24.png)
 **Figure 2.24**  ♦  File distribution with BitTorrentAt any given time, each peer will have a subset of chunks from the file, with dif- ferent peers having different subsets. Periodically, Alice will ask each of her neigh- boring peers (over the TCP connections) for the list of the chunks they have. If Alice has _L_ different neighbors, she will obtain _L_ lists of chunks. With this knowledge, Alice will issue requests (again over the TCP connections) for chunks she currently does not have.
 
 So at any given instant of time, Alice will have a subset of chunks and will know which chunks her neighbors have. With this information, Alice will have two impor- tant decisions to make. First, which chunks should she request first from her neigh- bors? And second, to which of her neighbors should she send requested chunks? In deciding which chunks to request, Alice uses a technique called **rarest first**. The idea is to determine, from among the chunks she does not have, the chunks that are the rarest among her neighbors (that is, the chunks that have the fewest repeated cop- ies among her neighbors) and then request those rarest chunks first. In this manner, the rarest chunks get more quickly redistributed, aiming to (roughly) equalize the numbers of copies of each chunk in the torrent.
@@ -1245,18 +770,7 @@ DNS server for NetCinema, which observes the string “video” in the host- nam
 
 4\. From this point on, the DNS query enters into KingCDN’s private DNS infra- structure. The user’s LDNS then sends a second query, now for a1105.kingcdn. com, and KingCDN’s DNS system eventually returns the IP addresses of a KingCDN content server to the LDNS. It is thus here, within the KingCDN’s DNS system, that the CDN server from which the client will receive its content is specified.
 
-Local DNS server
-
-NetCinema authoritative DNS server
-
-www.NetCinema.com
-
-KingCDN authoritative server
-
-KingCDN content distribution server
-
-2 534
-
+![](25.png)
 **Figure 2.25**  ♦  DNS redirects a user’s request to a CDN server5\. The LDNS forwards the IP address of the content-serving CDN node to the user’s host.
 
 6\. Once the client receives the IP address for a KingCDN content server, it estab- lishes a direct TCP connection with the server at that IP address and issues an HTTP GET request for the video. If DASH is used, the server will first send to the client a manifest file with a list of URLs, one for each version of the video, and the client will dynamically select chunks from the different versions.
@@ -1282,22 +796,7 @@ Netflix has a Web site that handles numerous functions, including user registra-
 
 • **_Uploading versions to its CDN._** Once all of the versions of a movie have been created, the hosts in the Amazon cloud upload the versions to its CDN.
 
-**Amazon Cloud**
-
-CDN server
-
-CDN server
-
-Upload versions to CDNs
-
-CDN server
-
-Client
-
-Manifest file
-
-Video chunks (DASH)
-
+![](26.png)
 **Figure 2.26**  ♦  Netflix video streaming platformWhen Netflix first rolled out its video streaming service in 2007, it employed three third-party CDN companies to distribute its video content. Netflix has since created its own private CDN, from which it now streams all of its videos. To create its own CDN, Netflix has installed server racks both in IXPs and within residen- tial ISPs themselves. Netflix currently has server racks in over 200 IXP locations; see \[Bottger 2018\] \[Netflix Open Connect 2020\] for a current list of IXPs housing Netflix racks. There are also hundreds of ISP locations housing Netflix racks; also see \[Netflix Open Connect 2020\], where Netflix provides to potential ISP partners instructions about installing a (free) Netflix rack for their networks. Each server in the rack has several 10 Gbps Ethernet ports and over 100 terabytes of storage. The number of servers in a rack varies: IXP installations often have tens of servers and contain the entire Netflix streaming video library, including multiple versions of the videos to support DASH. Netflix does not use pull-caching (Section 2.2.5) to popu- late its CDN servers in the IXPs and ISPs. Instead, Netflix distributes by pushing the videos to its CDN servers during off-peak hours. For those locations that cannot hold the entire library, Netflix pushes only the most popular videos, which are determined on a day-to-day basis. The Netflix CDN design is described in some detail in the YouTube videos \[Netflix Video 1\] and \[Netflix Video 2\]; see also \[Bottger 2018\].
 
 Having described the components of the Netflix architecture, let’s take a closer look at the interaction between the client and the various servers that are involved in movie delivery. As indicated earlier, the Web pages for browsing the Netflix video library are served from servers in the Amazon cloud. When a user selects a movie to play, the Netflix software, running in the Amazon cloud, first determines which of its CDN servers have copies of the movie. Among the servers that have the movie, the software then determines the “best” server for that client request. If the client is using a residential ISP that has a Netflix CDN server rack installed in that ISP, and this rack has a copy of the requested movie, then a server in this rack is typically selected. If not, a server at a nearby IXP is typically selected.
@@ -1344,34 +843,7 @@ We’ll use the following simple client-server application to demonstrate socket
 
 Figure 2.27 highlights the main socket-related activity of the client and server that communicate over the UDP transport service.
 
-Create socket, port=x:
-
-**Server**
-
-**serverSocket = socket(AF\_INET,SOCK\_DGRAM)**
-
-(Running on serverIP) **Client**
-
-Read UDP segment from **serverSocket**
-
-Write reply to
-
-specifying client address, port number
-
-**serverSocket**
-
-Create datagram with serverIP and port=x ;
-
-send datagram via **clientSocket**
-
-Create socket: **clientSocket =**
-
-**socket(AF\_INET,SOCK\_DGRAM)**
-
-Read datagram from **clientSocket**
-
-Close **clientSocket**
-
+![](27.png)
 **Figure 2.27**  ♦  The client-server application using UDPNow let’s get our hands dirty and take a look at the client-server program pair for a UDP implementation of this simple application. We also provide a detailed, line-by-line analysis after each program. We’ll begin with the UDP client, which will send a simple application-level message to the server. In order for the server to be able to receive and reply to the client’s message, it must be ready and running—that is, it must be running as a process before the client sends its message.
 
 The client program is called UDPClient.py, and the server program is called UDPServer.py. In order to emphasize the key issues, we intentionally provide code that is minimal. “Good code” would certainly have a few more auxiliary lines, in particular for handling error cases. For this application, we have arbitrarily chosen 12000 for the server port number.
@@ -1463,56 +935,14 @@ clientSocket = socket(AF\_INET, SOCK\_STREAM)
 
 This line creates the client’s socket, called clientSocket. The first parameter again indicates that the underlying network is using IPv4. The second parameter
 
-**Client process Server process**
-
-Client socket
-
-Welcoming socket
-
-Three-w ay handshake
-
-Connection socket
-
-bytes bytes
-
+![](28.png)
 **Figure 2.28**  ♦  The TCPServer process has two socketsindicates that the socket is of type SOCK\_STREAM, which means it is a TCP socket (rather than a UDP socket). Note that we are again not specifying the port number of the client socket when we create it; we are instead letting the operating system do this for us. Now the next line of code is very different from what we saw in UDPClient:
 
 clientSocket.connect((serverName,serverPort))
 
 Recall that before the client can send data to the server (or vice versa) using a TCP socket, a TCP connection must first be established between the client and server. The
 
-Close **connectionSocket**
-
-Write reply to **connectionSocket**
-
-Read request from **connectionSocket**
-
-Create socket, port=x, for incoming request:
-
-**Server**
-
-**serverSocket = socket()**
-
-Wait for incoming connection request:
-
-**connectionSocket = serverSocket.accept()**
-
-(Running on serverIP)
-
-**Client**
-
-TCP connection setup Create socket, connect
-
-to serverIP, port=x: **clientSocket =**
-
-**socket()**
-
-Read reply from **clientSocket**
-
-Send request using **clientSocket**
-
-Close **clientSocket**
-
+![](29.png)
 **Figure 2.29**  ♦  The client-server application using TCPabove line initiates the TCP connection between the client and server. The parameter of the connect() method is the address of the server side of the connection. After this line of code is executed, the three-way handshake is performed and a TCP con- nection is established between the client and server.
 
 sentence = input(’Input lowercase sentence:’)
@@ -1846,16 +1276,4 @@ What influenced you to specialize in networking? After my physics degree, the te
 
 What is the most challenging part of your job? When two groups disagree strongly about something, but want in the end to achieve a com- mon goal, finding exactly what they each mean and where the misunderstandings are can be very demanding. The chair of any working group knows that. However, this is what it takes to make progress toward consensus on a large scale.
 
-C ou
-
-rte sy
-
-o f T
-
-im B
-
-er ne
-
-rs -Le
-
-eWhat people have inspired you professionally? My parents, who were involved in the early days of computing, gave me a fascination with the whole subject. Mike Sendall and Peggie Rimmer, for whom I worked at various times at CERN are among the people who taught me and encouraged me. I later learned to admire the people, including Vanevar Bush, Doug Englebart, and Ted Nelson, who had had similar dreams in their time but had not had the benefit of the existence for PCs and the Internet to be able to realize it._This page is intentionally left blank_
+What people have inspired you professionally? My parents, who were involved in the early days of computing, gave me a fascination with the whole subject. Mike Sendall and Peggie Rimmer, for whom I worked at various times at CERN are among the people who taught me and encouraged me. I later learned to admire the people, including Vanevar Bush, Doug Englebart, and Ted Nelson, who had had similar dreams in their time but had not had the benefit of the existence for PCs and the Internet to be able to realize it._This page is intentionally left blank_
