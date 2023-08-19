@@ -13,8 +13,6 @@ We said that Alice and Bob want to communicate and wish to do so “securely,”
 
 **Security in Computer Networks**
 
-8CHAPTER
-
 communicating, they are indeed communicating with each other, and that if their communication is tampered with by an eavesdropper, that this tampering is detected. In the first part of this chapter, we’ll cover the fundamental cryptography techniques that allow for encrypting communication, authenticating the party with whom one is communicating, and ensuring message integrity.
 
 In the second part of this chapter, we’ll examine how the fundamental cryptography principles can be used to create secure networking protocols. Once again taking a top-down approach, we’ll examine secure protocols in each of the (top four) layers, beginning with the application layer. We’ll examine how to secure e-mail, how to secure a TCP connection, how to provide blanket security at the net- work layer, and how to secure a wireless LAN. In the third part of this chapter we’ll consider operational security, which is about protecting organizational networks from attacks. In particular, we’ll take a careful look at how firewalls and intrusion detection systems can enhance the security of an organizational network.
@@ -32,22 +30,7 @@ Let’s begin our study of network security by returning to our lovers, Alice an
 
 Having established what we mean by network security, let’s next consider exactly what information an intruder may have access to, and what actions can be taken by the intruder. Figure 8.1 illustrates the scenario. Alice, the sender, wants to send data to Bob, the receiver. In order to exchange data securely, while meeting the requirements of confidentiality, end-point authentication, and message integrity, Alice and Bob will exchange control messages and data messages (in much the same way that TCP senders and receivers exchange control segments and data segments).
 
-Secure sender
-
-Alice
-
-Trudy
-
-Channel
-
-Control, data messages Secure
-
-receiver
-
-Bob
-
-Data Data
-
+![Alt text](image.png)
 **Figure 8.1**  ♦  Sender, receiver, and intruder (Alice, Bob, and Trudy)All or some of these messages will typically be encrypted. As discussed in Section 1.6, an intruder can potentially perform
 
 • _eavesdropping_—sniffing and recording control and data messages on the channel.
@@ -69,31 +52,13 @@ Suppose now that Alice wants to send a message to Bob. Alice’s message in its 
 
 In Figure 8.2, Alice provides a **key**, _KA_, a string of numbers or characters, as input to the encryption algorithm. The encryption algorithm takes the key and the plaintext message, _m_, as input and produces ciphertext as output. The notation _KA_(_m_) refers to the ciphertext form (encrypted using the key _KA_) of the plaintext message, _m_. The actual encryption algorithm that uses key _KA_ will be evident from the context. Similarly, Bob will provide a key, _KB_, to the **decryption algorithm**
 
+![Alt text](image-1.png)
 **Figure 8.2**  ♦  Cryptographic components
-
-Encryption algorithm
-
-Ciphertext
-
-Channel
-
-Trudy
-
-Alice Bob
-
-Decryption algorithm
-
-Plaintext
-
-Key:
-
-Key
-
-Plaintext
 
 _KA KB_that takes the ciphertext and Bob’s key as input and produces the original plain- text as output. That is, if Bob receives an encrypted message _KA_(_m_), he decrypts it by computing _KB_(_KA_(_m_)) = _m_. In **symmetric key systems**, Alice’s and Bob’s keys are identical and are secret. In **public key systems**, a pair of keys is used. One of the keys is known to both Bob and Alice (indeed, it is known to the whole world). The other key is known only by either Bob or Alice (but not both). In the following two subsections, we consider symmetric key and public key systems in more detail.
 
-## Symmetric Key CryptographyAll cryptographic algorithms involve substituting one thing for another, for exam- ple, taking a piece of plaintext and then computing and substituting the appropriate ciphertext to create the encrypted message. Before studying a modern key-based cryptographic system, let us first get our feet wet by studying a very old, very simple symmetric key algorithm attributed to Julius Caesar, known as the **Caesar cipher
+## Symmetric Key Cryptography
+All cryptographic algorithms involve substituting one thing for another, for exam- ple, taking a piece of plaintext and then computing and substituting the appropriate ciphertext to create the encrypted message. Before studying a modern key-based cryptographic system, let us first get our feet wet by studying a very old, very simple symmetric key algorithm attributed to Julius Caesar, known as the **Caesar cipher
  (a cipher is a method for encrypting data).
 
 For English text, the Caesar cipher would work by taking each letter in the plain- text message and substituting the letter that is _k_ letters later (allowing wraparound; that is, having the letter _z_ followed by the letter _a_) in the alphabet. For example, if _k_ \= 3, then the letter _a_ in plaintext becomes _d_ in ciphertext; _b_ in plaintext becomes _e_ in ciphertext, and so on. Here, the value of _k_ serves as the key. As an example, the plaintext message “bob, i love you. Alice” becomes “ere, l oryh brx. dolfh” in ciphertext. While the ciphertext does indeed look like gibberish, it wouldn’t take long to break the code if you knew that the Caesar cipher was being used, as there are only 25 possible key values.
@@ -101,7 +66,7 @@ For English text, the Caesar cipher would work by taking each letter in the plai
 An improvement on the Caesar cipher is the **monoalphabetic cipher**, which also substitutes one letter of the alphabet with another letter of the alphabet. However, rather than substituting according to a regular pattern (e.g., substitution with an offset of _k_ for all letters), any letter can be substituted for any other letter, as long as each letter has a unique substitute letter, and vice versa. The substitution rule in Figure 8.3 shows one possible rule for encoding plaintext.
 
 The plaintext message “bob, i love you. Alice” becomes “nkn, s gktc wky. Mgsbc.” Thus, as in the case of the Caesar cipher, this looks like gibberish. A monoalphabetic cipher would also appear to be better than the Caesar cipher in that there are 26! (on the order of 1026) possible pairings of letters rather than 25 possible pairings. A brute-force approach of trying all 1026 possible pairings
-
+![Alt text](image-2.png)
 **Figure 8.3**  ♦  A monoalphabetic cipher
 
 Plaintext letter: a b c d e f g h i j k l m n o p q r s t u v w x y z Ciphertext letter: m n b v c x z a s d f g h j k l p o i u y t r e w qwould require far too much work to be a feasible way of breaking the encryption algorithm and decoding the message. However, by statistical analysis of the plain- text language, for example, knowing that the letters _e_ and _t_ are the most frequently occurring letters in typical English text (accounting for 13 percent and 9 percent of letter occurrences), and knowing that particular two-and three-letter occurrences of letters appear quite often together (for example, “in,” “it,” “the,” “ion,” “ing,” and so forth) make it relatively easy to break this code. If the intruder has some knowledge about the possible contents of the message, then it is even easier to break the code. For example, if Trudy the intruder is Bob’s wife and suspects Bob of having an affair with Alice, then she might suspect that the names “bob” and “alice” appear in the text. If Trudy knew for certain that those two names appeared in the ciphertext and had a copy of the example ciphertext message above, then she could immedi- ately determine seven of the 26 letter pairings, requiring 109 fewer possibilities to be checked by a brute-force method. Indeed, if Trudy suspected Bob of having an affair, she might well expect to find some other choice words in the message as well.
@@ -123,7 +88,7 @@ Let us now move forward to modern times and examine how symmetric key encryp- ti
 In a block cipher, the message to be encrypted is processed in blocks of _k_ bits. For example, if _k_ \= 64, then the message is broken into 64-bit blocks, and each block is encrypted independently. To encode a block, the cipher uses a one-to-one map- ping to map the _k_\-bit block of cleartext to a _k_\-bit block of ciphertext. Let’s look at an example. Suppose that _k_ \= 3, so that the block cipher maps 3-bit inputs (cleartext) to 3-bit outputs (ciphertext). One possible mapping is given in Table 8.1. Notice that this is a one-to-one mapping; that is, there is a different output for each input. This block cipher breaks the message up into 3-bit blocks and encrypts each block accord- ing to the above mapping. You should verify that the message 010110001111 gets encrypted into 101000111001.
 
 Continuing with this 3-bit block example, note that the mapping in Table 8.1 is just one mapping of many possible mappings. How many possible mappings are there? To answer this question, observe that a mapping is nothing more than a permu- tation of all the possible inputs. There are 23 (= 8) possible inputs (listed under the
-
+![Alt text](image-3.png)
 **Figure 8.4**  ♦  A polyalphabetic cipher using two Caesar ciphers
 
 Plaintext letter: a b c d e f g h i j k l m n o p q r s t u v w x y z C1(_k_ = 5): C2(_k_ = 19):
@@ -137,80 +102,16 @@ Although full-table block ciphers, as just described, with moderate values of _k
 Instead, block ciphers typically use functions that simulate randomly permuted tables. An example (adapted from \[Kaufman 2002\]) of such a function for _k_ \= 64 bits is shown in Figure 8.5. The function first breaks a 64-bit block into 8 chunks, with each chunk consisting of 8 bits. Each 8-bit chunk is processed by an 8-bit to 8-bit table, which is of manageable size. For example, the first chunk is processed by the table denoted by T1. Next, the 8 output chunks are reassembled into a 64-bit block. The positions of the 64 bits in the block are then scrambled (permuted) to produce a 64-bit output. This output is fed back to the 64-bit input, where another cycle begins. After _n_ such cycles, the function provides a 64-bit block of ciphertext. The purpose of the rounds is to make each input bit affect most (if not all) of the final output bits. (If only one round were used, a given input bit would affect only 8 of the 64 output bits.) The key for this block cipher algorithm would be the eight permutation tables (assuming the scramble function is publicly known).
 
 Today there are a number of popular block ciphers, including DES (standing for Data Encryption Standard), 3DES, and AES (standing for Advanced Encryption
-
+![Alt text](image-4.png)
 **Table 8.1**  ♦  A specific 3-bit block cipher
-
-input output input output
-
-000 110 100 011
-
-001 111 101 010
-
-010 101 110 000
-
-011 100 111 001Standard). Each of these standards uses functions, rather than predetermined tables, along the lines of Figure 8.5 (albeit more complicated and specific to each cipher). Each of these algorithms also uses a string of bits for a key. For example, DES uses 64-bit blocks with a 56-bit key. AES uses 128-bit blocks and can operate with keys that are 128, 192, and 256 bits long. An algorithm’s key determines the specific “mini-table” mappings and permutations within the algorithm’s internals. The brute- force attack for each of these ciphers is to cycle through all the keys, applying the decryption algorithm with each key. Observe that with a key length of _n_, there are 2_n_ possible keys. NIST \[NIST 2001\] estimates that a machine that could crack 56-bit DES in one second (that is, try all 256 keys in one second) would take approximately 149 trillion years to crack a 128-bit AES key.
+Standard). Each of these standards uses functions, rather than predetermined tables, along the lines of Figure 8.5 (albeit more complicated and specific to each cipher). Each of these algorithms also uses a string of bits for a key. For example, DES uses 64-bit blocks with a 56-bit key. AES uses 128-bit blocks and can operate with keys that are 128, 192, and 256 bits long. An algorithm’s key determines the specific “mini-table” mappings and permutations within the algorithm’s internals. The brute- force attack for each of these ciphers is to cycle through all the keys, applying the decryption algorithm with each key. Observe that with a key length of _n_, there are 2_n_ possible keys. NIST \[NIST 2001\] estimates that a machine that could crack 56-bit DES in one second (that is, try all 256 keys in one second) would take approximately 149 trillion years to crack a 128-bit AES key.
 
 **Cipher-Block Chaining**
 
 In computer networking applications, we typically need to encrypt long messages or long streams of data. If we apply a block cipher as described by simply chopping up the message into _k_\-bit blocks and independently encrypting each block, a subtle but important problem occurs. To see this, observe that two or more of the cleartext blocks can be identical. For example, the cleartext in two or more blocks could be “HTTP/1.1”. For these identical blocks, a block cipher would, of course, produce the same ciphertext. An attacker could potentially guess the cleartext when it sees identical ciphertext blocks and may even be able to decrypt the entire message by identifying identical ciphtertext blocks and using knowledge about the underlying protocol structure \[Kaufman 2002\].
-
+![Alt text](image-5.png)
 **Figure 8.5**  ♦  An example of a block cipher
-
-64-bit output
-
-Loop for _n_ rounds
-
-8 bits
-
-8 bits
-
-T1
-
-8 bits
-
-8 bits
-
-T2
-
-8 bits
-
-8 bits
-
-T3
-
-8 bits
-
-64-bit input
-
-8 bits
-
-T4
-
-8 bits
-
-8 bits
-
-T5
-
-8 bits
-
-8 bits
-
-T6
-
-8 bits
-
-8 bits
-
-T7
-
-8 bits
-
-8 bits
-
-T8
-
-64-bit scramblerTo address this problem, we can mix some randomness into the ciphertext so that identical plaintext blocks produce different ciphertext blocks. To explain this idea, let _m_(_i_) denote the _i_th plaintext block, _c_(_i_) denote the _i_th ciphertext block, and _a_ ⊕ _b_ denote the exclusive-or (XOR) of two bit strings, _a_ and _b_. (Recall that the 0 ⊕ 0 = 1 ⊕ 1 = 0 and 0 ⊕ 1 = 1 ⊕ 0 = 1, and the XOR of two bit strings is done on a bit-by-bit basis. So, for example, 10101010 ⊕ 11110000 = 01011010.) Also, denote the block-cipher encryption algorithm with key _S_ as _KS_. The basic idea is as follows. The sender creates a random _k_\-bit number _r_(_i_) for the _i_th block and calculates _c_(_i_) = _KS_(_m_(_i_) ⊕ _r_(_i_ )). Note that a new _k_\-bit random number is chosen for each block. The sender then sends _c_(1), _r_(1), _c_(2), _r_(2), _c_(3), _r_(3), and so on. Since the receiver receives _c(i)_ and _r(i)_, it can recover each block of the plaintext by computing _m_(_i_) = _KS_(_c_(_i_)) ⊕ _r_(_i_ ). It is important to note that, although _r_(_i_) is sent in the clear and thus can be sniffed by Trudy, she cannot obtain the plaintext _m_(_i_), since she does not know the key _KS_. Also note that if two plaintext blocks _m_(_i_) and _m_(_j_) are the same, the corresponding ciphertext blocks _c_(_i_) and _c_(_j_) will be different (as long as the random numbers _r_(_i_) and _r_(_j_) are different, which occurs with very high probability).
+ scrambler To address this problem, we can mix some randomness into the ciphertext so that identical plaintext blocks produce different ciphertext blocks. To explain this idea, let _m_(_i_) denote the _i_th plaintext block, _c_(_i_) denote the _i_th ciphertext block, and _a_ ⊕ _b_ denote the exclusive-or (XOR) of two bit strings, _a_ and _b_. (Recall that the 0 ⊕ 0 = 1 ⊕ 1 = 0 and 0 ⊕ 1 = 1 ⊕ 0 = 1, and the XOR of two bit strings is done on a bit-by-bit basis. So, for example, 10101010 ⊕ 11110000 = 01011010.) Also, denote the block-cipher encryption algorithm with key _S_ as _KS_. The basic idea is as follows. The sender creates a random _k_\-bit number _r_(_i_) for the _i_th block and calculates _c_(_i_) = _KS_(_m_(_i_) ⊕ _r_(_i_ )). Note that a new _k_\-bit random number is chosen for each block. The sender then sends _c_(1), _r_(1), _c_(2), _r_(2), _c_(3), _r_(3), and so on. Since the receiver receives _c(i)_ and _r(i)_, it can recover each block of the plaintext by computing _m_(_i_) = _KS_(_c_(_i_)) ⊕ _r_(_i_ ). It is important to note that, although _r_(_i_) is sent in the clear and thus can be sniffed by Trudy, she cannot obtain the plaintext _m_(_i_), since she does not know the key _KS_. Also note that if two plaintext blocks _m_(_i_) and _m_(_j_) are the same, the corresponding ciphertext blocks _c_(_i_) and _c_(_j_) will be different (as long as the random numbers _r_(_i_) and _r_(_j_) are different, which occurs with very high probability).
 
 As an example, consider the 3-bit block cipher in Table 8.1. Suppose the plain- text is 010010010. If Alice encrypts this directly, without including the randomness, the resulting ciphertext becomes 101101101. If Trudy sniffs this ciphertext, because each of the three cipher blocks is the same, she can correctly surmise that each of the three plaintext blocks are the same. Now suppose instead Alice generates the ran- dom blocks _r_(1) = 001, _r_(2) = 111, and _r_(3) = 100 and uses the above technique to generate the ciphertext _c_(1) = 100, _c_(2) = 010, and _c_(3) = 000. Note that the three ciphertext blocks are different even though the plaintext blocks are the same. Alice then sends _c_(1), _r_(1), _c_(2), and _r_(2). You should verify that Bob can obtain the original plaintext using the shared key _KS_.
 
@@ -258,29 +159,8 @@ _B_ (_B_ +(_m_)) = _K_\+ _B_ (_K_\-
 _B_(_m_)) = _m_. Although public-key cryptography is appealing, one concern immediately
 
 springs to mind. Since Bob’s encryption key is public, anyone can send an encrypted
-
+![Alt text](image-6.png)
 **Figure 8.6**  ♦  Public key cryptography
-
-Encryption algorithm
-
-Ciphertext
-
-Decryption algorithm
-
-Plaintext message, _m_
-
-Plaintext message, _m_
-
-Private decryption key
-
-_m = KB –_(_KB_
-
-_+_(_m_))
-
-_KB –_
-
-_KB +_(_m_)
-
 Public encryption key_KB +_message to Bob, including Alice or someone _pretending_ to be Alice. In the case of a single shared secret key, the fact that the sender knows the secret key implicitly identifies the sender to the receiver. In the case of public key cryptography, however, this is no longer the case since anyone can send an encrypted message to Bob using Bob’s publicly available key. A digital signature, a topic we will study in Section 8.3, is needed to bind a sender to a message.
 
 **RSA**
@@ -342,30 +222,13 @@ these values are far too small to be secure.) Then _n_ = 35 and _z_ = 24. Bob ch
 We note here that the exponentiation required by RSA is a rather time-consuming process. As a result, RSA is often used in practice in combination with symmet- ric key cryptography. For example, if Alice wants to send Bob a large amount of encrypted data, she could do the following. First Alice chooses a key that will be used to encode the data itself; this key is referred to as a **session key**, and is denoted by _KS_. Alice must inform Bob of the session key, since this is the shared symmetric key they will use with a symmetric key cipher (e.g., with DES or AES). Alice encrypts the session key using Bob’s public key, that is, computes _c_ \= (_KS_)
 
 _e_ mod _n_. Bob receives the RSA-encrypted session key, _c_, and decrypts it to obtain
-
+![Alt text](image-7.png)
 **Table 8.2**  ♦  Alice’s RSA encryption, _e_ = 5, _n_ = 35
 
-Plaintext Letter _m_: numeric representation _m_e Ciphertext c = _m_e mod _n_
-
-l 12 248832 17
-
-o 15 759375 15
-
-v 22 5153632 22
-
-e 5 3125 10
-
+![Alt text](image-8.png)
 **Table 8.3**  ♦  Bob’s RSA decryption, _d_ = 29, _n_ = 35
 
-Ciphertext _c cd m_ = _cd_ mod _n_ Plaintext Letter
-
-17 4819685721067509150915091411825223071697 12 l
-
-15 127834039403948858939111232757568359375 15 o
-
-22 851643319086537701956194499721106030592 22 v
-
-10 1000000000000000000000000000000 5 ethe session key, _KS_. Bob now knows the session key that Alice will use for her encrypted data transfer.
+the session key, _KS_. Bob now knows the session key that Alice will use for her encrypted data transfer.
 
 **Why Does RSA Work?**
 
@@ -404,7 +267,8 @@ We’ll see in Sections 8.4 through 8.7 that this problem of message integrity i
 
 As a specific example, consider a computer network using a link-state routing algorithm (such as OSPF) for determining routes between each pair of routers in the network (see Chapter 5). In a link-state algorithm, each router needs to broadcast a link-state message to all other routers in the network. A router’s link-state message includes a list of its directly connected neighbors and the direct costs to these neigh- bors. Once a router receives link-state messages from all of the other routers, it can create a complete map of the network, run its least-cost routing algorithm, and con- figure its forwarding table. One relatively easy attack on the routing algorithm is for Trudy to distribute bogus link-state messages with incorrect link-state information. Thus, the need for message integrity—when router B receives a link-state message from router A, router B should verify that router A actually created the message and, further, that no one tampered with the message in transit.In this section, we describe a popular message integrity technique that is used by many secure networking protocols. But before doing so, we need to cover another important topic in cryptography—cryptographic hash functions.
 
-## Cryptographic Hash FunctionsAs shown in Figure 8.7, a hash function takes an input, _m_, and computes a fixed-size string _H_(_m_) known as a hash. The Internet checksum (Chapter 3) and CRCs (Chapter 6) meet this definition. A **cryptographic hash function
+## Cryptographic Hash Functions
+As shown in Figure 8.7, a hash function takes an input, _m_, and computes a fixed-size string _H_(_m_) known as a hash. The Internet checksum (Chapter 3) and CRCs (Chapter 6) meet this definition. A **cryptographic hash function
  is required to have the follow- ing additional property:
 
 • It is computationally infeasible to find any two different messages _x_ and _y_ such that _H_(_x_) = _H_(_y_).
@@ -414,7 +278,7 @@ Informally, this property means that it is computationally infeasible for an int
 Let’s convince ourselves that a simple checksum, such as the Internet checksum, would make a poor cryptographic hash function. Rather than performing 1s comple- ment arithmetic (as in the Internet checksum), let us compute a checksum by treating each character as a byte and adding the bytes together using 4-byte chunks at a time. Suppose Bob owes Alice $100.99 and sends an IOU to Alice consisting of the text string “IOU100.99BOB.” The ASCII representation (in hexadecimal notation) for these letters is 49,4F,55,31,30,30,2E,39,39,42,4F,42.
 
 Figure 8.8 (top) shows that the 4-byte checksum for this message is B2 C1 D2 AC. A slightly different message (and a much more costly one for Bob)
-
+![Alt text](image-9.png)
 **Figure 8.7**  ♦  Hash functions
 
 Many-to-one hash function
@@ -435,24 +299,9 @@ The second major hash algorithm in use today is the Secure Hash Algorithm (SHA-1
 
 ## Message Authentication Code
  Let’s now return to the problem of message integrity. Now that we understand hash functions, let’s take a first stab at how we might perform message integrity:
-
+![Alt text](image-10.png)
 **Figure 8.8**  ♦   Initial message and fraudulent message have the same checksum!
-
-Message I O U 1 0 0 . 9 9 B O B
-
-ASCII Representation
-
-49 4F 55 31 30 30 2E 39 39 42 4F 42
-
-B2 C1 D2 AC Checksum
-
-Message I O U 9 0 0 . 1 9 B O B
-
-ASCII Representation
-
-49 4F 55 39 30 30 2E 31 39 42 4F 42
-
-B2 C1 D2 AC Checksum1\. Alice creates message _m_ and calculates the hash _H_(_m_) (for example, with SHA-1). 2. Alice then appends _H_(_m_) to the message _m_, creating an extended message
+ Alice creates message _m_ and calculates the hash _H_(_m_) (for example, with SHA-1). 2. Alice then appends _H_(_m_) to the message _m_, creating an extended message
 
 (_m_, _H_(_m_)), and sends the extended message to Bob. 3. Bob receives an extended message (_m_, _h_) and calculates _H_(_m_). If _H_(_m_) = _h_,
 
@@ -471,44 +320,16 @@ To perform message integrity, in addition to using cryptographic hash functions,
 A summary of the procedure is shown in Figure 8.9. Readers should note that the MAC here (standing for “message authentication code”) is not the same MAC used in link-layer protocols (standing for “medium access control”)!
 
 One nice feature of a MAC is that it does not require an encryption algorithm. Indeed, in many applications, including the link-state routing algorithm described earlier, communicating entities are only concerned with message integrity and are
-
+![Alt text](image-11.png)
 **Figure 8.9**  ♦  Message authentication code (MAC)
-
-_H_(.)
-
-_H_(.)
-
-_m m_
-
-_m_
-
-_m_
-
-_s_
-
-_s_
-
-_s_
-
-\+ Internet
-
-Compare
-
-Key:
-
-\= Message
-
-\= Shared secret
-
-_H(m+s)_
-
-_H(m+s)_not concerned with message confidentiality. Using a MAC, the entities can authen- ticate the messages they send to each other without having to integrate complex encryption algorithms into the integrity process.
+not concerned with message confidentiality. Using a MAC, the entities can authen- ticate the messages they send to each other without having to integrate complex encryption algorithms into the integrity process.
 
 As you might expect, a number of different standards for MACs have been pro- posed over the years. The most popular standard today is **HMAC**, which can be used either with MD5 or SHA-1. HMAC actually runs data and the authentication key through the hash function twice \[Kaufman 2002; RFC 2104\].
 
 There still remains an important issue. How do we distribute the shared authen- tication key to the communicating entities? For example, in the link-state routing algorithm, we would somehow need to distribute the secret authentication key to each of the routers in the autonomous system. (Note that the routers can all use the same authentication key.) A network administrator could actually accomplish this by physically visiting each of the routers. Or, if the network administrator is a lazy guy, and if each router has its own public key, the network administrator could distribute the authentication key to any one of the routers by encrypting it with the router’s public key and then sending the encrypted key over the network to the router.
 
-## Digital SignaturesThink of the number of the times you’ve signed your name to a piece of paper during the last week. You sign checks, credit card receipts, legal documents, and letters. Your signature attests to the fact that you (as opposed to someone else) have acknowledged and/or agreed with the document’s contents. In a digital world, one often wants to indicate the owner or creator of a document, or to signify one’s agree- ment with a document’s content. A **digital signature
+## Digital Signatures
+Think of the number of the times you’ve signed your name to a piece of paper during the last week. You sign checks, credit card receipts, legal documents, and letters. Your signature attests to the fact that you (as opposed to someone else) have acknowledged and/or agreed with the document’s contents. In a digital world, one often wants to indicate the owner or creator of a document, or to signify one’s agree- ment with a document’s content. A **digital signature
  is a cryptographic technique for achieving these goals in a digital world.
 
 Just as with handwritten signatures, digital signing should be done in a way that is verifiable and nonforgeable. That is, it must be possible to prove that a document signed by an individual was indeed signed by that individual (the signature must be verifiable) and that _only_ that individual could have signed the document (the signa- ture cannot be forged).
@@ -558,89 +379,22 @@ _B_, _K_\- _B_), in the first place, Bob.
 anyone stolen _K_\- _B_ from Bob.)
 
 It is also important to note that if the original document, _m_, is ever modified to some alternate form, _m_´, the signature that Bob created for _m_ will not be valid for _m_´,
-
+![Alt text](image-12.png)
 **Figure 8.10**  ♦  Creating a digital signature for a document
-
-Encryption algorithm
-
-Message: _m_
-
-Bob’s private key, _KB_
-
-_–_
-
-Dear Alice: Sorry I have been unable to write for so long. Since we..... .......... ..........
-
-Bob
-
-Signed message: _KB_
-
-_–_ (_m_)
-
-fadfg54986fgnzmcnv T98734ngldskg02j ser09tugkjdflg ..........since _K_\+ _B_(_K_\-
-
-_B_(_m_)) does not equal _m_´. Thus, we see that digital signatures also provide message integrity, allowing the receiver to verify that the message was unaltered as well as the source of the message.
+since _K_\+ _B_(_K_\-_B_(_m_)) does not equal _m_´. Thus, we see that digital signatures also provide message integrity, allowing the receiver to verify that the message was unaltered as well as the source of the message.
 
 One concern with signing data by encryption is that encryption and decryption are computationally expensive. Given the overheads of encryption and decryption, signing data via complete encryption/decryption can be overkill. A more efficient approach is to introduce hash functions into the digital signature. Recall from Section 8.3.2 that a hash algorithm takes a message, _m_, of arbitrary length and com- putes a fixed-length “fingerprint” of the message, denoted by _H_(_m_). Using a hash function, Bob signs the hash of a message rather than the message itself, that is, Bob calculates _K_\-
 
 _B_(_H_(_m_)). Since _H_(_m_) is generally much smaller than the original message _m_, the computational effort required to create the digital signature is sub- stantially reduced.
 
 In the context of Bob sending a message to Alice, Figure 8.11 provides a sum- mary of the operational procedure of creating a digital signature. Bob puts his origi- nal long message through a hash function. He then digitally signs the resulting hash with his private key. The original message (in cleartext) along with the digitally signed message digest (henceforth referred to as the digital signature) is then sent to Alice. Figure 8.12 provides a summary of the operational procedure of the signature. Alice applies the sender’s public key to the message to obtain a hash result. Alice also
-
+![Alt text](image-13.png)
 **Figure 8.11**  ♦  Sending a digitally signed message
 
-Bob’s private key, _KB_
-
-_–_
-
-Many-to-one hash function
-
-Long message
-
-Dear Alice: This is a VERY long letter since there is so much to say..... .......... ..........
-
-Bob
-
-Fixed-length hash
-
-Opgmdvboijrtnsd gghPPdogm;lcvkb
-
-Signed hashPackage to send
-
-to Alice
-
-Fgkopdgoo69cmxw 54psdterma\[asofmz
-
-Encryption algorithmapplies the hash function to the cleartext message to obtain a second hash result. If the two hashes match, then Alice can be sure about the integrity and author of the message.
+Encryption algorithm applies the hash function to the cleartext message to obtain a second hash result. If the two hashes match, then Alice can be sure about the integrity and author of the message.
 
 Before moving on, let’s briefly compare digital signatures with MACs, since they have parallels, but also have important subtle differences. Both digital signa- tures and MACs start with a message (or a document). To create a MAC out of the message, we append an authentication key to the message, and then take the hash of the result. Note that neither public key nor symmetric key encryption is involved in creating the MAC. To create a digital signature, we first take the hash of the message and then encrypt the message with our private key (using public key cryptography). Thus, a digital signature is a “heavier” technique, since it requires an underlying Public Key Infrastructure (PKI) with certification authorities as described below. We’ll see in Section 8.4 that PGP—a popular secure e-mail system—uses digital signatures for message integrity. We’ve seen already that OSPF uses MACs for mes- sage integrity. We’ll see in Sections 8.5 and 8.6 that MACs are also used for popular transport-layer and network-layer security protocols.
-
-Bob’s public key, _KB_
-
-_+_
-
-Long message
-
-Dear Alice: This is a VERY long letter since there is so much to say..... .......... ..........
-
-Bob
-
-Fixed-length hash
-
-Opgmdvboijrtnsd gghPPdogm;lcvkb
-
-Signed hash
-
-Fgkopdgoo69cmxw 54psdterma\[asofmz
-
-Many-to-one hash function Compare
-
-Fixed-length hash
-
-Opgmdvboijrtnsd gghPPdogm;lcvkb
-
-Encryption algorithm
-
+![Alt text](image-14.png)
 **Figure 8.12**  ♦  Verifying a signed message**Public Key Certification**
 
 An important application of digital signatures is **public key certification**, that is, certifying that a public key belongs to a specific entity. Public key certification is used in many popular secure networking protocols, including IPsec and TLS.
@@ -655,80 +409,26 @@ Binding a public key to a particular entity is typically done by a **Certificati
 
 1\. A CA verifies that an entity (a person, a router, and so on) is who it says it is. There are no mandated procedures for how certification is done. When dealing with a CA, one must trust the CA to have performed a suitably rigorous identity verification. For example, if Trudy were able to walk into the Fly-by-Night CA and simply announce “I am Alice” and receive certificates associated with the identity of Alice, then one shouldn’t put much faith in public keys certified by the Fly-by-Night CA. On the other hand, one might (or might not!) be more willing to trust a CA that is part of a federal or state program. You can trust the identity associated with a public key only to the extent to which you can trust a CA and its identity verification techniques. What a tangled web of trust we spin!
 
-2\. Once the CA verifies the identity of the entity, the CA creates a **certificate** that binds the public key of the entity to the identity. The certificate contains**Figure 8.13**  ♦  Trudy masquerades as Bob using public key cryptography
+2\. Once the CA verifies the identity of the entity, the CA creates a **certificate** that binds the public key of the entity to the identity. The certificate contains
+![Alt text](image-15.png)
+**Figure 8.13**  ♦  Trudy masquerades as Bob using public key cryptography
 
-Trudy’s private key, _KT_
+**Encryption algorithm**
 
-_–_
-
-Trudy’s public key, _KT_
-
-_+_
-
-Signed (using Trudy's private key)
-
-message digest
-
-Fgkopdgoo69cmxw 54psdterma\[asofmz
-
-Message
-
-Alice, Deliver a pizza to me.
-
-Bob
-
-Many-to-one hash function
-
-Alice uses Trudy’s public key, thinking
-
-it is Bob’s, and concludes the
-
-message is from Bob
-
-**PIZZA**
-
-Encryption algorithm
-
-the public key and globally unique identifying information about the owner of the public key (for example, a human name or an IP address). The certificate is digitally signed by the CA. These steps are shown in Figure 8.14.
-
+the public key and globally unique identifying information about the owner of the public key (for example, a human name or an IP address). The certificate is digitally signed by the CA. These steps are shown in 
+![Alt text](image-17.png)
+**Figure 8.14**
 Let us now see how certificates can be used to combat pizza-ordering prank- sters, like Trudy, and other undesirables. When Bob places his order he also sends his CA-signed certificate. Alice uses the CA’s public key to check the validity of Bob’s certificate and extract Bob’s public key.
 
-Both the International Telecommunication Union (ITU) and the IETF have developed standards for CAs. ITU X.509 \[ITU 2005a\] specifies an authentication service as well as a specific syntax for certificates. \[RFC 1422\] describes CA- based key management for use with secure Internet e-mail. It is compatible with X.509 but goes beyond X.509 by establishing procedures and conventions for a key management architecture. Table 8.4 describes some of the important fields in a certificate.**Table 8.4**  ♦  Selected fields in an X.509 and RFC 1422 public key
-
-Field Name Description
-
-Version Version number of X.509 specification
-
-Serial number CA-issued unique identifier for a certificate
-
-Signature Specifies the algorithm used by CA to sign this certificate
-
-Issuer name Identity of CA issuing this certificate, in distinguished name (DN) \[RFC 4514\] format
-
-Validity period Start and end of period of validity for certificate
-
-Subject name Identity of entity whose public key is associated with this certificate, in DN format
-
-Subject public key The subject’s public key as well indication of the public key algorithm (and algorithm parameters) to be used with this key
+Both the International Telecommunication Union (ITU) and the IETF have developed standards for CAs. ITU X.509 \[ITU 2005a\] specifies an authentication service as well as a specific syntax for certificates. \[RFC 1422\] describes CA- based key management for use with secure Internet e-mail. It is compatible with X.509 but goes beyond X.509 by establishing procedures and conventions for a key management architecture. Table 8.4 describes some of the important fields in a certificate.
+![Alt text](image-16.png)
+**Table 8.4**  ♦  Selected fields in an X.509 and RFC 1422 public key
 
 # End-Point Authentication
 **End-point authentication** is the process of one entity proving its identity to another entity over a computer network, for example, a user proving its identity to an e-mail server. As humans, we authenticate each other in many ways: We recognize each other’s faces when we meet, we recognize each other’s voices on the telephone, we are authenticated by the customs official who checks us against the picture on our passport.
 
-**Figure 8.14**  ♦  Bob has his public key certified by the CA
-
-Bob’s CA-signed certificate containing
-
-his public key, _KB +_
-
-Certification Authority (CA)
-
-(_KB +, B_)
-
-CA’s private key, _KCA_
-
-_–_
-
-Encryption algorithmIn this section, we consider how one party can authenticate another party when the two are communicating over a network. We focus here on authenticating a “live” party, at the point in time when communication is actually occurring. A concrete example is a user authenticating him or herself to an e-mail server. This is a subtly different problem from proving that a message received at some point in the past did indeed come from that claimed sender, as studied in Section 8.3.
+**Encryption algorithm**
+In this section, we consider how one party can authenticate another party when the two are communicating over a network. We focus here on authenticating a “live” party, at the point in time when communication is actually occurring. A concrete example is a user authenticating him or herself to an e-mail server. This is a subtly different problem from proving that a message received at some point in the past did indeed come from that claimed sender, as studied in Section 8.3.
 
 When performing authentication over the network, the communicating parties cannot rely on biometric information, such as a visual appearance or a voiceprint. Indeed, we will see in our later case studies that it is often network elements such as routers and client/server processes that must authenticate each other. Here, authen- tication must be done solely on the basis of messages and data exchanged as part of an **authentication protocol**. Typically, an authentication protocol would run _before_ the two communicating parties run some other protocol (for example, a reliable data transfer protocol, a routing information exchange protocol, or an e-mail protocol). The authentication protocol first establishes the identities of the parties to each other’s satisfaction; only after authentication do the parties get down to the work at hand.
 
@@ -737,22 +437,9 @@ As in the case of our development of a reliable data transfer (rdt) protocol in 
 Let’s assume that Alice needs to authenticate herself to Bob. Perhaps the simplest authentication protocol we can imagine is one where
 
 Alice simply sends a message to Bob saying she is Alice. This protocol is shown in Figure 8.15. The flaw here is obvious—there is no way for Bob actually to know that the person sending the message “I am Alice” is indeed Alice. For example, Trudy (the intruder) could just as well send such a message.
-
+![Alt text](image-18.png)
 **Figure 8.15**  ♦  Protocol _ap1.0_ and a failure scenario
-
-Alice
-
-I am Alice
-
-Bob
-
-Trudy Trudy
-
-Alice
-
-I am A li ce
-
-Bob**Authentication Protocol _ap2.0_**
+**Authentication Protocol _ap2.0_**
 
 If Alice has a well-known network address (e.g., an IP address) from which she always communicates, Bob could attempt to authenticate Alice by verifying that the source address on the IP datagram carrying the authentication message matches Alice’s well-known address. In this case, Alice would be authenticated. This might stop a very network-naive intruder from impersonating Alice, but it wouldn’t stop the determined student studying this book, or many others!
 
@@ -761,62 +448,18 @@ From our study of the network and data link layers, we know that it is not that 
 **Authentication Protocol _ap3.0_**
 
 One classic approach to authentication is to use a secret password. The password is a shared secret between the authenticator and the person being authenticated. Gmail, Facebook, telnet, FTP, and many other services use password authentication. In pro- tocol ap3.0, Alice thus sends her secret password to Bob, as shown in Figure 8.17.
-
+![Alt text](image-19.png)
 **Figure 8.16**  ♦  Protocol _ap2.0_ and a failure scenario
-
-Alice
-
-I am Alice
-
-Alice’s IP addr.
-
-Bob
-
-Trudy
-
-Alice
-
-I am A li ce
-
-Al ic e’ s IP a dd r.
-
-Bob
-
-TrudySince passwords are so widely used, we might suspect that protocol _ap3.0_ is fairly secure. If so, we’d be wrong! The security flaw here is clear. If Trudy eaves- drops on Alice’s communication, then she can learn Alice’s password. Lest you think this is unlikely, consider the fact that when you Telnet to another machine and log in, the login password is sent unencrypted to the Telnet server. Someone connected to the Telnet client or server’s LAN can possibly sniff (read and store) all packets transmitted on the LAN and thus steal the login password. In fact, this is a well- known approach for stealing passwords (see, for example, \[Jimenez 1997\]). Such a threat is obviously very real, so _ap3.0_ clearly won’t do.
+Since passwords are so widely used, we might suspect that protocol _ap3.0_ is fairly secure. If so, we’d be wrong! The security flaw here is clear. If Trudy eaves- drops on Alice’s communication, then she can learn Alice’s password. Lest you think this is unlikely, consider the fact that when you Telnet to another machine and log in, the login password is sent unencrypted to the Telnet server. Someone connected to the Telnet client or server’s LAN can possibly sniff (read and store) all packets transmitted on the LAN and thus steal the login password. In fact, this is a well- known approach for stealing passwords (see, for example, \[Jimenez 1997\]). Such a threat is obviously very real, so _ap3.0_ clearly won’t do.
 
 **Authentication Protocol _ap3.1_**
 
 Our next idea for fixing ap3.0 is naturally to encrypt the password. By encrypting the password, we can prevent Trudy from learning Alice’s password. If we assume that Alice and Bob share a symmetric secret key, _KA_\-_B_, then Alice can encrypt the password and send her identification message, “I am Alice,” and her encrypted password to Bob. Bob then decrypts the password and, assuming the password is cor- rect, authenticates Alice. Bob feels comfortable in authenticating Alice since Alice not only knows the password, but also knows the shared secret key value needed to encrypt the password. Let’s call this protocol _ap3.1_.
 
 While it is true that _ap3.1_ prevents Trudy from learning Alice’s password, the use of cryptography here does not solve the authentication problem. Bob is subject
-
+![Alt text](image-20.png)
 **Figure 8.17**  ♦  Protocol _ap3.0_ and a failure scenario
-
-Alice
-
-I am Alice, password
-
-OK
-
-Bob
-
-Trudy
-
-Alice
-
-I am A li ce ,
-
-pa ss wo rd
-
-OK
-
-Bob
-
-Trudy
-
-Tape recorder
-
-Key:to a **playback attack**: Trudy need only eavesdrop on Alice’s communication, record the encrypted version of the password, and play back the encrypted version of the password to Bob to pretend that she is Alice. The use of an encrypted password in _ap3.1_ doesn’t make the situation manifestly different from that of protocol _ap3.0_ in Figure 8.17.
+to a **playback attack**: Trudy need only eavesdrop on Alice’s communication, record the encrypted version of the password, and play back the encrypted version of the password to Bob to pretend that she is Alice. The use of an encrypted password in _ap3.1_ doesn’t make the situation manifestly different from that of protocol _ap3.0_ in Figure 8.17.
 
 **Authentication Protocol _ap4.0_**
 
@@ -840,16 +483,8 @@ Interestingly, it is possible to provide security services in any of the top fou
 In Sections 8.5 through 8.8, we examine how security tools are being used in the application, transport, network, and link layers. Being consistent with the general structure of this book, we begin at the top of the protocol stack and discuss security at the application layer. Our approach is to use a specific application, e-mail, as a case study for application-layer security. We then move down the protocol stack. We’ll examine the TLS protocol (which provides security at the transport layer), IPsec (which provides security at the network layer), and the security of the IEEE 802.11 wireless LAN protocol.
 
 You might be wondering why security functionality is being provided at more than one layer in the Internet. Wouldn’t it suffice simply to provide the security functionality at the network layer and be done with it? There are two answers to this question. First, although security at the network layer can offer “blanket coverage” by encrypting all the data in the datagrams (that is, all the transport-layer segments)
-
+![Alt text](image-21.png)
 **Figure 8.18**  ♦  Protocol _ap4.0_ and a failure scenario
-
-Alice
-
-_R_
-
-_KA–B_(_R_)
-
-I am Alice
 
 Boband by authenticating all the source IP addresses, it can’t provide user-level secu- rity. For example, a commerce site cannot rely on IP-layer security to authenticate a customer who is purchasing goods at the commerce site. Thus, there is a need for security functionality at higher layers as well as blanket coverage at lower lay- ers. Second, it is generally easier to deploy new Internet services, including security services, at the higher layers of the protocol stack. While waiting for security to be broadly deployed at the network layer, which is probably still many years in the future, many application developers “just do it” and introduce security functional- ity into their favorite applications. A classic example is Pretty Good Privacy (PGP), which provides secure e-mail (discussed later in this section). Requiring only client and server application code, PGP was one of the first security technologies to be broadly used in the Internet.
 
@@ -869,83 +504,29 @@ Having designed a secure e-mail system that provides confidentiality, let’s no
 _A_, to create a digital signature, (3) concatenates the original (unencrypted) message with the signature to create a package, and (4) sends the package to Bob’s e-mail address. When Bob receives the package, he (1) applies Alice’s public key, _K_+
 
 _A_, to the signed
-
+![Alt text](image-22.png)
 **Figure 8.19**  ♦   Alice used a symmetric session key, _KS_, to send a secret e-mail to Bob
-
-_KS_ (.) _KS_ (.) _KS_ (_m_) _KS_ (_m_)
-
-_KS_
-
-_KS_
-
-_KB +_(.)
-
-_KB +_(_KS_ )_KB_
-
-_+_(_KS_ )
-
-_m m_
-
-\+ –Internet
-
-_KB –_(.)
-
-Alice sends e-mail message _m_ Bob receives e-mail message _m_message digest and (2) compares the result of this operation with his own hash, _H_, of the message. The steps are illustrated in Figure 8.20. As discussed in Section 8.3, if the two results are the same, Bob can be pretty confident that the message came from Alice and is unaltered.
+message digest and (2) compares the result of this operation with his own hash, _H_, of the message. The steps are illustrated in Figure 8.20. As discussed in Section 8.3, if the two results are the same, Bob can be pretty confident that the message came from Alice and is unaltered.
 
 Now let’s consider designing an e-mail system that provides confidentiality, sender authentication, _and_ message integrity. This can be done by combining the procedures in Figures 8.19 and 8.20. Alice first creates a preliminary package, exactly as in Figure 8.20, that consists of her original message along with a digitally signed hash of the message. She then treats this preliminary package as a message in itself and sends this new message through the sender steps in Figure 8.19, creating a new package that is sent to Bob. The steps applied by Alice are shown in Figure 8.21. When Bob receives the package, he first applies his side of Figure 8.19 and then his
-
+![Alt text](image-23.png)
 **Figure 8.20**  ♦   Using hash functions and digital signatures to provide sender authentication and message integrity
-
-_H_(.) _KA –_ (.) _KA_
-
-_\+_ (.) _KA_
-
-_–_ (_H_(_m_)) _KA –_ (_H_(_m_))
-
-_m_
-
-_m m_
-
-\+ –Internet
-
-Alice sends e-mail message _m_ Bob receives e-mail message _m_
-
-_H_(.)
-
-Compare
-
-**Figure 8.21**  ♦   Alice uses symmetric key cyptography, public key cryptography, a hash function, and a digital signature to provide secrecy, sender authentication, and message integrity
-
-_H_ (.) _KA –_ (.)
-
-_KS_ (.)
-
-_KS_
-
-_KA –_ (_H_ (_m_))
-
-_m_
-
-_m_
-
-+
-
-\+ to Internet
-
-_KB +_(.)side of Figure 8.20. It should be clear that this design achieves the goal of provid- ing confidentiality, sender authentication, and message integrity. Note that, in this scheme, Alice uses public key cryptography twice: once with her own private key and once with Bob’s public key. Similarly, Bob also uses public key cryptography twice—once with his private key and once with Alice’s public key.
+![Alt text](image-24.png)
+**Figure 8.21**  ♦   Alice uses symmetric key cyptography, public key cryptography, a hash function, and a digital signature to provide secrecy, sender authentication, and message integrity side of Figure 8.20. It should be clear that this design achieves the goal of provid- ing confidentiality, sender authentication, and message integrity. Note that, in this scheme, Alice uses public key cryptography twice: once with her own private key and once with Bob’s public key. Similarly, Bob also uses public key cryptography twice—once with his private key and once with Alice’s public key.
 
 The secure e-mail design outlined in Figure 8.21 probably provides satisfactory security for most e-mail users for most occasions. However, there is still one important issue that remains to be addressed. The design in Figure 8.21 requires Alice to obtain Bob’s public key, and requires Bob to obtain Alice’s public key. The distribution of these public keys is a nontrivial problem. For example, Trudy might masquerade as Bob and give Alice her own public key while saying that it is Bob’s public key, enabling her to receive the message meant for Bob. As we learned in Section 8.3, a popular approach for securely distributing public keys is to _certify_ the public keys using a CA.
 
-## PGPWritten by Phil Zimmermann in 1991, **Pretty Good Privacy (PGP)
+## PGP
+Written by Phil Zimmermann in 1991, **Pretty Good Privacy (PGP)**
  is a nice exam- ple of an e-mail encryption scheme \[PGP 2020\]. The PGP design is, in essence, the same as the design shown in Figure 8.21. Depending on the version, the PGP soft- ware uses MD5 or SHA for calculating the message digest; CAST, triple-DES, or IDEA for symmetric key encryption; and RSA for the public key encryption.
 
 When PGP is installed, the software creates a public key pair for the user. The public key can be posted on the user’s Web site or placed in a public key server. The private key is protected by the use of a password. The password has to be entered every time the user accesses the private key. PGP gives the user the option of dig- itally signing the message, encrypting the message, or both digitally signing and encrypting. Figure 8.22 shows a PGP signed message. This message appears after the MIME header. The encoded data in the message is _K_\-
 
 _A_ (_H_(_m_)), that is, the digi- tally signed message digest. As we discussed above, in order for Bob to verify the integrity of the message, he needs to have access to Alice’s public key.
-
+![Alt text](image-25.png)
 **Figure 8.22**  ♦  A PGP signed message
-
-\-----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1 Bob: Can I see you tonight? Passionately yours, Alice -----BEGIN PGP SIGNATURE----- Version: PGP for Personal Privacy 5.0 Charset: noconv yhHJRHhGJGhgg/12EpJ+lo8gE4vB3mqJhFEvZP9t6n7G6m5Gw2 -----END PGP SIGNATURE-----Figure 8.23 shows a secret PGP message. This message also appears after the MIME header. Of course, the plaintext message is not included within the secret e-mail message. When a sender (such as Alice) wants both confidentiality and integrity, PGP contains a message like that of Figure 8.23 within the message of Figure 8.22.
+![Alt text](image-26.png)
+**Figure 8.23** shows a secret PGP message. This message also appears after the MIME header. Of course, the plaintext message is not included within the secret e-mail message. When a sender (such as Alice) wants both confidentiality and integrity, PGP contains a message like that of Figure 8.23 within the message of Figure 8.22.
 
 PGP also provides a mechanism for public key certification, but the mechanism is quite different from the more conventional CA. PGP public keys are certified by a _web of trust._ Alice herself can certify any key/username pair when she believes the pair really belong together. In addition, PGP permits Alice to say that she trusts another user to vouch for the authenticity of more keys. Some PGP users sign each other’s keys by holding key-signing parties. Users physically gather, exchange public keys, and certify each other’s keys by signing them with their private keys.
 
@@ -953,10 +534,7 @@ PGP also provides a mechanism for public key certification, but the mechanism is
 In the previous section, we saw how cryptographic techniques can provide confiden- tiality, data integrity, and end-point authentication to a specific application, namely, e-mail. In this section, we’ll drop down a layer in the protocol stack and examine how cryptography can enhance TCP with security services, including confidentiality, data integrity, and end-point authentication. This enhanced version of TCP is commonly known as **Transport Layer Security (TLS)**, which has been standardized by the IETF \[RFC 4346\]. An earlier and similar version of this protocol is SSL version 3.
 
 The SSL protocol was originally designed by Netscape, but the basic ideas behind securing TCP had predated Netscape’s work (for example, see Woo \[Woo 1994\]). Since its inception, SSL and its successor TLS have enjoyed broad deploy- ment. TLS is supported by all popular Web browsers and Web servers, and it is used by Gmail and essentially all Internet commerce sites (including Amazon, eBay, and TaoBao). Hundreds of billions of dollars are spent over TLS every year. In fact, if you have ever purchased anything over the Internet with your credit card, the communica- tion between your browser and the server for this purchase almost certainly went over TLS. (You can identify that TLS is being used by your browser when the URL begins with https: rather than http.)
-
-**Figure 8.23**  ♦  A secret PGP message
-
-\-----BEGIN PGP MESSAGE----- Version: PGP for Personal Privacy 5.0 u2R4d+/jKmn8Bc5+hgDsqAewsDfrGdszX68liKm5F6Gc4sDfcXyt RfdS10juHgbcfDssWe7/K=lKhnMikLo0+1/BvcX4t==Ujk9PbcD4 Thdf2awQfgHbnmKlok8iy6gThlp -----END PGP MESSAGETo understand the need for TLS, let’s walk through a typical Internet commerce scenario. Bob is surfing the Web and arrives at the Alice Incorporated site, which is selling perfume. The Alice Incorporated site displays a form in which Bob is sup- posed to enter the type of perfume and quantity desired, his address, and his pay- ment card number. Bob enters this information, clicks on Submit, and expects to receive (via ordinary postal mail) the purchased perfumes; he also expects to receive a charge for his order in his next payment card statement. This all sounds good, but if no security measures are taken, Bob could be in for a few surprises.
+To understand the need for TLS, let’s walk through a typical Internet commerce scenario. Bob is surfing the Web and arrives at the Alice Incorporated site, which is selling perfume. The Alice Incorporated site displays a form in which Bob is sup- posed to enter the type of perfume and quantity desired, his address, and his pay- ment card number. Bob enters this information, clicks on Submit, and expects to receive (via ordinary postal mail) the purchased perfumes; he also expects to receive a charge for his order in his next payment card statement. This all sounds good, but if no security measures are taken, Bob could be in for a few surprises.
 
 • If no confidentiality (encryption) is used, an intruder could intercept Bob’s order and obtain his payment card information. The intruder could then make purchases at Bob’s expense.
 
@@ -967,63 +545,17 @@ The SSL protocol was originally designed by Netscape, but the basic ideas behind
 TLS addresses these issues by enhancing TCP with confidentiality, data integrity, server authentication, and client authentication.
 
 TLS is often used to provide security to transactions that take place over HTTP. However, because TLS secures TCP, it can be employed by any application that runs over TCP. TLS provides a simple Application Programmer Interface (API) with sockets, which is similar and analogous to TCP’s API. When an application wants to employ TLS, the application includes SSL classes/libraries. As shown in Figure 8.24, although TLS technically resides in the application layer, from the developer’s perspective it is a transport protocol that provides TCP’s services enhanced with security services.
-
+![Alt text](image-27.png)
 **Figure 8.24**  ♦   Although TLS technically resides in the application layer, from the developer’s perspective it is a transport-layer protocol
-
-TCP
-
-TLS sublayer
-
-IP
-
-Application
-
-Application layer
-
-**TCP enhanced with TLS**
-
-TLS socket
-
-TCP socket
-
-TCP
-
-IP
-
-Application
-
-**TCP API**
-
-TCP socket## The Big Picture
+**The Big Picture**
  We begin by describing a simplified version of TLS, one that will allow us to get a big-picture understanding of the _why_ and _how_ of TLS. We will refer to this simpli- fied version of TLS as “almost-TLS.” After describing almost-TLS, in the next sub- section we’ll then describe the real TLS, filling in the details. Almost-TLS (and TLS) has three phases: _handshake_, _key derivation_, and _data transfer_. We now describe these three phases for a communication session between a client (Bob) and a server (Alice), with Alice having a private/public key pair and a certificate that binds her identity to her public key.
 
 **Handshake**
 
 During the handshake phase, Bob needs to (a) establish a TCP connection with Alice, (b) verify that Alice is _really_ Alice, and (c) send Alice a master secret key, which will be used by both Alice and Bob to generate all the symmetric keys they need for the TLS session. These three steps are shown in Figure 8.25. Note that once the TCP connection is established, Bob sends Alice a hello message. Alice then responds with her certificate, which contains her public key. As discussed in Section 8.3, because the certificate has been certified by a CA, Bob knows for sure that the public key in the certificate belongs to Alice. Bob then generates a Master Secret (MS) (which will only be used for this TLS session), encrypts the MS with Alice’s public key to create
-
+![Alt text](image-28.png)
 **Figure 8.25**  ♦   The almost-TLS handshake, beginning with a TCP connection
-
-TCP SYN
-
-TCP/SYNACK
-
-Decrypts _EMS_ with _KA_
-
-_–_ to get _MS_
-
-_EMS = KA +(MS)_
-
-TCP ACK
-
-TLS hello
-
-certificate(b)
-
-(a)
-
-(c) Create Master
-
-Secret _(MS)_the Encrypted Master Secret (EMS), and sends the EMS to Alice. Alice decrypts the EMS with her private key to get the MS. After this phase, both Bob and Alice (and no one else) know the master secret for this TLS session.
+the Encrypted Master Secret (EMS), and sends the EMS to Alice. Alice decrypts the EMS with her private key to get the MS. After this phase, both Bob and Alice (and no one else) know the master secret for this TLS session.
 
 **Key Derivation**
 
@@ -1060,7 +592,7 @@ The solution to this problem, as you probably guessed, is to use sequence num- b
 **TLS Record**
 
 The TLS record (as well as the almost-TLS record) is shown in Figure 8.26. The record consists of a type field, version field, length field, data field, and HMAC field. Note that the first three fields are not encrypted. The type field indicates whether the record is a handshake message or a message that contains application data. It is also used to close the TLS connection, as discussed below. TLS at the receiving end uses the length field to extract the TLS records out of the incoming TCP byte stream. The version field is self-explanatory.
-
+![Alt text](image-29.png)
 **Figure 8.26**  ♦  Record format for TLS
 
 Version LengthType Data HMAC
@@ -1097,54 +629,17 @@ Before getting into the specifics of IPsec, let’s step back and consider what 
 
 In addition to confidentiality, a network-layer security protocol could potentially provide other security services. For example, it could provide source authentication, so that the receiving entity can verify the source of the secured datagram. A network- layer security protocol could provide data integrity, so that the receiving entity can check for any tampering of the datagram that may have occurred while the datagram was in transit. A network-layer security service could also provide replay-attack pre- vention, meaning that Bob could detect any duplicate datagrams that an attacker might insert. We will soon see that IPsec indeed provides mechanisms for all these security services, that is, for confidentiality, source authentication, data integrity, and replay-attack prevention.
 
-## IPsec and Virtual Private Networks (VPNs)An institution that extends over multiple geographical regions often desires its own IP network, so that its hosts and servers can send data to each other in a secure and confidential manner. To achieve this goal, the institution could actually deploy a stand-alone physical network—including routers, links, and a DNS infrastructure— that is completely separate from the public Internet. Such a disjoint network, dedi- cated to a particular institution, is called a **private network
+## IPsec and Virtual Private Networks (VPNs)
+An institution that extends over multiple geographical regions often desires its own IP network, so that its hosts and servers can send data to each other in a secure and confidential manner. To achieve this goal, the institution could actually deploy a stand-alone physical network—including routers, links, and a DNS infrastructure— that is completely separate from the public Internet. Such a disjoint network, dedi- cated to a particular institution, is called a **private network
 . Not surprisingly, a private network can be very costly, as the institution needs to purchase, install, and maintain its own physical network infrastructure.
 
 Instead of deploying and maintaining a private network, many institutions today create VPNs over the existing public Internet. With a VPN, the institution’s inter-office traffic is sent over the public Internet rather than over a physicallyindependent network. But to provide confidentiality, the inter-office traffic is encrypted before it enters the public Internet. A simple example of a VPN is shown in Figure 8.27. Here the institution consists of a headquarters, a branch office, and traveling salespersons that typically access the Internet from their hotel rooms. (There is only one salesperson shown in the figure.) In this VPN, whenever two hosts within headquarters send IP datagrams to each other or whenever two hosts within the branch office want to communicate, they use good-old vanilla IPv4 (that is, without IPsec services). However, when two of the institution’s hosts commu- nicate over a path that traverses the public Internet, the traffic is encrypted before it enters the Internet.
 
 To get a feel for how a VPN works, let’s walk through a simple example in the context of Figure 8.27. When a host in headquarters sends an IP datagram to a sales- person in a hotel, the gateway router in headquarters converts the vanilla IPv4 data- gram into an IPsec datagram and then forwards this IPsec datagram into the Internet. This IPsec datagram actually has a traditional IPv4 header, so that the routers in the public Internet process the datagram as if it were an ordinary IPv4 datagram—to them, the datagram is a perfectly ordinary datagram. But, as shown Figure 8.27, the payload of the IPsec datagram includes an IPsec header, which is used for IPsec processing; furthermore, the payload of the IPsec datagram is encrypted. When the
-
+![Alt text](image-30.png)
 **Figure 8.27**  ♦  Virtual private network (VPN)
 
-IP header
-
-IPsec header
-
-Secure payload
-
-IP header
-
-IPsec header
-
-Secure payload
-
-IP header
-
-IPsec header
-
-Secure payload
-
-IP header Payload
-
-IP header Payload
-
-Laptop w/IPsec
-
-Router w/IPv4 and
-
-IPsec
-
-Router w/IPv4 and
-
-IPsec
-
-**Branch Office**
-
-**Headquarters**
-
-**Salesperson in Hotel**
-
-Public InternetIPsec datagram arrives at the salesperson’s laptop, the OS in the laptop decrypts the payload (and provides other security services, such as verifying data integrity) and passes the unencrypted payload to the upper-layer protocol (for example, to TCP or UDP).
+Public Internet IP sec datagram arrives at the salesperson’s laptop, the OS in the laptop decrypts the payload (and provides other security services, such as verifying data integrity) and passes the unencrypted payload to the upper-layer protocol (for example, to TCP or UDP).
 
 We have just given a high-level overview of how an institution can employ IPsec to create a VPN. To see the forest through the trees, we have brushed aside many important details. Let’s now take a closer look.
 
@@ -1153,7 +648,8 @@ We have just given a high-level overview of how an institution can employ IPsec 
 
 In the IPsec protocol suite, there are two principal protocols: the **Authentication Header (AH)** protocol and the **Encapsulation Security Payload (ESP)** protocol. When a source IPsec entity (typically a host or a router) sends secure datagrams to a destination entity (also a host or a router), it does so with either the AH protocol or the ESP protocol. The AH protocol provides source authentication and data integrity but _does not_ provide confidentiality. The ESP protocol provides source authentica- tion, data integrity, _and_ confidentiality. Because confidentiality is often critical for VPNs and other IPsec applications, the ESP protocol is much more widely used than the AH protocol. In order to de-mystify IPsec and avoid much of its complication, we will henceforth focus exclusively on the ESP protocol. Readers wanting to learn also about the AH protocol are encouraged to explore the RFCs and other online resources.
 
-## Security AssociationsIPsec datagrams are sent between pairs of network entities, such as between two hosts, between two routers, or between a host and router. Before sending IPsec datagrams from source entity to destination entity, the source and destination entities create a network-layer logical connection. This logical connection is called a **security asso- ciation (SA)
+## Security Associations
+IPsec datagrams are sent between pairs of network entities, such as between two hosts, between two routers, or between a host and router. Before sending IPsec datagrams from source entity to destination entity, the source and destination entities create a network-layer logical connection. This logical connection is called a **security asso- ciation (SA)
 . An SA is a simplex logical connection; that is, it is unidirectional from source to destination. If both entities want to send secure datagrams to each other, then two SAs (that is, two logical connections) need to be established, one in each direction.
 
 For example, consider once again the institutional VPN in Figure 8.27. This institution consists of a headquarters office, a branch office and, say, _n_ traveling salespersons. For the sake of example, let’s suppose that there is bi-directional IPsec traffic between headquarters and the branch office and bi-directional IPsec traffic between headquarters and the salespersons. In this VPN, how many SAs are there? To answer this question, note that there are two SAs between the headquarters gate- way router and the branch-office gateway router (one in each direction); for eachsalesperson’s laptop, there are two SAs between the headquarters gateway router and the laptop (again, one in each direction). So, in total, there are (2 + 2_n_) SAs. _Keep in mind, however, that not all traffic sent into the Internet by the gateway routers or by the laptops will be IPsec secured._ For example, a host in headquarters may want to access a Web server (such as Amazon or Google) in the public Internet. Thus, the gateway router (and the laptops) will emit into the Internet both vanilla IPv4 datagrams and secured IPsec datagrams.
@@ -1175,22 +671,10 @@ Let’s now take a look “inside” an SA. To make the discussion tangible and 
 Whenever router R1 needs to construct an IPsec datagram for forwarding over this SA, it accesses this state information to determine how it should authenticate and encrypt the datagram. Similarly, router R2 will maintain the same state informa- tion for this SA and will use this information to authenticate and decrypt any IPsec datagram that arrives from the SA.
 
 An IPsec entity (router or host) often maintains state information for many SAs. For example, in the VPN example in Figure 8.27 with _n_ salespersons, the headquar- ters gateway router maintains state information for (2 + 2_n_) SAs. An IPsec entity stores the state information for all of its SAs in its **Security Association Database** (**SAD**), which is a data structure in the entity’s OS kernel.
-
+![Alt text](image-31.png)
 **Figure 8.28**  ♦  Security association (SA) from R1 to R2
 
-Internet
-
-**SA** R1
-
-172.16.1/24
-
-Headquarters Branch Office
-
-200.168.1.100 193.68.2.23
-
-172.16.2/24
-
-R2## The IPsec Datagram** Having now described SAs, we can now describe the actual IPsec datagram. IPsec has two different packet forms, one for the so-called **tunnel modeand the other for the so-called **transport mode
+**R2## The IPsec Datagram** Having now described SAs, we can now describe the actual IPsec datagram. IPsec has two different packet forms, one for the so-called **tunnel modeand the other for the so-called **transport mode
 . The tunnel mode, being more appropriate for VPNs, is more widely deployed than the transport mode. In order to further de-mystify IPsec and avoid much of its complication, we henceforth focus exclusively on the tunnel mode. Once you have a solid grip on the tunnel mode, you should be able to easily learn about the transport mode on your own.
 
 The packet format of the IPsec datagram is shown in Figure 8.29. You might think that packet formats are boring and insipid, but we will soon see that the IPsec datagram actually looks and tastes like a popular Tex-Mex delicacy! Let’s examine the IPsec fields in the context of Figure 8.28. Suppose router R1 receives an ordinary IPv4 datagram from host 172.16.1.17 (in the headquarters network) which is destined to host 172.16.2.48 (in the branch-office network). Router R1 uses the following recipe to convert this “original IPv4 datagram” into an IPsec datagram:
@@ -1208,28 +692,9 @@ The packet format of the IPsec datagram is shown in Figure 8.29. You might think
 • Finally, creates a brand new IP header with all the classic IPv4 header fields (together normally 20 bytes long), which it appends before the payload
 
 Note that the resulting IPsec datagram is a bona fide IPv4 datagram, with the traditional IPv4 header fields followed by a payload. But in this case, the payload
-
+![Alt text](image-32.png)
 **Figure 8.29**  ♦  IPsec datagram format
-
-New IP header
-
-ESP header
-
-ESP trailer
-
-ESP MAC
-
-Original IP header
-
-Original IP datagram payload
-
-Encrypted
-
-“Enchilada” authenticated
-
-Pad lengthPadding
-
-Next headerSPI Seq #contains an ESP header, the original IP datagram, an ESP trailer, and an ESP authen- tication field (with the original datagram and ESP trailer encrypted). The original IP datagram has 172.16.1.17 for the source IP address and 172.16.2.48 for the destina- tion IP address. Because the IPsec datagram includes the original IP datagram, these addresses are included (and encrypted) as part of the payload of the IPsec packet. But what about the source and destination IP addresses that are in the new IP header, that is, in the left-most header of the IPsec datagram? As you might expect, they are set to the source and destination router interfaces at the two ends of the tunnels, namely, 200.168.1.100 and 193.68.2.23. Also, the protocol number in this new IPv4 header field is not set to that of TCP, UDP, or SMTP, but instead to 50, designating that this is an IPsec datagram using the ESP protocol.
+contains an ESP header, the original IP datagram, an ESP trailer, and an ESP authen- tication field (with the original datagram and ESP trailer encrypted). The original IP datagram has 172.16.1.17 for the source IP address and 172.16.2.48 for the destina- tion IP address. Because the IPsec datagram includes the original IP datagram, these addresses are included (and encrypted) as part of the payload of the IPsec packet. But what about the source and destination IP addresses that are in the new IP header, that is, in the left-most header of the IPsec datagram? As you might expect, they are set to the source and destination router interfaces at the two ends of the tunnels, namely, 200.168.1.100 and 193.68.2.23. Also, the protocol number in this new IPv4 header field is not set to that of TCP, UDP, or SMTP, but instead to 50, designating that this is an IPsec datagram using the ESP protocol.
 
 After R1 sends the IPsec datagram into the public Internet, it will pass through many routers before reaching R2. Each of these routers will process the datagram as if it were an ordinary datagram—they are completely oblivious to the fact that the datagram is carrying IPsec-encrypted data. For these public Internet routers, because the destina- tion IP address in the outer header is R2, the ultimate destination of the datagram is R2.
 
@@ -1261,7 +726,8 @@ Security is a particularly important concern in wireless networks, where the att
 
 In this section, we present a brief introduction to wireless security in both 802.11(WiFi) and 4G/5G settings. For a more in-depth treatment, see the highly read- able 802.11 security books \[Edney 2003; Wright 2015\], the excellent coverage of 3G/4G/5G security in \[Sauter 2014\], and recent surveys \[Zou 2016; Kohlios 2018\].
 
-## Authentication and Key Agreement in 802.11 Wireless LANsLet’s start our discussion of 802.11 security by identifying two (of many \[Zou 2016\]) critical security concerns that we’ll want an 802.11 network to handle:
+## Authentication and Key Agreement 
+in 802.11 Wireless LANsLet’s start our discussion of 802.11 security by identifying two (of many \[Zou 2016\]) critical security concerns that we’ll want an 802.11 network to handle:
 
 • _Mutual authentication._ Before a mobile device is allowed to fully attach to an access point and send datagrams to remote hosts, the network will typically want to first authenticate the device—to verify the identity of the mobile device attach- ing to the network, and to check that device’s access privileges. Similarly, the mobile device will want to authenticate the network to which it is attaching—to make sure that the network it is joining is truly the network to which it wants to attach. This two-way authentication is known as **mutual authentication**.
 
@@ -1275,24 +741,7 @@ We can identify four distinct phases to the process of mutual authentication and
 
 2\. _Mutual authentication and shared symmetric key derivation._ This is the most critical step in “securing” the 802.11 channel. As we will see, this step is
 
-Mobile device AP:
-
-access point
-
-Wired network
-
-AS: authentication
-
-server
-
-1 Discovery of security capabilities
-
-4 Encrypted communication between mobile device and a remote host via AP
-
-Shared symmetric session key distribution3
-
-Mutual authentication and shared symmetric key derivation
-
+![Alt text](image-33.png)
 **Figure 8.30**  ♦   Mutual authentication and encryption-key derivation in WPAgreatly facilitated by assuming (which is true in practice in both 802.11 and 4G/5G networks) that the authentication server and the mobile device already have a **shared common secret** before starting mutual authentication. In this step, the device and the authentication server will use this shared secret along with nonces (to prevent relay attacks) and cryptographic hashing (to ensure message integrity) in authenticating each other. They will also derive the shared session key to be used by the mobile device and the AP to encrypt frames transmitted over the 802.11 wireless link.
 
 3\. _Shared symmetric session key distribution._ Since the symmetric encryption key is derived at the mobile device and the authentication server, a protocol will be needed for the authentication server to inform the AP of the shared symmetric session key. While this is rather straightforward, it still is a necessary step.
@@ -1316,33 +765,7 @@ a. In this first step, the authentication server (AS) generates a nonce, _NonceA
 b. The mobile device, M, receives the nonce, _NonceAS_, from the AS and gener- ates its own nonce, _NonceM_. The mobile device then generates the symmetric shared session key, _KM-AP_, using _NonceAS_, _NonceM_, the initial shared secret key _KAS-M_, its MAC address, and the MAC address of the AS. It then sends its nonce, _NonceM_, and an HMAC-signed (see Figure 8.9) value that encodes _NonceAS_ and the original shared secret.
 
 The AS receives this message from M. By looking at the HMAC-signed ver- sion of the nonce it had just recently sent, _NonceAS_, the authentication server knows the mobile device is live; because the mobile device was able to encrypt using the shared secret key, _KAS-M_, the AS also knows that the mobile device
-
-M: Mobile device
-
-AS: authentication
-
-server
-
-a
-
-b
-
-_NonceAS_
-
-Derive session key _KM-AP_ using _KAS-M_, _NonceAS_, _NonceM_
-
-Derive session key _KM-AP_ using _KAS-M_, _NonceAS_, _NonceM_
-
-_KAS-M KAS-M_
-
-_NonceM_, HMAC(f(_KAS-M_,_NonceAS_))
-
-c
-
-d
-
-_c, d: used for group key derivation_
-
+![Alt text](image-34.png)
 **Figure 8.31**  ♦  The WPA2 four-way handshakeis indeed who it claims to be (i.e., a device that knows the shared initial secret). The AS has thus authenticated the mobile device! The AS can also now perform the exact same computation as the mobile device to derive the shared symmetric session-key, _KM-AP_, using the _NonceM_ it received, _NonceAS_, the initial shared secret key _KAS-M_, its MAC address and the MAC address of the mobile device. At this point both the mobile device and the authentication server have computed the same shared symmetric key, _KM-AP_, which will be used to encrypt/decrypt frames transmitted between the mobile device and the AP. The AS informs the AP of this key value in Step 3 in Figure 8.30.
 
 WPA3 was released in June 2018 as an update to WPA2. The update addresses an attack on the four-way handshake protocol that could induce the reuse of previously used nonces \[Vanhoef 2017\] but still permits the use of the four-way handshake as a legacy protocol and includes longer key lengths, among other changes \[WiFi 2019\].
@@ -1350,29 +773,11 @@ WPA3 was released in June 2018 as an update to WPA2. The update addresses an att
 **802.11 Security Messaging Protocols**
 
 Figure 8.32 shows the protocols used to implement the 802.11 security framework discussed above. The Extensible Authentication Protocol (EAP) \[RFC 3748\] defines the end-to-end message formats used in a simple request/response mode of interaction between the mobile device and authentication server, and are certified under WPA2. As shown in Figure 8.32, EAP messages are encapsulated using EAPoL (EAP over LAN) and sent over the 802.11 wireless link. These EAP messages are then decap- sulated at the access point, and then re-encapsulated using the RADIUS protocol for
-
-M: Mobile device
-
-AP: access point
-
-Wired network
-
-AS: authentication
-
-server
-
-EAP TLS
-
-EAP
-
-EAP over LAN (EAPoL) RADIUS
-
-IEEE 802.11 UDP/IP
-
+![Alt text](image-35.png)
 **Figure 8.32**  ♦   EAP is an end-to-end protocol. EAP messages are encapsulated using EAPoL over the wireless link between the mobile device and the access point, and using RADIUS over UDP/IP between the access point and the authentication servertransmission over UDP/IP to the authentication server. While the RADIUS server and protocol \[RFC 2865\] are not required, they are _de facto_ standard components. The recently standardized DIAMETER protocol \[RFC 3588\] is projected to eventu- ally replace RADIUS in the future.
 
-## Authentication and Key Agreement in 4G/5G Cellular NetworksIn this section, we describe mutual authentication and key-generation mechanisms in 4G/5G networks. Many of the approaches we’ll encounter here parallel those that we just studied in 802.11 networks, with the notable exception that in 4G/5G networks, mobile devices may be attached to their home network (i.e., the cellular carrier network to which they are subscribed), or may be roaming on a visited net- work. In this latter case, the visited and home networks will need to interact when authenticating a mobile device and generating encryption keys. Before continuing, you may want to re-familiarize yourself with 4G/5G network architecture by re- reading Sections 7.4 and 7.7.1.
-
+## Authentication and Key Agreement in 4G/5G Cellular Networks
+In this section, we describe mutual authentication and key-generation mechanisms in 4G/5G networks. Many of the approaches we’ll encounter here parallel those that we just studied in 802.11 networks, with the notable exception that in 4G/5G networks, mobile devices may be attached to their home network (i.e., the cellular carrier network to which they are subscribed), or may be roaming on a visited net- work. In this latter case, the visited and home networks will need to interact when authenticating a mobile device and generating encryption keys. Before continuing, you may want to re-familiarize yourself with 4G/5G network architecture by re- reading Sections 7.4 and 7.7.1.
 The goals of mutual authentication and key generation are the same in the 4G/5G setting as in the 802.11 setting. In order to encrypt the contents of frames being transmitted over the wireless channel, the mobile device and base station will need to derive a shared symmetric encryption key. In addition, the network to which the mobile device is attaching will need to authenticate the device’s identity and check its access privileges. Similarly, the mobile device will also want to authenticate the network to which it is attaching. While the network’s need to authenticate a mobile device may be obvious, the need for authentication in the reverse direction may not be so clear. However, there are documented cases of ne’er-do-wells operating rogue cellular base stations that entice unsuspecting mobile devices to attach to the rogue network, exposing a device to a number of attacks \[Li 2017\]. So, as in the case of 802.11 WLANs, a mobile device should exercise abundant caution when attaching to a cellular network!
 
 Figure 8.33 illustrates the scenario of mobile device attaching to a 4G cellu- lar network. At the top of Figure 8.33, we see many of the 4G components that we encountered earlier in Section 7.4—the mobile device (M), the base station (BS), the mobility management entity (MME) in the network to which the mobile device wants to attach, and the home subscriber service (HSS) in the mobile device’s home net- work. A comparison of Figures 8.30 and 8.33 shows the similarities and differences between the 802.11 and 4G security settings. We again see a mobile device and a base station; the user session-key derived during network attachment, KBS-M, will be used to encrypt/decrypt frames transmitted over their wireless link. The 4G MME and HSS together will play a role similar to that of the authentication server in the 802.11 setting. Note that the HSS and the mobile device also share a common secret, KHSS-M, known to both entities before authentication begins. This key is stored in the mobile device’s SIM card, and in the HSS database in the mobile device’s home network.The 4G Authentication and Key Agreement (AKA) protocol consists of the fol- lowing steps:
@@ -1380,47 +785,7 @@ Figure 8.33 illustrates the scenario of mobile device attaching to a 4G cellu- l
 a. _Authentication request to HSS._ When the mobile device first requests, via a base station, to attach to the network, it sends an attach message containing its international mobile subscriber identity (IMSI) that is relayed to the Mobility Management Entity (MME). The MME will then send the IMSI and informa- tion about the visited network (shown as “VN info” in Figure 8.33) to the Home Subscriber Service (HSS) in the device’s home network. In Section 7.4, we described how the MME is able to communicate with the HSS through the all-IP global network of interconnected cellular networks.
 
 b. _Authentication response from HSS._ The HSS performs cryptographic operations using the shared-in-advance secret key, KHSS-M, to derive an authentication token, _auth\_token_, and an expected authentication response token, _xresHSS_. _auth\_token_ contains information encrypted by the HSS using KHSS-M that will allow the mobile device to know that whoever computed _auth\_token_ knows the secret key. For example, suppose the HSS computes KHSS-M(IMSI), that is, encrypts the device’s IMSI using KHSS-M and sends that value as _auth\_token_. When the mobile device receives that encrypted value and uses its secret key to decrypt this value, that is, to compute
-
-Mobility Management Entity (MME)
-
-Base Station (BS)
-
-HSS
-
-Home Subscriber Service (HSS)
-
-Mobile Device (M)
-
-_Visited Network Home Network_
-
-KHSS-M
-
-attach attach AUTH\_REQ (IMSI, VN info)
-
-_auth tokenauth token_
-
-_resM resM_
-
-d OK, keys
-
-OK
-
-key derivation
-
-KHSS-M
-
-KBS-M
-
-c
-
-e
-
-db
-
-a
-
-AUTH\_RESP (_auth token_,_xresHSS_,keys)
-
+![Alt text](image-36.png)
 **Figure 8.33**  ♦   Mutual authentication and key agreement in a 4G LTE cellular networkKHSS-M(KHSS-M(IMSI)) 5 IMSI, it knows that the HSS that generated _auth\_ token_ knows its secret key. The mobile device can thus authenticate the HSS.
 
 The expected authentication response token, _xresHSS_, contains a value that the mobile device will need to be able to compute (using KHSS-M) and return to the MME to prove that _it_ (the mobile device) knows the secret key, thus authenti- cating the mobile device to the MME.
@@ -1458,15 +823,8 @@ We’ve seen throughout this chapter that the Internet is not a very safe place�
 Cisco and Check Point are two of the leading firewall vendors today. You can also easily create a firewall (packet filter) from a Linux box using iptables (public-domain software that is normally shipped with Linux). Furthermore, as discussed in Chapters 4 and 5, fire- walls are now frequently implemented in routers and controlled remotely using SDNs.
 
 Firewalls can be classified in three categories: **traditional packet filters**, **state- ful filters**, and **application gateways**. We’ll cover each of these in turn in the fol- lowing subsections.
-
+![Alt text](image-37.png)
 **Figure 8.34**  ♦   Firewall placement between the administered network and the outside world
-
-Administered network
-
-Firewall
-
-Public Internet**Traditional Packet Filters**
-
 As shown in Figure 8.34, an organization typically has a gateway router connecting its internal network to its ISP (and hence to the larger public Internet). All traffic leav- ing and entering the internal network passes through this router, and it is at this router where **packet filtering** occurs. A packet filter examines each datagram in isolation, determining whether the datagram should be allowed to pass or should be dropped based on administrator-specific rules. Filtering decisions are typically based on:
 
 • IP source or destination address
@@ -1484,7 +842,7 @@ As shown in Figure 8.34, an organization typically has a gateway router connecti
 • Different rules for the different router interfaces
 
 A network administrator configures the firewall based on the policy of the organ- ization. The policy may take user productivity and bandwidth usage into account as well as the security concerns of an organization. Table 8.5 lists a number of possible polices an organization may have, and how they would be addressed with a packet filter. For example, if the organization doesn’t want any incoming TCP connections except those for its public Web server, it can block all incoming TCP SYN segments except TCP SYN segments with destination port 80 and the destination IP address corresponding to the Web server. If the organization doesn’t want its users to monop- olize access bandwidth with Internet radio applications, it can block all not-critical
-
+![Alt text](image-38.png)
 **Table 8.5**  ♦   Policies and corresponding filtering rules for an organization’s network 130.207/16 with Web server at 130.207.244.203
 
 Policy Firewall Setting
@@ -1510,28 +868,9 @@ A filtering policy can be based on a combination of addresses and port numbers. 
 Filtering can also be based on whether or not the TCP ACK bit is set. This trick is quite useful if an organization wants to let its internal clients connect to external servers but wants to prevent external clients from connecting to internal servers. Recall from Section 3.5 that the first segment in every TCP connection has the ACK bit set to 0, whereas all the other segments in the connection have the ACK bit set to 1. Thus, if an organization wants to prevent external clients from initiating connections to internal servers, it simply filters all incoming segments with the ACK bit set to 0. This policy kills all TCP connections originating from the outside, but permits con- nections originating internally.
 
 Firewall rules are implemented in routers with access control lists, with each router interface having its own list. An example of an access control list for an organ- ization 222.22/16 is shown in Table 8.6. This access control list is for an interface that connects the router to the organization’s external ISPs. Rules are applied to each datagram that passes through the interface from top to bottom. The first two rules together allow internal users to surf the Web: The first rule allows any TCP packet with destination port 80 to leave the organization’s network; the second rule allows any TCP packet with source port 80 and the ACK bit set to enter the organization’s network. Note that if an external source attempts to establish a TCP connection with
-
+![Alt text](image-39.png)
 **Table 8.6**  ♦  An access control list for a router interface
-
-action source address dest address protocol source port dest port flag bit
-
-allow 222.22/16 outside of 222.22/16
-
-TCP > 1023 80 any
-
-allow outside of 222.22/16
-
-222.22/16 TCP 80 > 1023 ACK
-
-allow 222.22/16 outside of 222.22/16
-
-UDP > 1023 53 —
-
-allow outside of 222.22/16
-
-222.22/16 UDP 53 > 1023 —
-
-deny all all all all all allan internal host, the connection will be blocked, even if the source or destination port is 80. The second two rules together allow DNS packets to enter and leave the organization’s network. In summary, this rather restrictive access control list blocks all traffic except Web traffic initiated from within the organization and DNS traffic. \[CERT Filtering 2012\] provides a list of recommended port/protocol packet filterings to avoid a number of well-known security holes in existing network applications.
+an internal host, the connection will be blocked, even if the source or destination port is 80. The second two rules together allow DNS packets to enter and leave the organization’s network. In summary, this rather restrictive access control list blocks all traffic except Web traffic initiated from within the organization and DNS traffic. \[CERT Filtering 2012\] provides a list of recommended port/protocol packet filterings to avoid a number of well-known security holes in existing network applications.
 
 Readers with sharp memories may recall we encountered access control lists similar to Table 8.6 when we studied generalized forwarding in Section 4.4.3 of Chapter 4. Indeed, we provided an example there of how generalized forwarding rules can be used to build a packet-filtering firewall.
 
@@ -1542,76 +881,34 @@ In a traditional packet filter, filtering decisions are made on each packet in i
 To understand stateful filters, let’s reexamine the access control list in Table 8.6. Although rather restrictive, the access control list in Table 8.6 neverthe- less allows any packet arriving from the outside with ACK = 1 and source port 80 to get through the filter. Such packets could be used by attackers in attempts to crash internal systems with malformed packets, carry out denial-of-service attacks, or map the internal network. The naive solution is to block TCP ACK packets as well, but such an approach would prevent the organization’s internal users from surfing the Web.
 
 Stateful filters solve this problem by tracking all ongoing TCP connections in a connection table. This is possible because the firewall can observe the beginning of a new connection by observing a three-way handshake (SYN, SYNACK, and ACK); and it can observe the end of a connection when it sees a FIN packet for the connection. The firewall can also (conservatively) assume that the connection is over when it hasn’t seen any activity over the connection for, say, 60 seconds. An example connection table for a firewall is shown in Table 8.7. This connec- tion table indicates that there are currently three ongoing TCP connections, all of which have been initiated from within the organization. Additionally, the stateful filter includes a new column, “check connection,” in its access control list, as
-
+![Alt text](image-40.png)
 **Table 8.7**  ♦  Connection table for stateful filter
-
-source address dest address source port dest port
-
-222.22.1.7 37.96.87.123 12699 80
-
-222.22.93.2 199.1.205.23 37654 80
-
-222.22.65.143 203.77.240.43 48712 80shown in Table 8.8. Note that Table 8.8 is identical to the access control list in Table 8.6, except now it indicates that the connection should be checked for two of the rules.
+shown in Table 8.8. Note that Table 8.8 is identical to the access control list in Table 8.6, except now it indicates that the connection should be checked for two of the rules.
 
 Let’s walk through some examples to see how the connection table and the extended access control list work hand-in-hand. Suppose an attacker attempts to send a malformed packet into the organization’s network by sending a data- gram with TCP source port 80 and with the ACK flag set. Further suppose that this packet has source port number 12543 and source IP address 150.23.23.155. When this packet reaches the firewall, the firewall checks the access control list in Table 8.7, which indicates that the connection table must also be checked before permitting this packet to enter the organization’s network. The firewall duly checks the connection table, sees that this packet is not part of an ongoing TCP connection, and rejects the packet. As a second example, suppose that an internal user wants to surf an external Web site. Because this user first sends a TCP SYN segment, the user’s TCP connection gets recorded in the connection table. When the Web server sends back packets (with the ACK bit necessarily set), the fire- wall checks the table and sees that a corresponding connection is in progress. The firewall will thus let these packets pass, thereby not interfering with the internal user’s Web surfing activity.
 
 **Application Gateway**
 
 In the examples above, we have seen that packet-level filtering allows an organiza- tion to perform coarse-grain filtering on the basis of the contents of IP and TCP/UDP headers, including IP addresses, port numbers, and acknowledgment bits. But what if an organization wants to provide a Telnet service to a restricted set of internal users
-
+![Alt text](image-41.png)
 **Table 8.8**  ♦  Access control list for stateful filter
-
-action source address
-
-dest address
-
-protocol source port dest port flag bit check conxion
-
-allow 222.22/16 outside of 222.22/16
-
-TCP > 1023 80 any
-
-allow outside of 222.22/16
-
-222.22/16 TCP 80 > 1023 ACK X
-
-allow 222.22/16 outside of 222.22/16
-
-UDP > 1023 53 —
-
-allow outside of 222.22/16
-
-222.22/16 UDP 53 > 1023 — X
-
-deny all all all all all all(as opposed to IP addresses)? And what if the organization wants such privileged users to authenticate themselves first before being allowed to create Telnet sessions to the outside world? Such tasks are beyond the capabilities of traditional and stateful filters. Indeed, information about the identity of the internal users is application-layer data and is not included in the IP/TCP/UDP headers.
+(as opposed to IP addresses)? And what if the organization wants such privileged users to authenticate themselves first before being allowed to create Telnet sessions to the outside world? Such tasks are beyond the capabilities of traditional and stateful filters. Indeed, information about the identity of the internal users is application-layer data and is not included in the IP/TCP/UDP headers.
 
 To have finer-level security, firewalls must combine packet filters with appli- cation gateways. Application gateways look beyond the IP/TCP/UDP headers and make policy decisions based on application data. An **application gateway** is an application-specific server through which all application data (inbound and out- bound) must pass. Multiple application gateways can run on the same host, but each gateway is a separate server with its own processes.
 
 To get some insight into application gateways, let’s design a firewall that allows only a restricted set of internal users to Telnet outside and prevents all external clients from Telneting inside. Such a policy can be accomplished by implementing a com- bination of a packet filter (in a router) and a Telnet application gateway, as shown in Figure 8.35. The router’s filter is configured to block all Telnet connections except those that originate from the IP address of the application gateway. Such a filter configuration forces all outbound Telnet connections to pass through the application gateway. Consider now an internal user who wants to Telnet to the outside world. The user must first set up a Telnet session with the application gateway. An applica- tion running in the gateway, which listens for incoming Telnet sessions, prompts the
+![Alt text](image-42.png)
+**Figure 8.35**  ♦  Firewall consisting of an application gateway and a filter for a user ID and password. When the user supplies this information, the appli- cation gateway checks to see if the user has permission to Telnet to the outside world. If not, the Telnet connection from the internal user to the gateway is terminated by the gateway. If the user has permission, then the gateway (1) prompts the user for the host name of the external host to which the user wants to connect, (2) sets up a Telnet session between the gateway and the external host, and (3) relays to the external host all data arriving from the user, and relays to the user all data arriving from the exter- nal host. Thus, the Telnet application gateway not only performs user authorization but also acts as a Telnet server and a Telnet client, relaying information between the user and the remote Telnet server. Note that the filter will permit step 2 because the gateway initiates the Telnet connection to the outside world.
 
-**Figure 8.35**  ♦  Firewall consisting of an application gateway and a filter
-
-Application gateway
-
-Host-to-gateway Telnet session
-
-Gateway-to-remote host Telnet session
-
-Router and filteruser for a user ID and password. When the user supplies this information, the appli- cation gateway checks to see if the user has permission to Telnet to the outside world. If not, the Telnet connection from the internal user to the gateway is terminated by the gateway. If the user has permission, then the gateway (1) prompts the user for the host name of the external host to which the user wants to connect, (2) sets up a Telnet session between the gateway and the external host, and (3) relays to the external host all data arriving from the user, and relays to the user all data arriving from the exter- nal host. Thus, the Telnet application gateway not only performs user authorization but also acts as a Telnet server and a Telnet client, relaying information between the user and the remote Telnet server. Note that the filter will permit step 2 because the gateway initiates the Telnet connection to the outside world.
-
-ANONYMITY AND PRIVACY
+**ANONYMITY AND PRIVACY**
 
 Suppose you want to visit a controversial Web site (for example, a political activist site) and you (1) don’t want to reveal your IP address to the Web site, (2) don’t want your local ISP (which may be your home or office ISP) to know that you are visiting the site, and (3) don’t want your local ISP to see the data you are exchanging with the site. If you use the traditional approach of connecting directly to the Web site without any encryption, you fail on all three counts. Even if you use SSL, you fail on the first two counts: Your source IP address is presented to the Web site in every datagram you send; and the destination address of every packet you send can easily be sniffed by your local ISP.
 
 To obtain privacy and anonymity, you can instead use a combination of a trusted proxy server and SSL, as shown in Figure 8.36. With this approach, you first make an SSL connection to the trusted proxy. You then send, into this SSL connection,
 
 **CASE HISTORY**
-
+![Alt text](image-43.png)
 **Figure 8.36**  ♦  Providing anonymity and privacy with a proxy
-
-Alice
-
-Anonymizing Proxy
 
 **SSL Clearte**
 
@@ -1623,7 +920,8 @@ Internal networks often have multiple application gateways, for example, gate- w
 
 Application gateways do not come without their disadvantages. First, a different application gateway is needed for each application. Second, there is a performance penalty to be paid, since all data will be relayed via the gateway. This becomes a concern particularly when multiple users or applications are using the same gateway machine. Finally, the client software must know how to contact the gateway when the user makes a request, and must know how to tell the application gateway what external server to connect to.
 
-## Intrusion Detection SystemsWe’ve just seen that a packet filter (traditional and stateful) inspects IP, TCP, UDP, and ICMP header fields when deciding which packets to let pass through the firewall. However, to detect many attack types, we need to perform **deep packet inspection
+## Intrusion Detection Systems
+We’ve just seen that a packet filter (traditional and stateful) inspects IP, TCP, UDP, and ICMP header fields when deciding which packets to let pass through the firewall. However, to detect many attack types, we need to perform **deep packet inspection
 , that is, look beyond the header fields and into the actual application data that the packets carry. As we saw in Section 8.9.1, application gateways often do deep packet inspection. But an application gateway only does this for a specific application.Clearly, there is a niche for yet another device—a device that not only examines the headers of all packets passing through it (like a packet filter), but also performs deep packet inspection (unlike a packet filter). When such a device observes a suspicious packet, or a suspicious series of packets, it could prevent those packets from entering the organizational network. Or, because the activity is only deemed as suspicious, the device could let the packets pass, but send alerts to a network administrator, who can then take a closer look at the traffic and take appropriate actions. A device that generates alerts when it observes potentially malicious traffic is called an **intrusion detection system (IDS)**. A device that filters out suspicious traffic is called an **intrusion prevention system (IPS)**. In this section we study both systems—IDS and IPS—together, since the most interesting technical aspect of these systems is how they detect suspicious traffic (and not whether they send alerts or drop packets). We will henceforth collectively refer to IDS systems and IPS systems as IDS systems.
 
 An IDS can be used to detect a wide range of attacks, including network map- ping (emanating, for example, from nmap), port scans, TCP stack scans, DoS band- width-flooding attacks, worms and viruses, OS vulnerability attacks, and application vulnerability attacks. (See Section 1.6 for a survey of network attacks.) Today, thousands of organizations employ IDS systems. Many of these deployed systems are proprietary, marketed by Cisco, Check Point, and other security equipment ven- dors. But many of the deployed IDS systems are public-domain systems, such as the immensely popular Snort IDS system (which we’ll discuss shortly).
@@ -1633,28 +931,9 @@ An organization may deploy one or more IDS sensors in its organizational net- wo
 You may be wondering at this stage, why multiple IDS sensors? Why not just place one IDS sensor just behind the packet filter (or even integrated with the packet filter) in Figure 8.37? We will soon see that an IDS not only needs to do deep packet inspection, but must also compare each passing packet with tens of thousands of “signatures”; this can be a significant amount of processing, particularly if the organ- ization receives gigabits/sec of traffic from the Internet. By placing the IDS sensors further downstream, each sensor sees only a fraction of the organization’s traffic, and can more easily keep up. Nevertheless, high-performance IDS and IPS systems are available today, and many organizations can actually get by with just one sensor located near its access router.IDS systems are broadly classified as either **signature-based systems** or **anomaly- based systems**. A signature-based IDS maintains an extensive database of attack signatures. Each signature is a set of rules pertaining to an intrusion activity. A signature may simply be a list of characteristics about a single packet (e.g., source and destination port numbers, protocol type, and a specific string of bits in the packet payload), or may relate to a series of packets. The signatures are normally created by skilled network security engineers who research known attacks. An organization’s network administrator can customize the signatures or add its own to the database.
 
 Operationally, a signature-based IDS sniffs every packet passing by it, com- paring each sniffed packet with the signatures in its database. If a packet (or series of packets) matches a signature in the database, the IDS generates an alert. The alert could be sent to the network administrator in an e-mail message, could be sent to the network management system, or could simply be logged for future inspection.
-
+![Alt text](image-44.png)
 **Figure 8.37**  ♦   An organization deploying a filter, an application gateway, and IDS sensors
-
-Internet
-
-Web server
-
-FTP server
-
-DNS server
-
-Internal network
-
-Application gateway
-
-Demilitarized zone
-
-Filter
-
-Key:
-
-\= IDS sensorsSignature-based IDS systems, although widely deployed, have a number of limi- tations. Most importantly, they require previous knowledge of the attack to generate an accurate signature. In other words, a signature-based IDS is completely blind to new attacks that have yet to be recorded. Another disadvantage is that even if a sig- nature is matched, it may not be the result of an attack, so that a false alarm is gener- ated. Finally, because every packet must be compared with an extensive collection of signatures, the IDS can become overwhelmed with processing and actually fail to detect many malicious packets.
+ IDS sensorsSignature-based IDS systems, although widely deployed, have a number of limi- tations. Most importantly, they require previous knowledge of the attack to generate an accurate signature. In other words, a signature-based IDS is completely blind to new attacks that have yet to be recorded. Another disadvantage is that even if a sig- nature is matched, it may not be the result of an attack, so that a false alarm is gener- ated. Finally, because every packet must be compared with an extensive collection of signatures, the IDS can become overwhelmed with processing and actually fail to detect many malicious packets.
 
 An anomaly-based IDS creates a traffic profile as it observes traffic in normal operation. It then looks for packet streams that are statistically unusual, for exam- ple, an inordinate percentage of ICMP packets or a sudden exponential growth in port scans and ping sweeps. The great thing about anomaly-based IDS systems is that they don’t rely on previous knowledge about existing attacks—that is, they can potentially detect new, undocumented attacks. On the other hand, it is an extremely challenging problem to distinguish between normal traffic and statistically unusual traffic. To date, most IDS deployments are primarily signature-based, although some include some anomaly-based features.
 
@@ -1909,20 +1188,7 @@ Has anyone inspired you professionally? In what ways? Professor Fred Brooks—th
 
 Steven M. Bellovin
 
-C ou
-
-rte sy
-
-o f S
-
-te ve
-
-n Be
-
-llo vi
-
-n
-
+![Alt text](image-45.png)
 Steven M. Bellovin joined the faculty at Columbia University after many years at the Network Services Research Lab at AT&T Labs Research in Florham Park, New Jersey. His focus is on networks, security, and why the two are incompatible. In 1995, he was awarded the Usenix Lifetime Achievement Award for his work in the creation of Usenet, the first newsgroup exchange network that linked two or more computers and allowed users to share information and join in discussions. Steve is also an elected member of the National Academy of Engineering. He received his BA from Columbia University and his PhD from the University of North Carolina at Chapel Hill.influence on my career. More than anything else, he taught outlook and trade-offs—how to look at problems in the context of the real world (and how much messier the real world is than a theorist would like), and how to balance competing interests in designing a solution. Most computer work is engineering—the art of making the right trade-offs to satisfy many contradictory objectives.
 
 What is your vision for the future of networking and security? Thus far, much of the security we have has come from isolation. A firewall, for example, works by cutting off access to certain machines and services. But we’re in an era of increas- ing connectivity—it’s gotten harder to isolate things. Worse yet, our production systems require far more separate pieces, interconnected by networks. Securing all that is one of our biggest challenges.
