@@ -11,8 +11,6 @@ In Sections 5.6 and 5.7, we’ll cover some of the nuts and bolts of managing an
 
 **The Network Layer: Control Plane**
 
-5CHAPTER
-
 # Introduction
 Let’s quickly set the context for our study of the network control plane by recall- ing Figures 4.2 and 4.3. There, we saw that the forwarding table (in the case of destination-based forwarding) and the flow table (in the case of generalized forward- ing) were the principal elements that linked the network layer’s data and control planes. We learned that these tables specify the local data-plane forwarding behavior of a router. We saw that in the case of generalized forwarding, the actions taken could include not only forwarding a packet to a router’s output port, but also drop- ping a packet, replicating a packet, and/or rewriting layer 2, 3 or 4 packet-header fields.
 
@@ -24,51 +22,24 @@ In this chapter, we’ll study how those forwarding and flow tables are computed
 
 **Data plane**
 
-Routing Algorithm
-
-Forwarding Table
-
+![Alt text](image.png)
 **Figure 5.1**  ♦   Per-router control: Individual routing algorithm components interact in the control planewithin each router. Each router has a routing component that communicates with the routing components in other routers to compute the values for its forwarding table. This per-router control approach has been used in the Internet for decades. The OSPF and BGP protocols that we’ll study in Sections 5.3 and 5.4 are based on this per-router approach to control.
 
 • _Logically centralized control_. Figure 5.2 illustrates the case in which a logically centralized controller computes and distributes the forwarding tables to be used by each and every router. As we saw in Sections 4.4 and 4.5, the generalized match-plus-action abstraction allows the router to perform traditional IP forward- ing as well as a rich set of other functions (load sharing, firewalling, and NAT) that had been previously implemented in separate middleboxes.
-
-Logically centralized routing controller
-
-**Control plane**
-
-**Data plane**
-
-Control Agent (CA)
-
-CA
-
-CA
-
-CA
-
-CA
-
+![Alt text](image-1.png)
 **Figure 5.2**  ♦   Logically centralized control: A distinct, typically remote, controller interacts with local control agents (CAs)The controller interacts with a control agent (CA) in each of the routers via a well-defined protocol to configure and manage that router’s flow table. Typically, the CA has minimum functionality; its job is to communicate with the controller, and to do as the controller commands. Unlike the routing algorithms in Figure 5.1, the CAs do not directly interact with each other nor do they actively take part in computing the forwarding table. This is a key distinction between per-router control and logically centralized control.
 
 By “logically centralized” control \[Levin 2012\] we mean that the routing control service is accessed as if it were a single central service point, even though the service is likely to be implemented via multiple servers for fault-tolerance, and performance scalability reasons. As we will see in Section 5.5, SDN adopts this notion of a logically centralized controller—an approach that is finding increased use in production deployments. Google uses SDN to control the rout- ers in its internal B4 global wide-area network that interconnects its data centers \[Jain 2013\]. SWAN \[Hong 2013\], from Microsoft Research, uses a logically centralized controller to manage routing and forwarding between a wide area network and a data center network. Major ISP deployments, including COM- CAST’s ActiveCore and Deutsche Telecom’s Access 4.0 are actively integrating SDN into their networks. And as we’ll see in Chapter 8, SDN control is central to 4G/5G cellular networking as well. \[AT&T 2019\] notes, “ … SDN, isn’t a vision, a goal, or a promise. It’s a reality. By the end of next year, 75% of our network functions will be fully virtualized and software-controlled.” China Telecom and China Unicom are using SDN both within data centers and between data centers \[Li 2015\].
 
 # Routing Algorithms
-In this section, we’ll study **routing algorithms**, whose goal is to determine good paths (equivalently, routes), from senders to receivers, through the network of routers. Typically, a “good” path is one that has the least cost. We’ll see that in practice, however, real-world concerns such as policy issues (for example, a rule such as “router _x_, belonging to organization _Y_, should not forward any packets originating from the network owned by organization _Z_ ”) also come into play. We note that whether the network control plane adopts a per-router control approach or a logically centralized approach, there must always be a well-defined sequence of routers that a packet will cross in traveling from sending to receiving host. Thus, the routing algorithms that compute these paths are of fundamental importance, and another candidate for our top-10 list of fundamentally important networking concepts.
+In this Section, we’ll study **routing algorithms**, whose goal is to determine good paths (equivalently, routes), from senders to receivers, through the network of routers. Typically, a “good” path is one that has the least cost. We’ll see that in practice, however, real-world concerns such as policy issues (for example, a rule such as “router _x_, belonging to organization _Y_, should not forward any packets originating from the network owned by organization _Z_ ”) also come into play. We note that whether the network control plane adopts a per-router control approach or a logically centralized approach, there must always be a well-defined sequence of routers that a packet will cross in traveling from sending to receiving host. Thus, the routing algorithms that compute these paths are of fundamental importance, and another candidate for our top-10 list of fundamentally important networking concepts.
 
 A graph is used to formulate routing problems. Recall that a **graph** _G_ \= (_N_, _E_) is a set _N_ of nodes and a collection _E_ of edges, where each edge is a pair of nodes from _N_. In the context of network-layer routing, the nodes in the graph representrouters—the points at which packet-forwarding decisions are made—and the edges connecting these nodes represent the physical links between these routers. Such a graph abstraction of a computer network is shown in Figure 5.3. When we study the BGP inter-domain routing protocol, we’ll see that nodes represent networks, and the edge connecting two such nodes represents direction connectivity (know as peering) between the two networks. To view some graphs representing real network maps, see \[CAIDA 2020\]; for a discussion of how well different graph-based models model the Internet, see \[Zegura 1997, Faloutsos 1999, Li 2004\].
 
 As shown in Figure 5.3, an edge also has a value representing its cost. Typically, an edge’s cost may reflect the physical length of the corresponding link (for example, a transoceanic link might have a higher cost than a short-haul terrestrial link), the link speed, or the monetary cost associated with a link. For our purposes, we’ll simply take the edge costs as a given and won’t worry about how they are determined. For any edge (_x_, _y_) in _E_, we denote _c_(_x_, _y_) as the cost of the edge between nodes _x_ and _y._ If the pair (_x_, _y_) does not belong to _E_, we set _c_(_x_, _y_) = ∞ . Also, we’ll only consider undirected graphs (i.e., graphs whose edges do not have a direction) in our discussion here, so that edge (_x_, _y_) is the same as edge (_y_, _x_) and that _c_(_x_, _y_) = _c_(_y_, _x_); however, the algorithms we’ll study can be easily extended to the case of directed links with a different cost in each direction. Also, a node _y_ is said to be a **neighbor** of node _x_ if (_x_, _y_) belongs to _E_.
 
 Given that costs are assigned to the various edges in the graph abstraction, a natural goal of a routing algorithm is to identify the least costly paths between sources and destinations. To make this problem more precise, recall that a **path** in a graph _G_ \= (_N_, _E_) is a sequence of nodes (_x_1, _x_2, g, _xp_) such that each of the pairs (_x_1, _x_2), (_x_2, _x_3), g, (_xp_\-1, _xp_) are edges in _E_. The cost of a path (_x_1, _x_2, g, _xp_) is simply the sum of all the edge costs along the path, that is,
-
-x y
-
-v 32 5
-
-2 31 2u z
-
-w
-
+![Alt text](image-2.png)
 **Figure 5.3**  ♦  Abstract graph model of a computer network_c_(_x_1, _x_2) + _c_(_x_2, _x_3) + g+ _c_(_xp_\-1, _xp_). Given any two nodes _x_ and _y_, there are typi- cally many paths between the two nodes, with each path having a cost. One or more of these paths is a **least-cost path**. The least-cost problem is therefore clear: Find a path between the source and destination that has least cost. In Figure 5.3, for exam- ple, the least-cost path between source node _u_ and destination node _w_ is (_u_, _x_, _y_, _w_) with a path cost of 3. Note that if all edges in the graph have the same cost, the least- cost path is also the **shortest path** (that is, the path with the smallest number of links between the source and the destination).
 
 As a simple exercise, try finding the least-cost path from node _u_ to _z_ in Figure 5.3 and reflect for a moment on how you calculated that path. If you are like most people, you found the path from _u_ to _z_ by examining Figure 5.3, tracing a few routes from _u_ to _z_, and somehow convincing yourself that the path you had chosen had the least cost among all possible paths. (Did you check all of the 17 pos- sible paths between _u_ and _z_? Probably not!) Such a calculation is an example of a centralized routing algorithm—the routing algorithm was run in one location, your brain, with complete information about the network. Broadly, one way in which we can classify routing algorithms is according to whether they are centralized or decentralized.
@@ -81,7 +52,8 @@ A second broad way to classify routing algorithms is according to whether they a
 
 A third way to classify routing algorithms is according to whether they are load- sensitive or load-insensitive. In a **load-sensitive algorithm**, link costs vary dynami- cally to reflect the current level of congestion in the underlying link. If a high cost is associated with a link that is currently congested, a routing algorithm will tend to choose routes around such a congested link. While early ARPAnet routing algo- rithms were load-sensitive \[McQuillan 1980\], a number of difficulties were encoun- tered \[Huitema 1998\]. Today’s Internet routing algorithms (such as RIP, OSPF, and BGP) are **load-insensitive**, as a link’s cost does not explicitly reflect its current (or recent past) level of congestion.
 
-## The Link-State (LS) Routing AlgorithmRecall that in a link-state algorithm, the network topology and all link costs are known, that is, available as input to the LS algorithm. In practice, this is accom- plished by having each node broadcast link-state packets to _all_ other nodes in the network, with each link-state packet containing the identities and costs of its attached links. In practice (for example, with the Internet’s OSPF routing protocol, discussed in Section 5.3), this is often accomplished by a **link-state broadcast
+## The Link-State (LS) Routing Algorithm
+Recall that in a link-state algorithm, the network topology and all link costs are known, that is, available as input to the LS algorithm. In practice, this is accom- plished by having each node broadcast link-state packets to _all_ other nodes in the network, with each link-state packet containing the identities and costs of its attached links. In practice (for example, with the Internet’s OSPF routing protocol, discussed in Section 5.3), this is often accomplished by a **link-state broadcast
  algorithm \[Perlman 1999\]. The result of the nodes’ broadcast is that all nodes have an identical and complete view of the network. Each node can then run the LS algorithm and compute the same set of least-cost paths as every other node.
 
 The link-state routing algorithm we present below is known as _Dijkstra’s algorithm_, named after its inventor. A closely related algorithm is Prim’s algo- rithm; see \[Cormen 2001\] for a general discussion of graph algorithms. Dijkstra’s algorithm computes the least-cost path from one node (the source, which we will refer to as _u_) to all other nodes in the network. Dijkstra’s algorithm is iterative and has the property that after the _k_th iteration of the algorithm, the least-cost paths are known to _k_ destination nodes, and among the least-cost paths to all destinationnodes, these _k_ paths will have the _k_ smallest costs. Let us define the following notation:
@@ -96,7 +68,20 @@ The centralized routing algorithm consists of an initialization step followed by
 
 **Link-State (LS) Algorithm for Source Node** _u_
 
-1 **Initialization:** 2 N’ = {u} 3 for all nodes v 4 if v is a neighbor of u 5 then D(v) = c(u,v) 6 else D(v) = ∞ # Loop** 9 find w not in N’ such that D(w) is a minimum 10 add w to N’ 11 update D(v) for each neighbor v of w and not in N’: 12 D(v) = min(D(v), D(w)+ c(w,v) ) 13 /\* new cost to v is either old cost to v or known 14 least path cost to w plus cost from w to v \*/ 15 **until
+1 **Initialization:** 
+2 N’ = {u} 
+3 for all nodes v 
+4 if v is a neighbor of u 
+5 then D(v) = c(u,v) 
+6 else D(v) = ∞  
+7
+8**Loop** 
+9 find w not in N’ such that D(w) is a minimum 10 add w to N’ 
+11 update D(v) for each neighbor v of w and not in N’: 
+12 D(v) = min(D(v), D(w)+ c(w,v) ) 
+13 /\* new cost to v is either old cost to v or known 
+14 least path cost to w plus cost from w to v \*/ 
+15 **until
 
  N’= N
 
@@ -111,102 +96,20 @@ As an example, let’s consider the network in Figure 5.3 and compute the least-
 • And so on . . .
 
 When the LS algorithm terminates, we have, for each node, its predecessor along the least-cost path from the source node. For each predecessor, we also have _its_ predecessor, and so in this manner we can construct the entire path from the source to all destinations. The forwarding table in a node, say node _u_, can then be constructed from this information by storing, for each destination, the next-hop node on the least- cost path from _u_ to the destination. Figure 5.4 shows the resulting least-cost paths and forwarding table in _u_ for the network in Figure 5.3.
-
+![Alt text](image-3.png)
 **Table 5.1**  ♦  Running the link-state algorithm on the network in Figure 5.3
-
-_step N’ D_ (_v_), _p_ (_v_) _D_ (_w_), _p_ (_w_) _D_ (_x_), _p_ (_x_) _D_ (_y_), _p_ (_y_) _D_ (_z_), _p_ (_z_)
-
-0 u 2, u 5, u 1,u ∞ ∞
-
-1 ux 2, u 4, x 2, x ∞
-
-2 uxy 2, u 3, y 4, y
-
-3 uxyv 3, y 4, y
-
-4 uxyvw 4, y
-
-5 uxyvwzWhat is the computational complexity of this algorithm? That is, given _n_ nodes (not counting the source), how much computation must be done in the worst case to find the least-cost paths from the source to all destinations? In the first iteration, we need to search through all _n_ nodes to determine the node, _w_, not in _N_′ that has the minimum cost. In the second iteration, we need to check _n_ \- 1 nodes to determine the minimum cost; in the third iteration _n_ \- 2 nodes, and so on. Overall, the total number of nodes we need to search through over all the iterations is _n_(_n_ \+ 1)/2, and thus we say that the preceding implementation of the LS algorithm has worst-case complexity of order _n_ squared: _O_(_n_2). (A more sophisticated implementation of this algorithm, using a data structure known as a heap, can find the minimum in line 9 in logarithmic rather than linear time, thus reducing the complexity.)
+What is the computational complexity of this algorithm? That is, given _n_ nodes (not counting the source), how much computation must be done in the worst case to find the least-cost paths from the source to all destinations? In the first iteration, we need to search through all _n_ nodes to determine the node, _w_, not in _N_′ that has the minimum cost. In the second iteration, we need to check _n_ \- 1 nodes to determine the minimum cost; in the third iteration _n_ \- 2 nodes, and so on. Overall, the total number of nodes we need to search through over all the iterations is _n_(_n_ \+ 1)/2, and thus we say that the preceding implementation of the LS algorithm has worst-case complexity of order _n_ squared: _O_(_n_2). (A more sophisticated implementation of this algorithm, using a data structure known as a heap, can find the minimum in line 9 in logarithmic rather than linear time, thus reducing the complexity.)
 
 Before completing our discussion of the LS algorithm, let us consider a pathol- ogy that can arise. Figure 5.5 shows a simple network topology where link costs are equal to the load carried on the link, for example, reflecting the delay that would be experienced. In this example, link costs are not symmetric; that is, _c_(_u,v_) equals _c_(_v,u_) only if the load carried on both directions on the link (_u,v_) is the same. In this example, node _z_ originates a unit of traffic destined for _w_, node _x_ also originates a unit of traffic destined for _w_, and node _y_ injects an amount of traffic equal to _e_, also destined for _w_. The initial routing is shown in Figure 5.5(a) with the link costs cor- responding to the amount of traffic carried.
 
 When the LS algorithm is next run, node _y_ determines (based on the link costs shown in Figure 5.5(a)) that the clockwise path to _w_ has a cost of 1, while the coun- terclockwise path to _w_ (which it had been using) has a cost of 1 + _e_. Hence _y’_s least- cost path to _w_ is now clockwise. Similarly, _x_ determines that its new least-cost path to _w_ is also clockwise, resulting in costs shown in Figure 5.5(b). When the LS algorithm is run next, nodes _x, y_, and _z_ all detect a zero-cost path to _w_ in the counterclockwise direction, and all route their traffic to the counterclockwise routes. The next time the LS algorithm is run, _x, y_, and _z_ all then route their traffic to the clockwise routes.
 
 What can be done to prevent such oscillations (which can occur in any algo- rithm, not just an LS algorithm, that uses a congestion or delay-based link metric)? One solution would be to mandate that link costs not depend on the amount of traffic
-
-Destination Link
-
-v w x y z
-
-(u, v) (u, x) (u, x) (u, x) (u, x)x y
-
-v
-
-u z
-
-w
-
+![Alt text](image-4.png)
 **Figure 5.4**  ♦  Least cost path and forwarding table for node ucarried—an unacceptable solution since one goal of routing is to avoid highly con- gested (for example, high-delay) links. Another solution is to ensure that not all rout- ers run the LS algorithm at the same time. This seems a more reasonable solution, since we would hope that even if routers ran the LS algorithm with the same perio- dicity, the execution instance of the algorithm would not be the same at each node. Interestingly, researchers have found that routers in the Internet can self-synchronize among themselves \[Floyd Synchronization 1994\]. That is, even though they initially execute the algorithm with the same period but at different instants of time, the algo- rithm execution instance can eventually become, and remain, synchronized at the routers. One way to avoid such self-synchronization is for each router to randomize the time it sends out a link advertisement.
 
 Having studied the LS algorithm, let’s consider the other major routing algo- rithm that is used in practice today—the distance-vector routing algorithm.
-
-w
-
-y
-
-z x0 0
-
-0 e
-
-1 + e**a. Initial routing**e
-
-w
-
-y
-
-z x
-
-2 + e
-
-1 + e 1
-
-0 0**b. _x_, _y_ detect better path to _w_, clockwise**
-
-w
-
-y
-
-z x0 0
-
-1 1 + e
-
-2+ e
-
-**c. _x_, _y_, _z_ detect better path to _w_, counterclockwise**
-
-w
-
-y
-
-z x
-
-2 + e
-
-1 + e 1
-
-0 0**d. _x_, _y_, _z_, detect better path to _w_, clockwise**
-
-1 1
-
-e
-
-1 1
-
-e
-
-1 1
-
-e
+![Alt text](image-5.png)
 
 **Figure 5.5**  ♦  Oscillations with congestion-sensitive routing## The Distance-Vector (DV) Routing AlgorithmWhereas the LS algorithm is an algorithm using global information, the **distance- vector (DV)
  algorithm is iterative, asynchronous, and distributed. It is _distributed_ in that each node receives some information from one or more of its _directly attached_ neighbors, performs a calculation, and then distributes the results of its calculation back to its neighbors. It is _iterative_ in that this process continues on until no more information is exchanged between neighbors. (Interestingly, the algorithm is also self-terminating—there is no signal that the computation should stop; it just stops.) The algorithm is _asynchronous_ in that it does not require all of the nodes to operate in lockstep with each other. We’ll see that an asynchronous, iterative, self-terminating, distributed algorithm is much more interesting and fun than a centralized algorithm!
@@ -237,7 +140,25 @@ If node _x_’s distance vector has changed as a result of this update step, nod
 
 At each node, _x_:
 
-1 **Initialization:** 2 for all destinations y in N: 3 Dx(y)= c(x,y)/\* if y is not a neighbor then c(x,y)= ∞ \*/ 4 for each neighbor w 5 Dw(y) = ? for all destinations y in N 6 for each neighbor w 7 send distance vector **D**x = \[Dx(y): y in N\] to w # loop** 10 **wait** (until I see a link cost change to some neighbor w or 11 until I receive a distance vector from some neighbor w) 12 13 for each y in N: 14 Dx(y) = minv{c(x,v) + Dv(y)} 15 16 **if** Dx(y) changed for any destination y 17 send distance vector **D**x = \[Dx(y): y in N\] to all neighbors 18 19 **forever
+1 **Initialization:** 
+2 for all destinations y in N: 
+3 Dx(y)= c(x,y)/\* if y is not a neighbor then c(x,y)= ∞ \*/ 
+4 for each neighbor w 
+5 Dw(y) = ? for all destinations y in N 
+6 for each neighbor w 
+7 send distance vector **D**x = \[Dx(y): y in 
+N\] to w # loop** 
+
+10 **wait** (until I see a link cost change to some neighbor w or 
+11 until I receive a distance vector from some neighbor w) 
+12 
+13 for each y in N: 
+14 Dx(y) = minv{c(x,v) + Dv(y)} 
+15 
+16 **if** Dx(y) changed for any destination y 
+17 send distance vector **D**x = \[Dx(y): y in N\] to all neighbors 
+18 
+19 **forever
 
 In the DV algorithm, a node _x_ updates its distance-vector estimate when it either sees a cost change in one of its directly attached links or receives a distance-vector update from some neighbor. But to update its own forwarding table for a given des- tination _y_, what node _x_ really needs to know is not the shortest-path distance to _y_ but instead the neighboring node _v\*_(_y_) that is the next-hop router along the shortest path to _y_. As you might expect, the next-hop router _v\*_(_y_) is the neighbor _v_ that achieves the minimum in Line 14 of the DV algorithm. (If there are multiple neighbors _v_ that achieve the minimum, then _v\*_(_y_) can be any of the minimizing neighbors.) Thus, in Lines 13–14, for each destination _y_, node _x_ also determines _v\*_(_y_) and updates its forwarding table for destination _y_.
 
@@ -254,183 +175,7 @@ _Dx_(_y_) = min5_c_(_x_,_y_) + _Dy_(_y_), _c_(_x_,_z_) + _Dz_(_y_)6 = min52 + 0,
 _Dx_(_z_) = min5_c_(_x_,_y_) + _Dy_(_z_), _c_(_x_,_z_) + _Dz_(_z_)6 = min52 + 1, 7 + 06 = 3
 
 The second column therefore displays, for each node, the node’s new distance vector along with distance vectors just received from its neighbors. Note, for example, that
-
-**Node y table**
-
-**Node x table**
-
-0 2 7
-
-x y z
-
-\` \` \`
-
-\` \` \`
-
-Time2 1 y
-
-x z
-
-**Node z table**
-
-fr o
-
-m
-
-cost to
-
-x
-
-y
-
-z
-
-0 2 3
-
-x y z
-
-2 0 1
-
-7 1 0fr o
-
-m
-
-cost to
-
-x
-
-y
-
-z
-
-0 2 3
-
-x y z
-
-2 0 1
-
-3 1 0fr o
-
-m cost to
-
-x
-
-y
-
-z
-
-2 0 1
-
-x y z
-
-\` \` \`
-
-\` \` \`
-
-fr o
-
-m
-
-cost to
-
-x
-
-y
-
-z
-
-0 2 7
-
-x y z
-
-2 0 1
-
-7 1 0fr o
-
-m
-
-cost to
-
-x
-
-y
-
-z
-
-0 2 3
-
-x y z
-
-2 0 1
-
-3 1 0fr o
-
-m
-
-cost to
-
-x
-
-y
-
-z
-
-7 1 0
-
-x y z
-
-\` \` \`
-
-\` \` \`
-
-fr o
-
-m
-
-cost to
-
-x
-
-y
-
-z
-
-0 2 7
-
-x y z
-
-2 0 1
-
-3 1 0fr o
-
-m
-
-cost to
-
-x
-
-y
-
-z
-
-0 2 3
-
-x y z
-
-2 0 1
-
-3 1 0fr o
-
-m
-
-cost to
-
-x
-
-y
-
-z
-
+![Alt text](image-6.png)
 **Figure 5.6**  ♦  Distance-vector (DV) algorithm in operationnode _x_’s estimate for the least cost to node _z_, _Dx_(_z_), has changed from 7 to 3. Also note that for node _x_, neighboring node _y_ achieves the minimum in line 14 of the DV algorithm; thus, at this stage of the algorithm, we have at node _x_ that _v_\*(_y_) = _y_ and _v_\*(_z_) = _y_.
 
 After the nodes recompute their distance vectors, they again send their updated distance vectors to their neighbors (if there has been a change). This is illustrated in Figure 5.6 by the arrows from the second column of tables to the third column of tables. Note that only nodes _x_ and _z_ send updates: node _y_’s distance vector didn’t change so node _y_ doesn’t send an update. After receiving the updates, the nodes then recompute their distance vectors and update their routing tables, which are shown in the third column.
@@ -462,21 +207,7 @@ Of course, with our global view of the network, we can see that this new cost vi
 4\. In a similar manner, after receiving _z_’s new distance vector, _y_ determines _Dy_(_x_) = 8 and sends _z_ its distance vector. _z_ then determines _Dz_(_x_) = 9 and sends _y_ its distance vector, and so on.
 
 How long will the process continue? You should convince yourself that the loop will persist for 44 iterations (message exchanges between _y_ and _z_)—until _z_ eventually computes the cost of its path via _y_ to be greater than 50. At this point, _z_ will (finally!) determine that its least-cost path to _x_ is via its direct connection to _x_. _y_ will then4
-
-1 60y
-
-x
-
-a. b.
-
-z 50
-
-4 1
-
-y
-
-x z
-
+![Alt text](image-7.png)
 **Figure 5.7**  ♦  Changes in link costroute to _x_ via _z_. The result of the bad news about the increase in link cost has indeed traveled slowly! What would have happened if the link cost _c_(_y, x_) had changed from 4 to 10,000 and the cost _c_(_z, x_) had been 9,999? Because of such scenarios, the prob- lem we have seen is sometimes referred to as the count-to-infinity problem.
 
 **Distance-Vector Algorithm: Adding Poisoned Reverse**
@@ -518,7 +249,7 @@ OSPF is a link-state protocol that uses flooding of link-state information and a
 
 With OSPF, a router broadcasts routing information to _all_ other routers in the autonomous system, not just to its neighboring routers. A router broadcasts link-state information whenever there is a change in a link’s state (for example, a change in cost or a change in up/down status). It also broadcasts a link’s state periodically (at least once every 30 minutes), even if the link’s state has not changed. RFC 2328 notes that “this periodic updating of link state advertisements adds robustness to the link state algorithm.” OSPF advertisements are contained in OSPF messages that are
 
-SETTING OSPF L INK WEIGHTS
+**SETTING OSPF L INK WEIGHTS**
 
 Our discussion of link-state routing has implicitly assumed that link weights are set, a routing algorithm such as OSPF is run, and traffic flows according to the routing tables computed by the LS algorithm. In terms of cause and effect, the link weights are given (i.e., they come first) and result (via Dijkstra’s algorithm) in routing paths that minimize overall cost. In this viewpoint, link weights reflect the cost of using a link (for example, if link weights are inversely proportional to capacity, then the use of high-capacity links would have smaller weight and thus be more attractive from a routing standpoint) and Dijsktra’s algorithm serves to minimize overall cost.
 
@@ -560,7 +291,8 @@ As an inter-AS routing protocol, BGP provides each router a means to:
 
 Let us now delve into how BGP carries out these two tasks.
 
-## Advertising BGP Route Information** Consider the network shown in Figure 5.8. As we can see, this simple network has three autonomous systems: AS1, AS2, and AS3. As shown, AS3 includes a subnet with prefix x. For each AS, each router is either a **gateway routeror an **internal router**. A gateway router is a router on the edge of an AS that directly connects to one or more routers in other ASs. An **internal router
+## Advertising BGP Route Information
+ Consider the network shown in Figure 5.8. As we can see, this simple network has three autonomous systems: AS1, AS2, and AS3. As shown, AS3 includes a subnet with prefix x. For each AS, each router is either a **gateway routeror an internal router**. A gateway router is a router on the edge of an AS that directly connects to one or more routers in other ASs. An **internal router
  connects only to hosts and routers within its own AS. In AS1, for example, router 1c is a gateway router; routers 1a, 1b, and 1d are internal routers.
 
 Let’s consider the task of advertising reachability information for prefix x to all of the routers shown in Figure 5.8. At a high level, this is straightforward. First, AS3 sends a BGP message to AS2, saying that x exists and is in AS3; let’s denote this message as “AS3 x”. Then AS2 sends a BGP message to AS1, saying that x exists and that you can get to x by first passing through AS2 and then going to AS3; let’s denote that message as “AS2 AS3 x”. In this manner, each of the autonomous systems will not only learn about the existence of x, but also learn about a path of autonomous systems that leads to x.
@@ -570,33 +302,7 @@ Although the discussion in the above paragraph about advertising BGP reacha- bil
 There are also iBGP connections between routers within each of the ASs. In particular, Figure 5.9 displays a common configuration of one BGP connection for each pair of routers internal to an AS, creating a mesh of TCP connections within each AS. In Figure 5.9, the eBGP connections are shown with the long dashes; the iBGP connections are shown with the short dashes. Note that iBGP connections do not always correspond to physical links.
 
 In order to propagate the reachability information, both iBGP and eBGP sessions are used. Consider again advertising the reachability information for prefix x to all routers in AS1 and AS2. In this process, gateway router 3a first sends an eBGP message “AS3 x” to gateway router 2c. Gateway router 2c then sends the iBGP message “AS3 x” to all of the other routers in AS2, including to gateway router 2a. Gateway router 2a then sends the eBGP message “AS2 AS3 x” to gateway router 1c. Finally, gateway router 1c uses iBGP to send the
-
-2b
-
-2d
-
-2a 2c
-
-**AS2**
-
-1b
-
-1d
-
-1a 1c
-
-**AS1**
-
-3b
-
-3d
-
-3a 3c
-
-**AS3**
-
-X
-
+![Alt text](image-8.png)
 **Figure 5.8**  ♦   Network with three autonomous systems. AS3 includes a subnet with prefix xmessage “AS2 AS3 x” to all the routers in AS1. After this process is complete, each router in AS1 and AS2 is aware of the existence of x and is also aware of an AS path that leads to x.
 
 Of course, in a real network, from a given router there may be many different paths to a given destination, each through a different sequence of ASs. For example, consider the network in Figure 5.10, which is the original network in Figure 5.8, with an additional physical link from router 1d to router 3d. In this case, there are two paths from AS1 to x: the path “AS2 AS3 x” via router 1c; and the new path “AS3 x” via the router 1d.
@@ -605,39 +311,7 @@ Of course, in a real network, from a given router there may be many different pa
  As we have just learned, there may be many paths from a given router to a destina- tion subnet. In fact, in the Internet, routers often receive reachability information about dozens of different possible paths. How does a router choose among these paths (and then configure its forwarding table accordingly)?
 
 Before addressing this critical question, we need to introduce a little more BGP terminology. When a router advertises a prefix across a BGP connection, it includes with the prefix several **BGP attributes**. In BGP jargon, a prefix along with its attributes is called a **route**. Two of the more important attributes are AS-PATH and NEXT-HOP. The AS-PATH attribute contains the list of ASs through which the
-
-eBGP
-
-Key:
-
-iBGP
-
-2b
-
-2d
-
-2a 2c
-
-**AS2**
-
-1b
-
-1d
-
-1a 1c
-
-**AS1**
-
-3b
-
-3d
-
-3a 3c
-
-**AS3**
-
-X
-
+![Alt text](image-9.png)
 **Figure 5.9**  ♦  eBGP and iBGP connectionsadvertisement has passed, as we’ve seen in our examples above. To generate the AS- PATH value, when a prefix is passed to an AS, the AS adds its ASN to the existing list in the AS-PATH. For example, in Figure 5.10, there are two routes from AS1 to subnet x: one which uses the AS-PATH “AS2 AS3”; and another that uses the AS-PATH “A3”. BGP routers also use the AS-PATH attribute to detect and prevent looping advertisements; specifically, if a router sees that its own AS is contained in the path list, it will reject the advertisement.
 
 Providing the critical link between the inter-AS and intra-AS routing protocols, the NEXT-HOP attribute has a subtle but important use. The NEXT-HOP is the _IP address of the router interface that begins the AS-PATH_. To gain insight into this attribute, let’s again refer to Figure 5.10. As indicated in Figure 5.10, the NEXT- HOP attribute for the route “AS2 AS3 x” from AS1 to x that passes through AS2 is the IP address of the left interface on router 2a. The NEXT-HOP attribute for the route “AS3 x” from AS1 to x that bypasses AS2 is the IP address of the leftmost interface of router 3d. In summary, in this toy example, each router in AS1 becomes aware of two BGP routes to prefix x:
@@ -645,37 +319,7 @@ Providing the critical link between the inter-AS and intra-AS routing protocols,
 IP address of leftmost interface for router 2a; AS2 AS3; x IP address of leftmost interface of router 3d; AS3; x
 
 Here, each BGP route is written as a list with three components: NEXT-HOP; AS- PATH; destination prefix. In practice, a BGP route includes additional attributes, which we will ignore for the time being. Note that the NEXT-HOP attribute is an IP
-
-NEXT-HOP
-
-NEXT-HOP
-
-2b
-
-2d
-
-2a 2c
-
-**AS2**
-
-1b
-
-1d
-
-1a 1c
-
-**AS1**
-
-3b
-
-3d
-
-3a 3c
-
-**AS3**
-
-X
-
+![Alt text](image-10.png)
 **Figure 5.10**  ♦   Network augmented with peering link between AS1 and AS3address of a router that does _not_ belong to AS1; however, the subnet that contains this IP address directly attaches to AS1.
 
 **Hot Potato Routing**
@@ -687,23 +331,7 @@ Consider router 1b in the network in Figure 5.10. As just described, this router
 The steps for adding an outside-AS prefix in a router’s forwarding table for hot potato routing are summarized in Figure 5.11. It is important to note that when add- ing an outside-AS prefix into a forwarding table, both the inter-AS routing protocol (BGP) and the intra-AS routing protocol (e.g., OSPF) are used.
 
 The idea behind hot-potato routing is for router 1b to get packets out of its AS as quickly as possible (more specifically, with the least cost possible) without worrying about the cost of the remaining portions of the path outside of its AS to the destination. In the name “hot potato routing,” a packet is analogous to a hot potato that is burning in your hands. Because it is burning hot, you want to pass it off to another person (another AS) as quickly as possible. Hot potato routing is thus
-
-Learn from inter-AS protocol that subnet
-
-x is reachable via multiple gateways.
-
-Use routing info from intra-AS protocol to determine costs of least-cost paths to
-
-each of the gateways.
-
-Hot potato routing: Choose the gateway
-
-that has the smallest least cost.
-
-Determine from forwarding table the interface I that leads to least-cost gateway.
-
-Enter (x,I) in forwarding table.
-
+![Alt text](image-11.png)
 **Figure 5.11**  ♦   Steps in adding outside-AS destination in a router’s forwarding tablea selfish algorithm—it tries to reduce the cost in its own AS while ignoring the other components of the end-to-end costs outside its AS. Note that with hot potato routing, two routers in the same AS may choose two different AS paths to the same prefix. For example, we just saw that router 1b would send packets through AS2 to reach x. However, router 1d would bypass AS2 and send packets directly to AS3 to reach x.
 
 **Route-Selection Algorithm**
@@ -733,66 +361,14 @@ Although the above CDN example nicely illustrates how IP-anycast can be used, in
  When a router selects a route to a destination, the AS routing policy can trump all other considerations, such as shortest AS path or hot potato routing. Indeed, in the route-selection algorithm, routes are first selected according to the local-preference attribute, whose value is fixed by the policy of the local AS.
 
 Let’s illustrate some of the basic concepts of BGP routing policy with a simple example. Figure 5.13 shows six interconnected autonomous systems: A, B, C, W, X, and Y. It is important to note that A, B, C, W, X, and Y are ASs, not routers. Let’s
-
-**AS1**
-
-**AS3 3b**
-
-**3c**
-
-**3a**
-
-**1a**
-
-**1c**
-
-**1b**
-
-**1d**
-
-**AS2**
-
-**AS4**
-
-**2a**
-
-**2c**
-
-**4a 4c**
-
-**4b**
-
-Advertise 212.21.21.21
-
-CDN Server B
-
-CDN Server A
-
-Advertise 212.21.21.21
-
-Receive BGP advertisements for 212.21.21.21 from AS1 and from AS4. Forward toward Server B since it is closer.
-
-**2b**
-
+![Alt text](image-12.png)
 **Figure 5.12**  ♦  Using IP-anycast to bring users to the closest CDN serverassume that autonomous systems W, X, and Y are access ISPs and that A, B, and C are backbone provider networks. We’ll also assume that A, B, and C, directly send traffic to each other, and provide full BGP information to their customer networks. All traffic entering an ISP access network must be destined for that network, and all traffic leaving an ISP access network must have originated in that network. W and Y are clearly access ISPs. X is a **multi-homed access ISP**, since it is con- nected to the rest of the network via two different providers (a scenario that is becom- ing increasingly common in practice). However, like W and Y, X itself must be the source/destination of all traffic leaving/entering X. But how will this stub network behavior be implemented and enforced? How will X be prevented from forwarding traffic between B and C? This can easily be accomplished by controlling the manner in which BGP routes are advertised. In particular, X will function as an access ISP network if it advertises (to its neighbors B and C) that it has no paths to any other destinations except itself. That is, even though X may know of a path, say XCY, that reaches network Y, it will not advertise this path to B. Since B is unaware that X has a path to Y, B would never forward traffic destined to Y (or C) via X. This simple example illustrates how a selective route advertisement policy can be used to imple- ment customer/provider routing relationships.
 
 Let’s next focus on a provider network, say AS B. Suppose that B has learned (from A) that A has a path AW to W. B can thus install the route AW into its routing information base. Clearly, B also wants to advertise the path BAW to its customer, X, so that X knows that it can route to W via B. But should B advertise the path BAW to C? If it does so, then C could route traffic to W via BAW. If A, B, and C are all backbone providers, than B might rightly feel that it should not have to shoulder the burden (and cost!) of carrying transit traffic between A and C. B might rightly feel that it is A’s and C’s job (and cost!) to make sure that C can route to/from A’s customers via a direct connection between A and C. There are currently no official standards that govern how backbone ISPs route among themselves. However, a rule of thumb followed by commercial ISPs is that any traffic flowing across an ISP’s backbone network must have either a source or a destination (or both) in a network that is a customer of that ISP; otherwise the traffic would be getting a free ride on the ISP’s network. Individual peering agreements (that would govern questions such
-
-AW X
-
-Y
-
-B
-
-Key:
-
-Provider network
-
-Customer networkC
-
+![Alt text](image-13.png)
 **Figure 5.13**  ♦  A simple BGP policy scenarioas those raised above) are typically negotiated between pairs of ISPs and are often confidential; \[Huston 1999a; Huston 2012\] provide an interesting discussion of peer- ing agreements. For a detailed description of how routing policy reflects commercial relationships among ISPs, see \[Gao 2001; Dmitiropoulos 2007\]. For a discussion of BGP routing polices from an ISP standpoint, see \[Caesar 2005b\].
 
-WHY ARE THERE DIFFERENT INTER-AS AND INTRA-AS ROUTING PROTOCOLS?
+**WHY ARE THERE DIFFERENT INTER-AS AND INTRA-AS ROUTING PROTOCOLS?**
 
 Having now studied the details of specific inter-AS and intra-AS routing protocols deployed in today’s Internet, let’s conclude by considering perhaps the most fundamental question we could ask about these protocols in the first place (hopefully, you have been wondering this all along, and have not lost the forest for the trees!): Why are different inter-AS and intra-AS routing protocols used?
 
@@ -806,7 +382,8 @@ The answer to this question gets at the heart of the differences between the goa
 
 **PRINCIPLES IN PRACTICE**This completes our brief introduction to BGP. Understanding BGP is important because it plays a central role in the Internet. We encourage you to see the references \[Stewart 1999; Huston 2019a; Labovitz 1997; Halabi 2000; Huitema 1998; Gao 2001; Feamster 2004; Caesar 2005b; Li 2007\] to learn more about BGP.
 
-## Putting the Pieces Together: Obtaining Internet PresenceAlthough this subsection is not about BGP _per se_, it brings together many of the protocols and concepts we’ve seen thus far, including IP addressing, DNS, and BGP.
+## Putting the Pieces Together: Obtaining Internet Presence
+Although this subSection is not about BGP _per se_, it brings together many of the protocols and concepts we’ve seen thus far, including IP addressing, DNS, and BGP.
 
 Suppose you have just created a small company that has a number of servers, including a public Web server that describes your company’s products and services, a mail server from which your employees obtain their e-mail messages, and a DNS server. Naturally, you would like the entire world to be able to visit your Web site in order to learn about your exciting products and services. Moreover, you would like your employees to be able to send and receive e-mail to potential customers throughout the world.
 
@@ -819,7 +396,7 @@ So that people can discover the IP addresses of your Web server, in your DNS ser
 However, there still remains one other necessary and crucial step to allow out- siders from around the world to access your Web server. Consider what happens when Alice, who knows the IP address of your Web server, sends an IP datagram (e.g., a TCP SYN segment) to that IP address. This datagram will be routed through the Internet, visiting a series of routers in many different ASs, and eventually reach your Web server. When any one of the routers receives the datagram, it is going to look for an entry in its forwarding table to determine on which outgoing port it should forward the datagram. Therefore, each of the routers needs to know about the existence of your company’s /24 prefix (or some aggregate entry). How does a router become aware of your company’s prefix? As we have just seen, it becomes aware of it from BGP! Specifically, when your company contracts with a local ISP and gets assigned a prefix (i.e., an address range), your local ISP will use BGP to advertise your prefix to the ISPs to which it connects. Those ISPs will then, in turn, use BGP to propagate the advertisement. Eventually, all Internet routers will know about your prefix (or about some aggregate that includes your prefix) and thus be able to appro- priately forward datagrams destined to your Web and mail servers.
 
 # The SDN Control Plane
-In this section, we’ll dive into the SDN control plane—the network-wide logic that controls packet forwarding among a network’s SDN-enabled devices, as well as the configuration and management of these devices and their services. Our study here builds on our earlier discussion of generalized SDN forwarding in Section 4.4, so you might want to first review that section, as well as Section 5.1 of this chapter, before continuing on. As in Section 4.4, we’ll again adopt the terminology used in the SDN literature and refer to the network’s forwarding devices as “packet switches” (or just switches, with “packet” being understood), since forwarding decisions can be made on the basis of network-layer source/destination addresses, link-layer source/destina- tion addresses, as well as many other values in transport-, network-, and link-layer packet-header fields.
+In this Section, we’ll dive into the SDN control plane—the network-wide logic that controls packet forwarding among a network’s SDN-enabled devices, as well as the configuration and management of these devices and their services. Our study here builds on our earlier discussion of generalized SDN forwarding in Section 4.4, so you might want to first review that Section, as well as Section 5.1 of this chapter, before continuing on. As in Section 4.4, we’ll again adopt the terminology used in the SDN literature and refer to the network’s forwarding devices as “packet switches” (or just switches, with “packet” being understood), since forwarding decisions can be made on the basis of network-layer source/destination addresses, link-layer source/destina- tion addresses, as well as many other values in transport-, network-, and link-layer packet-header fields.
 
 Four key characteristics of an SDN architecture can be identified \[Kreutz 2015\]:
 
@@ -834,27 +411,7 @@ Four key characteristics of an SDN architecture can be identified \[Kreutz 2015\
 From this discussion, we can see that SDN represents a significant “unbundling” of network functionality—data plane switches, SDN controllers, and network-control applications are separate entities that may each be provided by different vendors and organizations. This contrasts with the pre-SDN model in which a switch/router (together with its embedded control plane software and protocol implementations) was monolithic, vertically integrated, and sold by a single vendor. This unbundlingof network functionality in SDN has been likened to the earlier evolution from main- frame computers (where hardware, system software, and applications were provided by a single vendor) to personal computers (with their separate hardware, operating systems, and applications). The unbundling of computing hardware, system soft- ware, and applications has led to a rich, open ecosystem driven by innovation in all three of these areas; one hope for SDN is that it will continue to drive and enable such rich innovation.
 
 Given our understanding of the SDN architecture of Figure 5.14, many questions naturally arise. How and where are the flow tables actually computed? How are these tables updated in response to events at SDN-controlled devices (e.g., an attached link going up/down)? And how are the flow table entries at multiple switches coordinated in such a way as to result in orchestrated and consistent network-wide functionality (e.g., end-to-end paths for forwarding packets from sources to destinations, or coor- dinated distributed firewalls)? It is the role of the SDN control plane to provide these, and many other, capabilities.
-
-Routing
-
-**Network-control Applications**
-
-**Control plane**
-
-**Data plane**
-
-**SDN-Controlled Switches**
-
-Access Control
-
-Load Balancer
-
-Northbound API
-
-Southbound API
-
-SDN Controller (network operating system)
-
+![Alt text](image-14.png)
 **Figure 5.14**  ♦   Components of the SDN architecture: SDN-controlled switches, the SDN controller, network-control applications## The SDN Control Plane: SDN Controller and SDN Network-control ApplicationsLet’s begin our discussion of the SDN control plane in the abstract, by consider- ing the generic capabilities that the control plane must provide. As we’ll see, this abstract, “first principles” approach will lead us to an overall architecture that reflects how SDN control planes have been implemented in practice.
 
 As noted above, the SDN control plane divides broadly into two components— the SDN controller and the SDN network-control applications. Let’s explore the controller first. Many SDN controllers have been developed since the earliest SDN controller \[Gude 2008\]; see \[Kreutz 2015\] for an extremely thorough survey. Figure 5.15 provides a more detailed view of a generic SDN controller. A controller’s function- ality can be broadly organized into three layers. Let’s consider these layers in an uncharacteristically bottom-up fashion:
@@ -866,43 +423,7 @@ As noted above, the SDN control plane divides broadly into two components— the
 • _The interface to the network-control application layer._ The controller interacts with network-control applications through its “northbound” interface. This APIallows network-control applications to read/write network state and flow tables within the state-management layer. Applications can register to be notified when state-change events occur, so that they can take actions in response to network event notifications sent from SDN-controlled devices. Different types of APIs may be provided; we’ll see that two popular SDN controllers communicate with their applications using a REST \[Fielding 2000\] request-response interface.
 
 We have noted several times that an SDN controller can be considered to be “logically centralized,” that is, that the controller may be viewed externally (for exam- ple, from the point of view of SDN-controlled devices and external network-control
-
-Routing Access
-
-Control Load
-
-Balancer
-
-Interface, abstractions for network control apps
-
-Network graph
-
-RESTful API
-
-Intent
-
-Communication to/from controlled devices
-
-Network-wide distributed, robust state management
-
-Link-state info
-
-Host info Switch
-
-info
-
-Statistics Flow
-
-tables
-
-OpenFlow SNMP
-
-**SDN Controller**
-
-**Northbound API**
-
-**Southbound API**
-
+![Alt text](image-15.png)
 **Figure 5.15**  ♦  Components of an SDN controllerapplications) as a single, monolithic service. However, these services and the data- bases used to hold state information are implemented in practice by a _distributed_ set of servers for fault tolerance, high availability, or for performance reasons. With controller functions being implemented by a _set_ of servers, the semantics of the con- troller’s internal operations (e.g., maintaining logical time ordering of events, con- sistency, consensus, and more) must be considered \[Panda 2013\]. Such concerns are common across many different distributed systems; see \[Lamport 1989, Lampson 1996\] for elegant solutions to these challenges. Modern controllers such as Open- Daylight \[OpenDaylight 2020\] and ONOS \[ONOS 2020\] (see sidebar) have placed considerable emphasis on architecting a logically centralized but physically distrib- uted controller platform that provides scalable services and high availability to the controlled devices and network-control applications alike.
 
 The architecture depicted in Figure 5.15 closely resembles the architecture of the originally proposed NOX controller in 2008 \[Gude 2008\], as well as that of today’s OpenDaylight \[OpenDaylight 2020\] and ONOS \[ONOS 2020\] SDN controllers (see sidebar). We’ll cover an example of controller operation in Section 5.5.3. First, how- ever, let’s examine the OpenFlow protocol, the earliest and now one of several pro- tocols that can be used for communication between an SDN controller and a controlled device, which lies in the controller’s communication layer.
@@ -938,7 +459,8 @@ Google’s B4 network uses custom-built switches, each implementing a slightly e
 
 A traffic engineering network-control application, sitting logically above the set of network control servers, interacts with these servers to provide global, network-wide band- width provisioning for groups of application flows. With B4, SDN made an important leap forward into the operational networks of a global network provider. See \[Jain 2013; Hong 2018\] for a detailed description of B4.
 
-**PRINCIPLES IN PRACTICE**## Data and Control Plane Interaction: An Example
+**PRINCIPLES IN PRACTICE**
+ Data and Control Plane Interaction: An Example
  In order to solidify our understanding of the interaction between SDN-controlled switches and the SDN controller, let’s consider the example shown in Figure 5.16, in which Dijkstra’s algorithm (which we studied in Section 5.2) is used to determine shortest path routes. The SDN scenario in Figure 5.16 has two important differ- ences from the earlier per-router-control scenario of Sections 5.2.1 and 5.3, where Dijkstra’s algorithm was implemented in each and every router and link-state updates were flooded among all network routers:
 
 • Dijkstra’s algorithm is executed as a separate application, outside of the packet switches.
@@ -946,28 +468,8 @@ A traffic engineering network-control application, sitting logically above the s
 • Packet switches send link updates to the SDN controller and not to each other.
 
 In this example, let’s assume that the link between switch s1 and s2 goes down; that shortest path routing is implemented, and consequently and that incom- ing and outgoing flow forwarding rules at s1, s3, and s4 are affected, but that s2’s
-
+![Alt text](image-16.png)
 **Figure 5.16**  ♦  SDN controller scenario: Link-state change
-
-Network graph
-
-RESTful API
-
-Intent
-
-Statistics Flow
-
-tables
-
-OpenFlow SNMP
-
-Dijkstra’s link-state Routing31s1 s2
-
-s3
-
-s4Link-state info
-
-Host info Switch
 
 infooperation is unchanged. Let’s also assume that OpenFlow is used as the communi- cation layer protocol, and that the control plane performs no other function other than link-state routing.
 
@@ -1002,93 +504,21 @@ Figure 5.17 presents a simplified view of the OpenDaylight (ODL) controller plat
 
 closely to the network-wide state management capabilities that we encountered in Figure 5.15. The Service Abstraction Layer (SAL) is the controller’s nerve center, allowing controller components and applications to invoke each other’s services, access configuration and operational data, and to subscribe to events they generate. The SAL also provides a uni- form abstract interface to specific protocols operating between the ODL controller and the controlled devices. These protocols include OpenFlow (which we covered in Section 4.5),
 
-**PRINCIPLES IN PRACTICE**and the Simple Network Management Protocol (SNMP) and the Network Configuration (NETCONF) protocol, both of which we’ll cover in Section 5.7. The Open vSwitch Database Management Protocol (OVSDB) is used to manage data center switching, an important application area for SDN technology. We’ll introduce data center networking in Chapter 6.
+**PRINCIPLES IN PRACTICE**
+and the Simple Network Management Protocol (SNMP) and the Network Configuration (NETCONF) protocol, both of which we’ll cover in Section 5.7. The Open vSwitch Database Management Protocol (OVSDB) is used to manage data center switching, an important application area for SDN technology. We’ll introduce data center networking in Chapter 6.
 
 Network Orchestrations and Applications determine how data-plane forwarding and other services, such as firewalling and load balancing, are accomplished in the controlled devices. ODL provides two ways in which applications can interoperate with native controller services (and hence devices) and with each other. In the API-Driven (AD-SAL) approach, shown in Figure 5.17, applications communicate with controller modules using a REST request-response API running over HTTP. Initial releases of the OpenDaylight controller provided only the AD-SAL. As ODL became increasingly used for network configuration and management, later ODL releases introduced a Model- Driven (MD-SAL) approach. Here, the YANG data modeling language \[RFC 6020\] defines models of device, protocol, and network configuration and operational state data. Devices are then configured and managed by manipulating this data using the NETCONF protocol.
-
+![Alt text](image-17.png)
 **Figure 5.17**  ♦  A simplified view of the OpenDaylight controller
-
-REST/RESTCONF/NETCONF APIs
-
-Enhanced Services
-
-Basic Network Functions
-
-Topology Processing
-
-Switch mgr.
-
-Stats mgr.AAA
-
-Device Discovery
-
-Forwarding rules mgr.
-
-Host Tracker
-
-**Network Orchestrations and**
-
-**Applications**
-
-**Northbound APIs**
-
-**Southbound APIs and**
-
-**Protocols Plugins**
-
-**Service Abstraction Layer (SAL)**
-
-messaging
-
-Openflow NETCONF SNMP OVSDB
-
-Traffic Engineering
-
-Firewalling Load
-
-Balancing
-
-config. and operational data
-
-storeThe ONOS Control ler
 
 Figure 5.18 presents a simplified view of the ONOS controller ONOS 2020\]. Similar to the canonical controller in Figure 5.15, three layers can be identified in the ONOS controller:
 
 • _Northbound abstractions and protocols._ A unique feature of ONOS is its intent framework, which allows an application to request a high-level service (e.g., to setup a connection between host A and Host B, or conversely to not allow Host A and host B to communicate) without having to know the details of how this service is performed. State information is provided to network-control applications across the northbound API either synchronously (via query) or asynchronously (via listener callbacks, e.g., when network state changes).
 
 • _Distributed core._ The state of the network’s links, hosts, and devices is maintained in ONOS’s distributed core. ONOS is deployed as a service on a set of intercon- nected servers, with each server running an identical copy of the ONOS software; an increased number of servers offers an increased service capacity. The ONOS core
-
+![Alt text](image-18.png)
 **Figure 5.18**  ♦  ONOS controller architecture
-
-IntentREST API
-
-Hosts Paths
-
-Topology
-
-Devices Links
-
-Flow rules
-
-Statistics
-
-Device Link Host Flow Packet
-
-OpenFlow Netconf OVSDB
-
-**Network control apps**
-
-**Northbound abstractions,**
-
-**protocols**
-
-**ONOS distributed**
-
-**core**
-
-**Southbound abstractions,**
-
-**protocols**# ICMP: The Internet Control Message Protocol
+ ICMP: The Internet Control Message Protocol
 The Internet Control Message Protocol (ICMP), specified in \[RFC 792\], is used by hosts and routers to communicate network-layer information to each other. The most typical use of ICMP is for error reporting. For example, when running an HTTP session, you may have encountered an error message such as “Destination network unreachable.” This message had its origins in ICMP. At some point, an IP router was unable to find a path to the host specified in your HTTP request. That router created and sent an ICMP message to your host indicating the error.
 
 ICMP is often considered part of IP, but architecturally it lies just above IP, as ICMP messages are carried inside IP datagrams. That is, ICMP messages are carried as IP payload, just as TCP or UDP segments are carried as IP payload. Similarly, when a host receives an IP datagram with ICMP specified as the upper-layer protocol (an upper-layer protocol number of 1), it demultiplexes the datagram’s contents to ICMP, just as it would demultiplex a datagram’s content to TCP or UDP.
@@ -1106,34 +536,8 @@ provides the mechanisms for service replication and coordination among instances
 In Chapter 1, we introduced the Traceroute program, which allows us to trace a route from a host to any other host in the world. Interestingly, Traceroute is imple- mented with ICMP messages. To determine the names and addresses of the routers between source and destination, Traceroute in the source sends a series of ordinary IP datagrams to the destination. Each of these datagrams carries a UDP segment with an unlikely UDP port number. The first of these datagrams has a TTL of 1, the second of 2, the third of 3, and so on. The source also starts timers for each of the datagrams. When the _n_th datagram arrives at the _n_th router, the _n_th router observes that the TTL of the datagram has just expired. According to the rules of the IP protocol, the router discards the datagram and sends an ICMP warning message to the source (type 11 code 0). This warning message includes the name of the router and its IP address. When this ICMP message arrives back at the source, the source obtains the round-trip time from the timer and the name and IP address of the _n_th router from the ICMP message.
 
 How does a Traceroute source know when to stop sending UDP segments? Recall that the source increments the TTL field for each datagram it sends. Thus, one of the datagrams will eventually make it all the way to the destination host. Because this datagram contains a UDP segment with an unlikely port number, the destination
-
+![Alt text](image-19.png)
 **Figure 5.19**  ♦  ICMP message types
-
-ICMP Type Code Description33349110137000
-
-echo reply (to ping)
-
-destination network unreachable
-
-destination host unreachable
-
-destination protocol unreachable
-
-destination port unreachable
-
-destination network unknown
-
-destination host unknown
-
-source quench (congestion control)
-
-echo request
-
-router advertisement
-
-router discovery
-
-TTL expired
 
 IP header badhost sends a port unreachable ICMP message (type 3 code 3) back to the source. When the source host receives this particular ICMP message, it knows it does not need to send additional probe packets. (The standard Traceroute program actually sends sets of three packets with the same TTL; thus, the Traceroute output provides three results for each TTL.)
 
@@ -1142,13 +546,13 @@ In this manner, the source host learns the number and the identities of routers 
 A new version of ICMP has been defined for IPv6 in RFC 4443. In addition to reorganizing the existing ICMP type and code definitions, ICMPv6 also added new types and codes required by the new IPv6 functionality. These include the “Packet Too Big” type and an “unrecognized IPv6 options” error code.
 
 # Network Management and SNMP, NETCONF/YANG
-Having now made our way to the end of our study of the network layer, with only the link-layer before us, we’re well aware that a network consists of many complex, interact- ing pieces of hardware and software—from the links, switches, routers, hosts, and other devices that comprise the physical components of the network to the many protocols that control and coordinate these devices. When hundreds or thousands of such components are brought together by an organization to form a network, the job of the network admin- istrator to keep the network “up and running” is surely a challenge. We saw in Section 5.5 that the logically centralized controller can help with this process in an SDN context. But the challenge of network management has been around long before SDN, with a rich set of network management tools and approaches that help the network administrator monitor, manage, and control the network. We’ll study these tools and techniques in this section, as well as new tools and techniques that have co-evolved along with SDN.
+Having now made our way to the end of our study of the network layer, with only the link-layer before us, we’re well aware that a network consists of many complex, interact- ing pieces of hardware and software—from the links, switches, routers, hosts, and other devices that comprise the physical components of the network to the many protocols that control and coordinate these devices. When hundreds or thousands of such components are brought together by an organization to form a network, the job of the network admin- istrator to keep the network “up and running” is surely a challenge. We saw in Section 5.5 that the logically centralized controller can help with this process in an SDN context. But the challenge of network management has been around long before SDN, with a rich set of network management tools and approaches that help the network administrator monitor, manage, and control the network. We’ll study these tools and techniques in this Section, as well as new tools and techniques that have co-evolved along with SDN.
 
 An often-asked question is “What is network management?” A well-conceived, single-sentence (albeit a rather long run-on sentence) definition of network manage- ment from \[Saydam 1996\] is:
 
 _Network management includes the deployment, integration, and coordination of the hardware, software, and human elements to monitor, test, poll, configure, ana- lyze, evaluate, and control the network and element resources to meet the real-time, operational performance, and Quality of Service requirements at a reasonable cost._
 
-Given this broad definition, we’ll cover only the rudiments of network man- agement in this section—the architecture, protocols, and data used by a networkadministrator in performing their task. We’ll not cover the administrator’s decision- making processes, where topics such as fault identification \[Labovitz 1997; Steinder 2002; Feamster 2005; Wu 2005; Teixeira 2006\], anomaly detection \[Lakhina 2005; Barford 2009\], network design/engineering to meet contracted Service Level Agree- ments (SLA’s) \[Huston 1999a\], and more come into consideration. Our focus is thus purposefully narrow; the interested reader should consult these references, the excel- lent overviews in \[Subramanian 2000; Schonwalder 2010; Claise 2019\], and the more detailed treatment of network management available on the Web site for this text.
+Given this broad definition, we’ll cover only the rudiments of network man- agement in this Section—the architecture, protocols, and data used by a networkadministrator in performing their task. We’ll not cover the administrator’s decision- making processes, where topics such as fault identification \[Labovitz 1997; Steinder 2002; Feamster 2005; Wu 2005; Teixeira 2006\], anomaly detection \[Lakhina 2005; Barford 2009\], network design/engineering to meet contracted Service Level Agree- ments (SLA’s) \[Huston 1999a\], and more come into consideration. Our focus is thus purposefully narrow; the interested reader should consult these references, the excel- lent overviews in \[Subramanian 2000; Schonwalder 2010; Claise 2019\], and the more detailed treatment of network management available on the Web site for this text.
 
 ## The Network Management Framework
  Figure 5.20 shows the key components of network management:
@@ -1164,38 +568,8 @@ Given this broad definition, we’ll cover only the rudiments of network man- ag
 In practice, there are three commonly used ways in a network operator can man- age the network, using the components described above:
 
 • _CLI._ A network operator may issue direct **Command Line Interface (CLI)** commands to the device. These commands can be typed directly on a managed device’s console (if the operator is physically present at the device), or over a Telnet or secure shell (SSH) connection, possibly via scripting, between the
-
+![Alt text](image-20.png)
 **Figure 5.20**  ♦   Elements of network management
-
-Agent Device data
-
-Agent Device data
-
-Agent Device data
-
-Managing server/controller
-
-Managed device
-
-Managed device
-
-Managed device
-
-Managed device
-
-Agent
-
-Controller-to-device protocol Key:
-
-Managed device
-
-Network managers
-
-config. and operational data
-
-store
-
-Device data
 
 Agent Device datamanaging server/controller and the managed device. CLI commands are vendor- and device-specific and can be rather arcane. While seasoned network wizards may be able to use CLI to flawlessly configure network devices, CLI use is prone to errors, and it is difficult to automate or efficiently scale for large networks. Con- sumer-oriented network devices, such as your wireless home router, may export a management menu that you (the network manager!) can access via HTTP to con- figure that device. While this approach may work well for single, simple devices and is less error-prone than CLI, it also doesn’t scale to larger-sized networks.
 
@@ -1203,33 +577,17 @@ Agent Device datamanaging server/controller and the managed device. CLI commands
 
 • _NETCONF/YANG._ The NETCONF/YANG approach takes a more abstract, net- work-wide, and holistic view toward network management, with a much stronger emphasis on configuration management, including specifying correctness con- straints and providing atomic management operations over multiple controlled devices. **YANG** \[RFC 6020\] is a data modeling language used to model configu- ration and operational data. The **NETCONF** protocol \[RFC 6241\] is used to com- municate YANG-compatible actions and data to/from/among remote devices. We briefly encountered NETCONF and YANG in our case study of OpenDaylight Controller in Figure 5.17 and will study them in Section 5.7.3 below.
 
-## The Simple Network Management Protocol (SNMP) and the Management Information Base (MIB)The **Simple Network Management Protocol** version 3 (SNMPv3) \[RFC 3410\] is an application-layer protocol used to convey network-management control and information messages between a managing server and an agent executing on behalf of that managing server. The most common usage of SNMP is in a request-response mode in which an SNMP managing server sends a request to an SNMP agent, whoreceives the request, performs some action, and sends a reply to the request. Typi- cally, a request will be used to query (retrieve) or modify (set) MIB object values associated with a managed device. A second common usage of SNMP is for an agent to send an unsolicited message, known as a trap message, to a managing server. Trap messages are used to notify a managing server of an exceptional situation (e.g., a link interface going up or down) that has resulted in changes to MIB object values.
+## The Simple Network Management Protocol (SNMP) and the Management Information Base (MIB)
+The **Simple Network Management Protocol** version 3 (SNMPv3) \[RFC 3410\] is an application-layer protocol used to convey network-management control and information messages between a managing server and an agent executing on behalf of that managing server. The most common usage of SNMP is in a request-response mode in which an SNMP managing server sends a request to an SNMP agent, whoreceives the request, performs some action, and sends a reply to the request. Typi- cally, a request will be used to query (retrieve) or modify (set) MIB object values associated with a managed device. A second common usage of SNMP is for an agent to send an unsolicited message, known as a trap message, to a managing server. Trap messages are used to notify a managing server of an exceptional situation (e.g., a link interface going up or down) that has resulted in changes to MIB object values.
 
 MIB objects are specified in a data description language known as SMI (Structure of Management Information) \[RFC 2578; RFC 2579; RFC 2580\], a rather oddly named component of the network management framework whose name gives no hint of its functionality. A formal definition language is used to ensure that the syntax and seman- tics of the network management data are well defined and unambiguous. Related MIB objects are gathered into MIB modules. As of late 2019, there are more than 400 MIB- related RFCs and a much larger number of vendor-specific (private) MIB modules.
 
 SNMPv3 defines seven types of messages, known generically as protocol data units—PDUs—as shown in Table 5.2 and described below. The format of the PDU is shown in Figure 5.21.
 
 • The GetRequest, GetNextRequest, and GetBulkRequest PDUs are all sent from a managing server to an agent to request the value of one or more
-
+![Alt text](image-21.png)
 **Table 5.2**  ♦  SNMPv3 PDU types
-
-SNMPv3 PDU Type Sender-receiver Description
-
-GetRequest manager-to-agent get value of one or more MIB object instances GetNextRequest manager-to-agent get value of next MIB object instance in list or table GetBulkRequest manager-to-agent get values in large block of data, for example, values
-
-in a large table InformRequest manager-to-manager inform remote managing entity of MIB values remote
-
-to its access SetRequest manager-to-agent set value of one or more MIB object instances Response agent-to-manager or generated in response to
-
-manager-to-manager GetRequest,
-
-GetNextRequest,
-
-GetBulkRequest,
-
-SetRequest PDU, or InformRequest
-
-SNMPv2-Trap agent-to-manager inform manager of an exceptional event #MIB objects at the agent’s managed device. The MIB objects whose values are being requested are specified in the variable binding portion of the PDU. GetRequest, GetNextRequest, and GetBulkRequest differ in the granularity of their data requests. GetRequest can request an arbitrary set of MIB values; multiple GetNextRequests can be used to sequence through a list or table of MIB objects; GetBulkRequest allows a large block of data to be returned, avoiding the overhead incurred if multiple GetRequest or GetNextRequest messages were to be sent. In all three cases, the agent responds with a Response PDU containing the object identifiers and their associated values.
+MIB objects at the agent’s managed device. The MIB objects whose values are being requested are specified in the variable binding portion of the PDU. GetRequest, GetNextRequest, and GetBulkRequest differ in the granularity of their data requests. GetRequest can request an arbitrary set of MIB values; multiple GetNextRequests can be used to sequence through a list or table of MIB objects; GetBulkRequest allows a large block of data to be returned, avoiding the overhead incurred if multiple GetRequest or GetNextRequest messages were to be sent. In all three cases, the agent responds with a Response PDU containing the object identifiers and their associated values.
 
 • The SetRequest PDU is used by a managing server to set the value of one or more MIB objects in a managed device. An agent replies with a Response PDU with the “noError” error status to confirm that the value has indeed been set.
 
@@ -1238,41 +596,8 @@ SNMPv2-Trap agent-to-manager inform manager of an exceptional event #MIB objects
 • The Response PDU is typically sent from a managed device to the managing server in response to a request message from that server, returning the requested information.
 
 • The final type of SNMPv3 PDU is the trap message. Trap messages are gener- ated asynchronously; that is, they are not generated in response to a received request but rather in response to an event for which the managing server requires notification. RFC 3418 defines well-known trap types that include a cold or warm start by a device, a link going up or down, the loss of a neighbor, or an authentication failure event. A received trap request has no required response from a managing server.
-
+![Alt text](image-22.png)
 **Figure 5.21**  ♦  SNMP PDU format
-
-PDU type (0–3)
-
-Request Id
-
-Error Status (0–5)
-
-Error Index
-
-Name
-
-ValueName
-
-Name Value
-
-PDU Type (4)
-
-Enterprise Agent Addr
-
-Trap Type (0–7)
-
-Specific code
-
-Time stamp
-
-Value
-
-Get/set header
-
-Trap header Trap information
-
-SNMP PDU
-
 Variables to get/setGiven the request-response nature of SNMP, it is worth noting here that although SNMP PDUs can be carried via many different transport protocols, the SNMP PDU is typically carried in the payload of a UDP datagram. Indeed, RFC 3417 states that UDP is “the preferred transport mapping.” However, since UDP is an unreli- able transport protocol, there is no guarantee that a request, or its response, will be received at the intended destination. The request ID field of the PDU (see Figure 5.21) is used by the managing server to number its requests to an agent; the agent’s response takes its request ID from that of the received request. Thus, the request ID field can be used by the managing server to detect lost requests or replies. It is up to the man- aging server to decide whether to retransmit a request if no corresponding response is received after a given amount of time. In particular, the SNMP standard does not mandate any particular procedure for retransmission, or even if retransmission is to be done in the first place. It only requires that the managing server “needs to act responsibly in respect to the frequency and duration of retransmissions.” This, of course, leads one to wonder how a “responsible” protocol should act!
 
 SNMP has evolved through three versions. The designers of SNMPv3 have said that “SNMPv3 can be thought of as SNMPv2 with additional security and admin- istration capabilities” \[RFC 3410\]. Certainly, there are changes in SNMPv3 over SNMPv2, but nowhere are those changes more evident than in the area of administra- tion and security. The central role of security in SNMPv3 was particularly important, since the lack of adequate security resulted in SNMP being used primarily for moni- toring rather than control (for example, SetRequest is rarely used in SNMPv1). Once again, we see that security—a topic we’ll cover in detail in Chapter 8 — is of critical concern, but once again a concern whose importance had been realized per- haps a bit late and only then “added on.”
@@ -1291,57 +616,20 @@ Discontinuities in the value of this counter can occur at re-initialization of t
 
 ::= { ipSystemStatsEntry 18 }
 
-## The Network Configuration Protocol (NETCONF) and YANGThe NETCONF protocol operates between the managing server and the man- aged network devices, providing messaging to _(i)_ retrieve, set, and modify con- figuration data at managed devices; _(ii)_ to query operational data and statistics at managed devices; and _(iii)_ to subscribe to notifications generated by managed devices. The managing server actively controls a managed device by sending it configurations, which are specified in a structured XML document, and activat- ing a configuration at the managed device. NETCONF uses a remote procedure call (RPC) paradigm, where protocol messages are also encoded in XML and exchanged between the managing server and a managed device over a secure, connection-oriented session such as the TLS (Transport Layer Security) protocol (discussed in Chapter 8) over TCP.Figure 5.22 shows an example NETCONF session. First, the managing server establishes a secure connection to the managed device. (In NETCONF parlance, the managing server is actually referred to as the “client” and the managed device as the “server,” since the managing server establishes the connection to the managed device. But we’ll ignore that here for consistency with the longer-standing network- management server/client terminology shown in Figure 5.20.) Once a secure con- nection has been established, the managing server and the managed device exchange <hello> messages, declaring their “capabilities”—NETCONF functionality that sup- plements the base NETCONF specification in \[RFC 6241\]. Interactions between the managing server and managed device take the form of a remote procedure call, using the <rpc> and <rpc-response> messages. These messages are used to retrieve, set, query and modify device configurations, operational data and statistics, and to sub- scribe to device notifications. Device notifications themselves are proactively sent from managed device to the managing server using NETCONF <notification> mes- sages. A session is closed with the <session-close message>.
-
+## The Network Configuration Protocol (NETCONF) and YANG
+The NETCONF protocol operates between the managing server and the man- aged network devices, providing messaging to _(i)_ retrieve, set, and modify con- figuration data at managed devices; _(ii)_ to query operational data and statistics at managed devices; and _(iii)_ to subscribe to notifications generated by managed devices. The managing server actively controls a managed device by sending it configurations, which are specified in a structured XML document, and activat- ing a configuration at the managed device. NETCONF uses a remote procedure call (RPC) paradigm, where protocol messages are also encoded in XML and exchanged between the managing server and a managed device over a secure, connection-oriented session such as the TLS (Transport Layer Security) protocol (discussed in Chapter 8) over TCP.Figure 5.22 shows an example NETCONF session. First, the managing server establishes a secure connection to the managed device. (In NETCONF parlance, the managing server is actually referred to as the “client” and the managed device as the “server,” since the managing server establishes the connection to the managed device. But we’ll ignore that here for consistency with the longer-standing network- management server/client terminology shown in Figure 5.20.) Once a secure con- nection has been established, the managing server and the managed device exchange <hello> messages, declaring their “capabilities”—NETCONF functionality that sup- plements the base NETCONF specification in \[RFC 6241\]. Interactions between the managing server and managed device take the form of a remote procedure call, using the <rpc> and <rpc-response> messages. These messages are used to retrieve, set, query and modify device configurations, operational data and statistics, and to sub- scribe to device notifications. Device notifications themselves are proactively sent from managed device to the managing server using NETCONF <notification> mes- sages. A session is closed with the <session-close message>.
+![Alt text](image-23.png)
 **Figure 5.22**  ♦   NETCONF session between managing server/controller and managed device
-
-Session initiation, capabilities exchange: <hello>
-
-Session close: <close-session>
-
-<rpc> <rpc-reply>
-
-<notification>
-
-Agent Device data
-
-Managing server/controller
-
-<rpc>
-
-<rpc>
-
-<rpc-reply>
-
-<rpc-reply>
-
-config. and operational data
-
-storeTable 5.3 shows a number of the important NETCONF operations that a man- aging server can perform at a managed device. As in the case of SNMP, we see operations for retrieving operational state data (<get>), and for event notification. However, the <get-config>, <edit-config>, <lock> and <unlock> operation demon- strate NETCONF’s particular emphasis on device configuration. Using the basic operations shown in Table 5.3, it is also possible to create a _set_ of more sophisticated network management transactions that either complete atomically (i.e., as a group) and successfully on a _set_ of devices, or are fully reversed and leave the devices in their pre-transaction state. Such multi-device transactions—“enabl\[ing\] operators to concentrate on the _configuration_ of the network as a whole rather than individual devices” was an important operator requirement put forth in \[RFC 3535\].
+Table 5.3 shows a number of the important NETCONF operations that a man- aging server can perform at a managed device. As in the case of SNMP, we see operations for retrieving operational state data (<get>), and for event notification. However, the <get-config>, <edit-config>, <lock> and <unlock> operation demon- strate NETCONF’s particular emphasis on device configuration. Using the basic operations shown in Table 5.3, it is also possible to create a _set_ of more sophisticated network management transactions that either complete atomically (i.e., as a group) and successfully on a _set_ of devices, or are fully reversed and leave the devices in their pre-transaction state. Such multi-device transactions—“enabl\[ing\] operators to concentrate on the _configuration_ of the network as a whole rather than individual devices” was an important operator requirement put forth in \[RFC 3535\].
 
 A full description of NETCONF is beyond our scope here; \[RFC 6241, RFC 5277, Claise 2019; Schonwalder 2010\] provide more in-depth coverage.
 
 But since this is the first time we’ve seen protocol messages formatted as an XML document (rather than the traditional message with header fields and message body, e.g., as shown in Figure 5.21 for the SNMP PDU), let’s conclude our brief study of NETCONF with two examples.
 
 In the first example, the XML document sent from the managing server to the managed device is a NETCONF <get> command requesting all device configuration
-
+![Alt text](image-24.png)
 **Table 5.3**  ♦   Selected NETCONF operations
-
-NETCONF Operation Description
-
-<get-config> Retrieve all or part of a given configuration. A device may have multiple configurations. There is always a running/ configuration that describes the devices current (running) configuration.
-
-<get> Retrieve all or part of both configuration state and operational state data.
-
-<edit-config> Change all or part of a specified configuration at the managed device. If the running/configuration is specified, then the device’s current (running) configuration will be changed. If the managed device was able to satisfy the request, an <rpc-reply> is sent containing an <ok> element; otherwise <rpc- error> response is returned. On error, the device’s configuration state can be roll-ed-back to its previous state.
-
-<lock>, <unlock> The <lock> (<unlock>) operation allows the managing server to lock (unlock) the entire configuration datastore system of a managed device. Locks are intended to be short-lived and allow a client to make a change without fear of interaction with other NETCONF, SNMP, or CLIs commands from other sources.
-
-<create-subscription> ,
-
-<notification>
-
-This operation initiates an event notification subscription that will send asynchronous event <notification> for specified events of interest from the managed device to the managing server, until the subscription is terminated.and operational data. With this command, the server can learn about the device’s configuration.
+and operational data. With this command, the server can learn about the device’s configuration.
 
 01 <?xml version=”1.0” encoding=”UTF-8”?> 02 <rpc message-id=”101” 03 xmlns=”urn:ietf:params:xml:ns:netconf:base:1.0”> 04 <get/> 05 </rpc>
 
@@ -1379,13 +667,13 @@ Having completed our study of the network layer, our journey now takes us one st
 
 **Homework Problems and Questions**
 
-**Chapter 5 Review Questions** sECTION 5.1 R1. What is meant by a control plane that is based on per-router control? In such
+**Chapter 5 Review Questions** Section 5.1 R1. What is meant by a control plane that is based on per-router control? In such
 
 cases, when we say the network control and data planes are implemented “monolithically,” what do we mean?
 
 R2. What is meant by a control plane that is based on logically centralized control? In such cases, are the data plane and the control plane implemented within the same device or in separate devices? Explain.
 
-sECTION 5.2 R3. Compare and contrast the properties of a centralized and a distributed routing
+Section 5.2 R3. Compare and contrast the properties of a centralized and a distributed routing
 
 algorithm. Give an example of a routing protocol that takes a centralized and a decentralized approach.
 
@@ -1395,7 +683,7 @@ R5. What is the “count to infinity” problem in distance vector routing?
 
 R6. How is a least cost path calculated in a decentralized routing algorithm?
 
-sECTIONs 5.3–5.4 R7. Why are different inter-AS and intra-AS protocols used in the Internet?
+Sections 5.3–5.4 R7. Why are different inter-AS and intra-AS protocols used in the Internet?
 
 R8. True or false: When an OSPF route sends its link state information, it is sent only to those nodes directly attached neighbors. Explain.R9. What is meant by an _area_ in an OSPF autonomous system? Why was the concept of an area introduced?
 
@@ -1407,7 +695,7 @@ R12. Describe how a network administrator of an upper-tier ISP can implement pol
 
 R13. True or false: When a BGP router receives an advertised path from its neigh- bor, it must add its own identity to the received path and then send that new path on to all of its neighbors. Explain.
 
-sECTION 5.5 R14. Describe the main role of the communication layer, the network-wide state-
+Section 5.5 R14. Describe the main role of the communication layer, the network-wide state-
 
 management layer, and the network-control application layer in an SDN controller.
 
@@ -1419,7 +707,7 @@ R17. Describe the purpose of two types of OpenFlow messages (of your choosing) t
 
 R18. What is the purpose of the service abstraction layer in the OpenDaylight SDN controller?
 
-sECTIONs 5.6–5.7 R19. Names four different types of ICMP messages
+Sections 5.6–5.7 R19. Names four different types of ICMP messages
 
 R20. What two types of ICMP messages are received at the sending host executing the _Traceroute_ program?
 
@@ -1433,38 +721,14 @@ PROBLEms
 **Problems**
 
 P1. Consider the figure below.
-
-C D
-
-B 42 3
-
-1 2 1
-
-1 5A F
-
-E
-
+![Alt text](image-25.png)
 Enumerate all paths from _A_ to _D_ that do not contain any loops
 
 P2. Repeat Problem P1 for paths from _C_ to _D_, _B_ to _F_, and _C_ to _F_.
 
 P3. Consider the following network. With the indicated link costs, use Dijkstra’s shortest-path algorithm to compute the shortest path from _x_ to all network nodes. Show how the algorithm works by computing a table similar to Table 5.1.
-
-x
-
-v
-
-ty
-
-z
-
-u
-
-w12
-
-8 73
-
-6 42 4P4. Consider the network shown in Problem P3. Using Dijkstra’s algorithm, and showing your work using a table similar to Table 5.1, do the following:
+![Alt text](image-26.png)
+ Consider the network shown in Problem P3. Using Dijkstra’s algorithm, and showing your work using a table similar to Table 5.1, do the following:
 
 a. Compute the shortest path from _t_ to all network nodes.
 
@@ -1481,25 +745,11 @@ f. Compute the shortest path from _z_ to all network nodes.
 **Dijkstra’s algorithm: discussion and example**
 
 **VideoNote**P5. Consider the network shown below. Assume that each node initially knows the costs to each of its neighbors. Consider the distance-vector algorithm and show the distance table entries at node _z_.
-
-y x
-
-u 23 4 17
-
-z
-
-v
-
+![Alt text](image-27.png)
 P6. Consider a general topology (that is, not the specific network shown above) and a synchronous version of the distance-vector algorithm. Suppose that at each itera- tion, a node exchanges its distance vectors with its neighbors and receives their distance vectors. Assuming that the algorithm begins with each node knowing only the costs to its immediate neighbors, what is the maximum number of itera- tions required before the distributed algorithm converges? Justify your answer.
 
 P7. Consider the network fragment shown below. _x_ has only two attached neighbors, _w_ and _y_. _w_ has a minimum-cost path to destination _u_ (illustrated with the dotted line through the remaining network) of 9, and _y_ has a mini- mum-cost path to _u_ of 11. The complete paths from _w_ and _y_ to _u_ (and between _w_ and _y_) are pictured with dotted lines, as they are irrelevant to the solution.
-
-w
-
-y 46 9
-
-x u
-
+![Alt text](image-28.png)
 a. Give _x_’s distance vector for destinations _w_, _y_, and _u_.
 
 b. Give a link-cost change for either _c_(_x_,_w_) or _c_(_x_,_y_) such that _x_ will inform its neighbors of a new minimum-cost path to _u_ as a result of executing the distance-vector algorithm.
@@ -1534,38 +784,8 @@ b. Router 3a learns about _x_ from which routing protocol?
 c. Router 1c learns about _x_ from which routing protocol?
 
 d. Router 1d learns about _x_ from which routing protocol?
-
-**AS4**
-
-**AS3**
-
-**AS1**
-
-**AS2**
-
-**_x_**
-
-**4b**
-
-**4c 4a**
-
-**3c**
-
-**3b 3a**
-
-**1c**
-
-**1b**
-
-**1d**
-
-**1a**
-
-**_I_1 _I_2**
-
-**2c**
-
-**2a 2b**P15. Referring to the previous problem, once router 1d learns about _x_ it will put an entry (_x_, _I_) in its forwarding table.
+![Alt text](image-29.png)
+P15. Referring to the previous problem, once router 1d learns about _x_ it will put an entry (_x_, _I_) in its forwarding table.
 
 a. Will _I_ be equal to _I_1 or _I_2 for this entry? Explain why in one sentence.
 
@@ -1574,26 +794,9 @@ b. Now suppose that there is a physical link between AS2 and AS4, shown by the d
 c. Now suppose there is another AS, called AS5, which lies on the path between AS2 and AS4 (not shown in diagram). Suppose router 1d learns that _x_ is accessible via AS2 AS5 AS4 as well as via AS3 AS4. Will _I_ be set to _I_1 or _I_2? Explain why in one sentence.
 
 P16. Consider the following network. ISP B provides national backbone service to regional ISP A. ISP C provides national backbone service to regional ISP D. Each ISP consists of one AS. B and C peer with each other in two places using BGP. Consider traffic going from A to D. B would prefer to hand that traffic over to C on the West Coast (so that C would have to absorb the cost of carrying the traffic cross-country), while C would prefer to get the traffic via its East Coast peering point with B (so that B would have carried the traffic across the country). What BGP mechanism might C use, so that B would hand over A-to-D traffic at its East Coast peering point? To answer this question, you will need to dig into the BGP specification.
-
-**ISP B**
-
-**ISP C**
-
-**ISP D**
-
-**ISP A**
-sOCKET PROgRAmmINg AssIgNmENT 5: ICmP PINg 
-
-P17. In Figure 5.13, consider the path information that reaches stub networks W, X, and Y. Based on the information available at W and X, what are their respective views of the network topology? Justify your answer. The topology view at Y is shown below.
-
-W
-
-Y
-
-X A
-
-C Stub network Y’s view of the topology
-
+![Alt text](image-30.png)
+In Figure 5.13, consider the path information that reaches stub networks W, X, and Y. Based on the information available at W and X, what are their respective views of the network topology? Justify your answer. The topology view at Y is shown below.
+![Alt text](image-31.png)
 P18. Consider Figure 5.13. B would never forward traffic destined to Y via X based on BGP routing. But there are some very popular applications for which data packets go to X first and then flow to Y. Identify one such application, and describe how data packets follow a path not given by BGP routing.
 
 P19. In Figure 5.13, suppose that there is another stub network V that is a cus- tomer of ISP A. Suppose that B and C have a peering relationship, and A is a customer of both B and C. Suppose that A would like to have the traffic destined to W to come from B only, and the traffic destined to V from either B or C. How should A advertise its routes to B and C? What AS routes does C receive?
@@ -1615,12 +818,8 @@ In this lab, you will write your own Ping application in Python. Your appli- cat
 In this programming assignment, you will be writing a “distributed” set of proce- dures that implements a distributed asynchronous distance-vector routing for the network shown below.
 
 You are to write the following routines that will “execute” asynchronously within the emulated environment provided for this assignment. For node 0, you will write the routines:
-
-3 2
-
-0 1
-
-7 32• _rtinit0()_. This routine will be called once at the beginning of the emulation. _rtinit0()_ has no arguments. It should initialize your distance table in node 0 to reflect the direct costs of 1, 3, and 7 to nodes 1, 2, and 3, respectively. In the figure above, all links are bidirectional and the costs in both directions are identi- cal. After initializing the distance table and any other data structures needed by your node 0 routines, it should then send its directly connected neighbors (in this case, 1, 2, and 3) the cost of its minimum-cost paths to all other network nodes.
+![Alt text](image-32.png)
+• _rtinit0()_. This routine will be called once at the beginning of the emulation. _rtinit0()_ has no arguments. It should initialize your distance table in node 0 to reflect the direct costs of 1, 3, and 7 to nodes 1, 2, and 3, respectively. In the figure above, all links are bidirectional and the costs in both directions are identi- cal. After initializing the distance table and any other data structures needed by your node 0 routines, it should then send its directly connected neighbors (in this case, 1, 2, and 3) the cost of its minimum-cost paths to all other network nodes.
 WIREsHARK LAB: ICmP 
 
 This minimum-cost information is sent to neighboring nodes in a routing update packet by calling the routine _tolayer2(),_ as described in the full assignment. The format of the routing update packet is also described in the full assignment.
@@ -1641,19 +840,9 @@ Jennifer Rexford
 
 **AN INTERVIEW WITH…**
 
-C ou
+![Alt text](image-33.png)
 
-rte sy
-
-o f J
-
-en ni
-
-fe r R
-
-ex fo
-
-rdbackbone on a single commodity computer, and could control legacy routers without modification. To me, this project was exciting because we had a provocative idea, a working system, and ultimately a real deployment in an operational network. Fast forward a few years, and software-defined networking (SDN) has become a mainstream technology, and standard protocols (like standard protocols (like OpenFlow) and languages (like P4) have made it much easier to tell the underlying switches what to do.
+rdbackbone on a single commodity computer, and could control legacy routers without modification. To me, this project was exciting because we had a provocative idea, a working system, and ultimately a real deployment in an operational network. Fast forward a few years, and software-defined networking (SDN) has become a mainstream technology, and standard protocols like standard protocols (like OpenFlow) and languages (like P4) have made it much easier to tell the underlying switches what to do.
 
 How do you think software-defined networking should evolve in the future? In a major break from the past, the software controlling network devices can be created by many different programmers, not just at companies selling network equipment. Yet, unlike the applications running on a server or a smart phone, SDN applications must work together to handle the same traffic. Network operators do not want to perform load balancing on some traffic and routing on other traffic; instead, they want to perform load balancing and routing, together, on the same traffic. Future SDN platforms should offer good program- ming abstractions for composing independently written multiple applications together. More broadly, good programming abstractions can make it easier to create applications, without having to worry about low-level details like flow table entries, traffic counters, bit patterns in packet headers, and so on. Also, while an SDN controller is logically centralized, the network still consists of a distributed collection of devices. Future programmable networks should offer good abstractions for updating a distributed set of devices, so network admin- istrators can reason about what happens to packets in flight while the devices are updated. Programming abstractions for programmable network is an exciting area for interdisciplinary research between computer networking, distributed systems, and programming languages, with a real chance for practical impact in the years ahead.
 
