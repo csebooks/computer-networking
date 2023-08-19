@@ -11,8 +11,6 @@ In discussing the link layer, we’ll see that there are two fundamentally diffe
 
 **The Link Layer and LANs**
 
-6CHAPTER
-
 transmissions; in other cases, the hosts themselves coordinate transmissions. The second type of link-layer channel is the point-to-point communication link, such as that often found between two routers connected by a long-distance link, or between a user’s office computer and the nearby Ethernet switch to which it is connected. Coordinating access to a point-to-point link is simpler; the reference material on this book’s Web site has a detailed discussion of the Point-to-Point Protocol (PPP), which is used in settings ranging from dial-up service over a telephone line to high-speed point-to-point frame transport over fiber-optic links.
 
 We’ll explore several important link-layer concepts and technologies in this chapter. We’ll dive deeper into error detection and correction, a topic we touched on briefly in Chapter 3. We’ll consider multiple access networks and switched LANs, including Ethernet—by far the most prevalent wired LAN technology. We’ll also look at virtual LANs, and data center networks. Although WiFi, and more generally wireless LANs, are link-layer topics, we’ll postpone our study of these important topics until Chapter 7.
@@ -20,7 +18,9 @@ We’ll explore several important link-layer concepts and technologies in this c
 # Introduction to the Link Layer
 Let’s begin with some important terminology. We’ll find it convenient in this chapter to refer to any device that runs a link-layer (i.e., layer 2) protocol as a **node**. Nodes include hosts, routers, switches, and WiFi access points (discussed in Chapter 7). We will also refer to the communication channels that connect adjacent nodes along the communication path as **links**. In order for a datagram to be transferred from source host to destination host, it must be moved over each of the _individual links_ in the end-to-end path. As an example, in the company network shown at the bot- tom of Figure 6.1, consider sending a datagram from one of the wireless hosts to one of the servers. This datagram will actually pass through six links: a WiFi link between sending host and WiFi access point, an Ethernet link between the access point and a link-layer switch; a link between the link-layer switch and the router, a link between the two routers; an Ethernet link between the router and a link-layer switch; and finally an Ethernet link between the switch and the server. Over a given link, a transmitting node encapsulates the datagram in a **link-layer frame** and trans- mits the frame into the link.
 
-In order to gain further insight into the link layer and how it relates to the network layer, let’s consider a transportation analogy. Consider a travel agent who is planning a trip for a tourist traveling from Princeton, New Jersey, to Lausanne, Switzerland. The travel agent decides that it is most convenient for the tourist to take a limousine from Princeton to JFK airport, then a plane from JFK airport to Geneva’s airport, and finally a train from Geneva’s airport to Lausanne’s train station. Once**Figure 6.1**  ♦  Six link-layer hops between wireless host and server
+In order to gain further insight into the link layer and how it relates to the network layer, let’s consider a transportation analogy. Consider a travel agent who is planning a trip for a tourist traveling from Princeton, New Jersey, to Lausanne, Switzerland. The travel agent decides that it is most convenient for the tourist to take a limousine from Princeton to JFK airport, then a plane from JFK airport to Geneva’s airport, and finally a train from Geneva’s airport to Lausanne’s train station. Once
+![Alt text](image.png)
+**Figure 6.1**  ♦  Six link-layer hops between wireless host and server
 
 the travel agent makes the three reservations, it is the responsibility of the Princeton limousine company to get the tourist from Princeton to JFK; it is the responsibility of the airline company to get the tourist from JFK to Geneva; and it is the responsibility of the Swiss train service to get the tourist from Geneva to Lausanne. Each of the three segments of the trip is “direct” between two “adjacent” locations. Note that the three transportation segments are managed by different companies and use entirelydifferent transportation modes (limousine, plane, and train). Although the transporta- tion modes are different, they each provide the basic service of moving passengers from one location to an adjacent location. In this transportation analogy, the tourist is a datagram, each transportation segment is a link, the transportation mode is a link- layer protocol, and the travel agent is a routing protocol.
 
@@ -46,161 +46,40 @@ Figure 6.2 shows that while most of the link layer is implemented in hardware, p
 
 # Error-Detection and -Correction Techniques
 In the previous section, we noted that **bit-level error detection and correction**— detecting and correcting the corruption of bits in a link-layer frame sent from one node to another physically connected neighboring node—are two services often provided by the link layer. We saw in Chapter 3 that error-detection and -correction services are also often offered at the transport layer as well. In this section, we’ll examine a few of the simplest techniques that can be used to detect and, in some
-
+![Alt text](image-1.png)
 **Figure 6.2**  ♦   Network adapter: Its relationship to other host components and to protocol stack functionality
-
-Host
-
-Memory
-
-Motherboard bus
-
-CPU
-
-Controller
-
-Physical transmission
-
-Network adapter Link
-
-Physical
-
-Transport
-
-Network
-
-Link
-
-Applicationcases, correct such bit errors. A full treatment of the theory and implementation of this topic is itself the topic of many textbooks (e.g., \[Schwartz 1980\] or \[Bertsekas 1991\]), and our treatment here is necessarily brief. Our goal here is to develop an intuitive feel for the capabilities that error-detection and -correction techniques pro- vide and to see how a few simple techniques work and are used in practice in the link layer.
+cases, correct such bit errors. A full treatment of the theory and implementation of this topic is itself the topic of many textbooks (e.g., \[Schwartz 1980\] or \[Bertsekas 1991\]), and our treatment here is necessarily brief. Our goal here is to develop an intuitive feel for the capabilities that error-detection and -correction techniques pro- vide and to see how a few simple techniques work and are used in practice in the link layer.
 
 Figure 6.3 illustrates the setting for our study. At the sending node, data, _D_, to be protected against bit errors is augmented with error-detection and -correction bits (_EDC_). Typically, the data to be protected includes not only the datagram passed down from the network layer for transmission across the link, but also link-level addressing information, sequence numbers, and other fields in the link frame header. Both _D_ and _EDC_ are sent to the receiving node in a link-level frame. At the receiv- ing node, a sequence of bits, _D_′ and _EDC_′ is received. Note that _D_′ and _EDC_′ may differ from the original _D_ and _EDC_ as a result of in-transit bit flips.
 
 The receiver’s challenge is to determine whether or not _D_′ is the same as the original _D_, given that it has only received _D_′ and _EDC_′. The exact wording of the receiver’s decision in Figure 6.3 (we ask whether an error is detected, not whether an error has occurred!) is important. Error-detection and -correction techniques allow the receiver to sometimes, _but not always_, detect that bit errors have occurred. Even with the use of error-detection bits there still may be **undetected bit errors**; that is, the receiver may be unaware that the received information contains bit errors. As a
-
+![Alt text](image-2.png)
 **Figure 6.3**  ♦  Error-detection and -correction scenario
-
-EDC'_D'_
-
-Detected error
-
-Datagram
-
-EDC_D_
-
-_d_ data bits
-
-Bit error-prone link
-
-all bits in _D'_
-
-OK ?
-
-N
-
-Y
-
-Datagram
-
-HIconsequence, the receiver might deliver a corrupted datagram to the network layer, or be unaware that the contents of a field in the frame’s header has been corrupted. We thus want to choose an error-detection scheme that keeps the probability of such occurrences small. Generally, more sophisticated error-detection and -correction techniques (that is, those that have a smaller probability of allowing undetected bit errors) incur a larger overhead—more computation is needed to compute and trans- mit a larger number of error-detection and -correction bits.
+consequence, the receiver might deliver a corrupted datagram to the network layer, or be unaware that the contents of a field in the frame’s header has been corrupted. We thus want to choose an error-detection scheme that keeps the probability of such occurrences small. Generally, more sophisticated error-detection and -correction techniques (that is, those that have a smaller probability of allowing undetected bit errors) incur a larger overhead—more computation is needed to compute and trans- mit a larger number of error-detection and -correction bits.
 
 Let’s now examine three techniques for detecting errors in the transmitted data— parity checks (to illustrate the basic ideas behind error detection and correction), check- summing methods (which are more typically used in the transport layer), and cyclic redundancy checks (which are more typically used in the link layer in an adapter).
 
-## Parity ChecksPerhaps the simplest form of error detection is the use of a single **parity bit
+## Parity Checks
+Perhaps the simplest form of error detection is the use of a single **parity bit**
 . Suppose that the information to be sent, _D_ in Figure 6.4, has _d_ bits. In an even parity scheme, the sender simply includes one additional bit and chooses its value such that the total number of 1s in the _d_ + 1 bits (the original information plus a parity bit) is even. For odd parity schemes, the parity bit value is chosen such that there is an odd number of 1s. Figure 6.4 illustrates an even parity scheme, with the single parity bit being stored in a separate field.
 
 Receiver operation is also simple with a single parity bit. The receiver need only count the number of 1s in the received _d_ + 1 bits. If an odd number of 1-valued bits are found with an even parity scheme, the receiver knows that at least one bit error has occurred. More precisely, it knows that some _odd_ number of bit errors have occurred.
 
 But what happens if an even number of bit errors occur? You should convince yourself that this would result in an undetected error. If the probability of bit errors is small and errors can be assumed to occur independently from one bit to the next, the probability of multiple bit errors in a packet would be extremely small. In this case, a single parity bit might suffice. However, measurements have shown that, rather than occurring independently, errors are often clustered together in “bursts.” Under burst error conditions, the probability of undetected errors in a frame protected by single-bit parity can approach 50 percent \[Spragins 1991\]. Clearly, a more robust error-detection scheme is needed (and, fortunately, is used in practice!). But before examining error-detection schemes that are used in practice, let’s consider a simple
-
+![Alt text](image-3.png)
 **Figure 6.4**  ♦  One-bit even parity
-
-0 1 1 1 0 0 0 1 1 0 1 0 1 0 1 1 1
-
-_d_ data bits Parity
-
-bitgeneralization of one-bit parity that will provide us with insight into error-correction techniques.
+ Parity bit generalization of one-bit parity that will provide us with insight into error-correction techniques.
 
 Figure 6.5 shows a two-dimensional generalization of the single-bit parity scheme. Here, the _d_ bits in _D_ are divided into _i_ rows and _j_ columns. A parity value is computed for each row and for each column. The resulting _i_ + _j_ + 1 parity bits comprise the link-layer frame’s error-detection bits.
 
 Suppose now that a single bit error occurs in the original _d_ bits of information. With this **two-dimensional parity** scheme, the parity of both the column and the row containing the flipped bit will be in error. The receiver can thus not only _detect_ the fact that a single bit error has occurred, but can use the column and row indices of the column and row with parity errors to actually identify the bit that was corrupted and _correct_ that error! Figure 6.5 shows an example in which the 1-valued bit in position (2,2) is corrupted and switched to a 0—an error that is both detectable and correctable at the receiver. Although our discussion has focused on the original _d_ bits of information, a single error in the parity bits themselves is also detectable and cor- rectable. Two-dimensional parity can also detect (but not correct!) any combination of two errors in a packet. Other properties of the two-dimensional parity scheme are explored in the problems at the end of the chapter.
-
+![Alt text](image-4.png)
 **Figure 6.5**  ♦  Two-dimensional even parity
 
-1 0 1 0 1 1
+The ability of the receiver to both detect and correct errors is known as **forward error correction (FEC)**. These techniques are commonly used in audio storage and playback devices such as audio CDs. In a network setting, FEC techniques can be used by themselves, or in conjunction with link-layer ARQ techniques similar to those we examined in Chapter 3. FEC techniques are valuable because they can decrease the number of sender retransmissions required. Perhaps more important, they allow for immediate correction of errors at the receiver. This avoids having to wait for the round-trip propagation delay needed for the sender to receive a NAK packet and for the retransmitted packet to propagate back to the receiver—a poten- tially important advantage for real-time network applications \[Rubenstein 1998\] or links (such as deep-space links) with long propagation delays. Research examining the use of FEC in error-control protocols includes \[Biersack 1992; Nonnenmacher 1998; Byers 1998; Shacham 1990\].
 
-1 1 1 1 0 0
-
-0 1 1 1 0 1
-
-0 0 1 0 1 0
-
-1 0 1 0 1 1
-
-1 0 1 1 0 0
-
-0 1 1 1 0 1
-
-0 0 1 0 1 0
-
-Row parity
-
-Parity error
-
-Parity error
-
-**No errors Correctable single-bit error**
-
-_d_1,1
-
-_d_2,1
-
-_. . ._
-
-_di_,1
-
-_di_+1,1
-
-_. . ._
-
-_. . ._
-
-_. . ._
-
-_. . ._
-
-_. . ._
-
-_d_1, _j_
-
-_d_2, _j_
-
-_. . ._
-
-_di_, _j_
-
-_di_+1, _j_
-
-_d_1, _j_+1
-
-_d_2, _j_+1
-
-_. . ._
-
-_di_, _j_+1
-
-_di_+1, _j_+1
-
-C o
-
-lu m
-
-n p
-
-ar it
-
-yThe ability of the receiver to both detect and correct errors is known as **forward error correction (FEC)**. These techniques are commonly used in audio storage and playback devices such as audio CDs. In a network setting, FEC techniques can be used by themselves, or in conjunction with link-layer ARQ techniques similar to those we examined in Chapter 3. FEC techniques are valuable because they can decrease the number of sender retransmissions required. Perhaps more important, they allow for immediate correction of errors at the receiver. This avoids having to wait for the round-trip propagation delay needed for the sender to receive a NAK packet and for the retransmitted packet to propagate back to the receiver—a poten- tially important advantage for real-time network applications \[Rubenstein 1998\] or links (such as deep-space links) with long propagation delays. Research examining the use of FEC in error-control protocols includes \[Biersack 1992; Nonnenmacher 1998; Byers 1998; Shacham 1990\].
-
-## Checksumming MethodsIn checksumming techniques, the _d_ bits of data in Figure 6.4 are treated as a sequence of _k_\-bit integers. One simple checksumming method is to simply sum these _k_\-bit inte- gers and use the resulting sum as the error-detection bits. The **Internet checksum
+## Checksumming Methods
+In checksumming techniques, the _d_ bits of data in Figure 6.4 are treated as a sequence of _k_\-bit integers. One simple checksumming method is to simply sum these _k_\-bit inte- gers and use the resulting sum as the error-detection bits. The **Internet checksum
  is based on this approach—bytes of data are treated as 16-bit integers and summed. The 1s complement of this sum then forms the Internet checksum that is carried in the segment header. As discussed in Section 3.3, the receiver checks the checksum by taking the 1s complement of the sum of the received data (including the checksum) and checking whether the result is all 0 bits. If any of the bits are 1, an error is indi- cated. RFC 1071 discusses the Internet checksum algorithm and its implementation in detail. In the TCP and UDP protocols, the Internet checksum is computed over all fields (header and data fields included). In IP, the checksum is computed over the IP header (since the UDP or TCP segment has its own checksum). In other protocols, for example, XTP \[Strayer 1992\], one checksum is computed over the header and another checksum is computed over the entire packet.
 
 Checksumming methods require relatively little packet overhead. For example, the checksums in TCP and UDP use only 16 bits. However, they provide relatively weak protection against errors as compared with cyclic redundancy check, which is discussed below and which is often used in the link layer. A natural question at this point is, Why is checksumming used at the transport layer and cyclic redundancy check used at the link layer? Recall that the transport layer is typically implemented in software in a host as part of the host’s operating system. Because transport-layer error detection is implemented in software, it is important to have a simple and fast error-detection scheme such as checksumming. On the other hand, error detection at the link layer is implemented in dedicated hardware in adapters, which can rapidly perform the more complex CRC operations. Feldmeier \[Feldmeier 1995\] presents fast software implementation techniques for not only weighted checksum codes, but CRC (see below) and other codes as well.## Cyclic Redundancy Check (CRC)An error-detection technique used widely in today’s computer networks is based on **cyclic redundancy check (CRC) codes**. CRC codes are also known as **polynomial codes
@@ -221,16 +100,8 @@ Also, we similarly have
 1001 - 1101 = 0100
 
 Multiplication and division are the same as in base-2 arithmetic, except that any required addition or subtraction is done without carries or borrows. As in regular
-
+![Alt text](image-5.png)
 **Figure 6.6**  ♦  CRC
-
-_d_ bits _r_ bits
-
-_D_: Data bits to be sent
-
-_D_ • 2_r_ XOR _R_
-
-_R_: CRC bits Bit pattern
 
 Mathematical formulabinary arithmetic, multiplication by 2_k_ left shifts a bit pattern by _k_ places. Thus, given _D_ and _R_, the quantity _D_ # 2_r_ XOR _R_ yields the _d_ + _r_ bit pattern shown in Figure 6.6. We’ll use this algebraic characterization of the _d_ + _r_ bit pattern from Figure 6.6 in our discussion below.
 
@@ -249,24 +120,8 @@ _R_ \= remainder _D_ \# 2_r_
 _G_
 
 Figure 6.7 illustrates this calculation for the case of _D_ \= 101110, _d_ \= 6, _G_ \= 1001, and _r_ \= 3. The 9 bits transmitted in this case are 101 110 011. You should check these calculations for yourself and also check that indeed _D_ # 2_r_ \= 101011 # _G_ XOR _R_.
-
+![Alt text](image-6.png)
 **Figure 6.7**  ♦  A sample CRC calculation
-
-1 0 0 1 1 0 1 1 1 0 0 0 0
-
-1 0 1 0 1 1
-
-1 0 0 1 1 0 1 0 0 0 1 0 1 0 1 0 0 1
-
-1 1 0 0 0 0 1 1 0 0 1 0 0 1
-
-1 0 1 0 1 0 0 1
-
-0 1 1
-
-G
-
-D
 
 RInternational standards have been defined for 8-, 12-, 16-, and 32-bit generators, _G_. The CRC-32 32-bit standard, which has been adopted in a number of link-level IEEE protocols, uses a generator of
 
@@ -282,14 +137,8 @@ We are all familiar with the notion of broadcasting—television has been using 
 “Give everyone a chance to speak.” “Don’t speak until you are spoken to.” “Don’t monopolize the conversation.” “Raise your hand if you have a question.” “Don’t interrupt when someone is speaking.” “Don’t fall asleep when someone is talking.”
 
 Computer networks similarly have protocols—so-called **multiple access protocols**—by which nodes regulate their transmission into the shared broadcast channel. As shown in Figure 6.8, multiple access protocols are needed in a wide variety of network settings, including both wired and wireless access networks, and satellite networks. Although technically each node accesses the broadcast chan- nel through its adapter, in this section, we will refer to the _node_ as the sending and
-
+![Alt text](image-7.png)
 **Figure 6.8**  ♦  Various multiple access channels
-
-**Shared wire** (e.g., cable access network)
-
-**Shared wireless** (e.g., WiFi)
-
-**Satellite Cocktail party**
 
 Head endreceiving device. In practice, hundreds or even thousands of nodes can directly com- municate over a broadcast channel.
 
@@ -313,28 +162,9 @@ bps. This need not necessarily imply that each of the _M_ nodes always has an in
  Recall from our early discussion back in Section 1.3 that time-division multiplexing (TDM) and frequency-division multiplexing (FDM) are two techniques that canbe used to partition a broadcast channel’s bandwidth among all nodes sharing that channel. As an example, suppose the channel supports _N_ nodes and that the trans- mission rate of the channel is _R_ bps. TDM divides time into **time frames** and further divides each time frame into _N_ **time slots**. (The TDM time frame should not be confused with the link-layer unit of data exchanged between sending and receiving adapters, which is also called a frame. In order to reduce confusion, in this subsec- tion we’ll refer to the link-layer unit of data exchanged as a packet.) Each time slot is then assigned to one of the _N_ nodes. Whenever a node has a packet to send, it transmits the packet’s bits during its assigned time slot in the revolving TDM frame. Typically, slot sizes are chosen so that a single packet can be transmitted during a slot time. Figure 6.9 shows a simple four-node TDM example. Returning to our cocktail party analogy, a TDM-regulated cocktail party would allow one partygoer to speak for a fixed period of time, then allow another partygoer to speak for the same amount of time, and so on. Once everyone had had a chance to talk, the pattern would repeat.
 
 TDM is appealing because it eliminates collisions and is perfectly fair: Each node gets a dedicated transmission rate of _R_/_N_ bps during each frame time. However, it has two major drawbacks. First, a node is limited to an average rate of _R_/_N_ bps even when it is the only node with packets to send. A second drawback is that a node must always wait for its turn in the transmission sequence—again, even when it is the only node with a frame to send. Imagine the partygoer who is the only one with anything to say (and imagine that this is the even rarer circumstance where everyone
-
+![Alt text](image-8.png)
 **Figure 6.9**  ♦  A four-node TDM and FDM example
-
-4KHz
-
-**FDM**
-
-**TDM**
-
-Link
-
-4KHz
-
-Slot
-
-All slots labeled “2” are dedicated to a specific sender-receiver pair.
-
-Frame2
-
-2 3 4 1 2 3 4 1 2 3 4 1 2 3 4
-
-Key:wants to hear what that one person has to say). Clearly, TDM would be a poor choice for a multiple access protocol for this particular party.
+wants to hear what that one person has to say). Clearly, TDM would be a poor choice for a multiple access protocol for this particular party.
 
 While TDM shares the broadcast channel in time, FDM divides the _R_ bps chan- nel into different frequencies (each with a bandwidth of _R_/_N_) and assigns each fre- quency to one of the _N_ nodes. FDM thus creates _N_ smaller channels of _R_/_N_ bps out of the single, larger _R_ bps channel. FDM shares both the advantages and drawbacks of TDM. It avoids collisions and divides the bandwidth fairly among the _N_ nodes. However, FDM also shares a principal disadvantage with TDM—a node is limited to a bandwidth of _R_/_N_, even when it is the only node with packets to send.
 
@@ -372,26 +202,9 @@ Slotted ALOHA would appear to have many advantages. Unlike channel par- titionin
 Slotted ALOHA works well when there is only one active node, but how efficient is it when there are multiple active nodes? There are two possible efficiencyconcerns here. First, as shown in Figure 6.10, when there are multiple active nodes, a certain fraction of the slots will have collisions and will therefore be “wasted.” The second concern is that another fraction of the slots will be _empty_ because all active nodes refrain from transmitting as a result of the probabilistic transmission policy. The only “unwasted” slots will be those in which exactly one node transmits. A slot in which exactly one node transmits is said to be a **successful slot**. The **efficiency** of a slotted multiple access protocol is defined to be the long-run fraction of successful slots in the case when there are a large number of active nodes, each always having a large number of frames to send. Note that if no form of access control were used, and each node were to immediately retransmit after each collision, the efficiency would be zero. Slotted ALOHA clearly increases the efficiency beyond zero, but by how much?
 
 We now proceed to outline the derivation of the maximum efficiency of slotted ALOHA. To keep this derivation simple, let’s modify the protocol a little and assume that each node attempts to transmit a frame in each slot with probability _p_. (That is, we assume that each node always has a frame to send and that the node transmits with probability _p_ for a fresh frame as well as for a frame that has already suffered a collision.) Suppose there are _N_ nodes. Then the probability that a given slot is a suc- cessful slot is the probability that one of the nodes transmits and that the remaining _N_ \- 1 nodes do not transmit. The probability that a given node transmits is _p;_ the probability that the remaining nodes do not transmit is (1 - _p_)_N_\-1. Therefore, the probability a given node has a success is _p_(1 - _p_)_N_\-1. Because there are _N_ nodes, the probability that any one of the _N_ nodes has a success is _Np_(1 - _p_)_N_\-1.
-
+![Alt text](image-9.png)
 **Figure 6.10**  ♦   Nodes 1, 2, and 3 collide in the first slot. Node 2 finally succeeds in the fourth slot, node 1 in the eighth slot, and node 3 in the ninth slot
-
-Node 3
-
-Key:
-
-C = Collision slot E = Empty slot S = Successful slot
-
-Node 2
-
-Node 1
-
-2 2 2
-
-1 1 1 1
-
-3 3 3
-
-Time C E C S E C E S SThus, when there are _N_ active nodes, the efficiency of slotted ALOHA is _Np_(1 - _p_)_N_\-1. To obtain the _maximum_ efficiency for _N_ active nodes, we have to find the _p_\* that maximizes this expression. (See the homework problems for a general outline of this derivation.) And to obtain the maximum efficiency for a large number of active nodes, we take the limit of _Np_\*(1 - _p_\*)_N_\-1 as _N_ approaches infinity. (Again, see the homework problems.) After performing these calculations, we’ll find that the maximum efficiency of the protocol is given by 1/_e_ = 0.37. That is, when a large number of nodes have many frames to transmit, then (at best) only 37 percent of the slots do useful work. Thus, the effective transmission rate of the channel is not _R_ bps but only 0.37 _R_ bps! A similar analysis also shows that 37 percent of the slots go empty and 26 percent of slots have collisions. Imagine the poor network administrator who has purchased a 100-Mbps slotted ALOHA system, expecting to be able to use the network to transmit data among a large number of users at an aggregate rate of, say, 80 Mbps! Although the channel is capable of transmitting a given frame at the full channel rate of 100 Mbps, in the long run, the successful throughput of this channel will be less than 37 Mbps.
+Thus, when there are _N_ active nodes, the efficiency of slotted ALOHA is _Np_(1 - _p_)_N_\-1. To obtain the _maximum_ efficiency for _N_ active nodes, we have to find the _p_\* that maximizes this expression. (See the homework problems for a general outline of this derivation.) And to obtain the maximum efficiency for a large number of active nodes, we take the limit of _Np_\*(1 - _p_\*)_N_\-1 as _N_ approaches infinity. (Again, see the homework problems.) After performing these calculations, we’ll find that the maximum efficiency of the protocol is given by 1/_e_ = 0.37. That is, when a large number of nodes have many frames to transmit, then (at best) only 37 percent of the slots do useful work. Thus, the effective transmission rate of the channel is not _R_ bps but only 0.37 _R_ bps! A similar analysis also shows that 37 percent of the slots go empty and 26 percent of slots have collisions. Imagine the poor network administrator who has purchased a 100-Mbps slotted ALOHA system, expecting to be able to use the network to transmit data among a large number of users at an aggregate rate of, say, 80 Mbps! Although the channel is capable of transmitting a given frame at the full channel rate of 100 Mbps, in the long run, the successful throughput of this channel will be less than 37 Mbps.
 
 **ALOHA**
 
@@ -406,20 +219,8 @@ In both slotted and pure ALOHA, a node’s decision to transmit is made indepen-
 • _If someone else begins talking at the same time, stop talking._ In the network- ing world, this is called **collision detection**—a transmitting node listens to the channel while it is transmitting. If it detects that another node is transmitting an interfering frame, it stops transmitting and waits a random amount of time before repeating the sense-and-transmit-when-idle cycle.
 
 These two rules are embodied in the family of **carrier sense multiple access (CSMA)** and **CSMA with collision detection (CSMA/CD)** protocols \[Kleinrock 1975b; Metcalfe 1976; Lam 1980; Rom 1990\]. Many variations on CSMA and
-
+![Alt text](image-10.png)
 **Figure 6.11**  ♦  Interfering transmissions in pure ALOHA
-
-Time
-
-Will overlap with start of
-
-_i_ ’s frame
-
-_t_0 – 1 _t_0 _t_0 + 1
-
-Will overlap with end of
-
-_i_ ’s frame
 
 Node i frameCSMA/CD have been proposed. Here, we’ll consider a few of the most important, and fundamental, characteristics of CSMA and CSMA/CD.
 
@@ -438,20 +239,9 @@ Because the secondary hosts transmitted packets in a decentralized fashion, col-
 **Carrier Sense Multiple Access with Collision Detection (CSMA/CD)**
 
 In Figure 6.12, nodes do not perform collision detection; both B and D continue to transmit their frames in their entirety even though a collision has occurred. When a node performs collision detection, it ceases transmission as soon as it detects a col- lision. Figure 6.13 shows the same scenario as in Figure 6.12, except that the two
-
+![Alt text](image-11.png)
 **Figure 6.12**  ♦   Space-time diagram of two CSMA nodes with colliding transmissions
-
-**A**
-
-Time Time
-
-Space
-
-_t_ 0
-
-_t_ 1
-
-**B C D**nodes each abort their transmission a short time after detecting a collision. Clearly, adding collision detection to a multiple access protocol will help protocol perfor- mance by not transmitting a useless, damaged (by interference with a frame from another node) frame in its entirety.
+nodes each abort their transmission a short time after detecting a collision. Clearly, adding collision detection to a multiple access protocol will help protocol perfor- mance by not transmitting a useless, damaged (by interference with a frame from another node) frame in its entirety.
 
 Before analyzing the CSMA/CD protocol, let us now summarize its operation from the perspective of an adapter (in a node) attached to a broadcast channel:
 
@@ -460,24 +250,9 @@ Before analyzing the CSMA/CD protocol, let us now summarize its operation from t
 2\. If the adapter senses that the channel is idle (that is, there is no signal energy entering the adapter from the channel), it starts to transmit the frame. If, on the other hand, the adapter senses that the channel is busy, it waits until it senses no signal energy and then starts to transmit the frame.
 
 3\. While transmitting, the adapter monitors for the presence of signal energy coming from other adapters using the broadcast channel.
-
+![Alt text](image-12.png)
 **Figure 6.13**  ♦  CSMA with collision detection
-
-**A**
-
-Time Time
-
-Collision detect/abort
-
-time
-
-Space
-
-_t_ 0
-
-_t_ 1
-
-**B C D**4\. If the adapter transmits the entire frame without detecting signal energy from other adapters, the adapter is finished with the frame. If, on the other hand, the adapter detects signal energy from other adapters while transmitting, it aborts the transmission (that is, it stops transmitting its frame).
+4\. If the adapter transmits the entire frame without detecting signal energy from other adapters, the adapter is finished with the frame. If, on the other hand, the adapter detects signal energy from other adapters while transmitting, it aborts the transmission (that is, it stops transmitting its frame).
 
 5\. After aborting, the adapter waits a random amount of time and then returns to step 2.
 
@@ -497,75 +272,33 @@ Efficiency = 1
 
 We see from this formula that as _d_prop approaches 0, the efficiency approaches 1. This matches our intuition that if the propagation delay is zero, colliding nodes will abort immediately without wasting the channel. Also, as _d_trans becomes very large, efficiency approaches 1. This is also intuitive because when a frame grabs the chan- nel, it will hold on to the channel for a very long time; thus, the channel will be doing productive work most of the time.
 
-## Taking-Turns ProtocolsRecall that two desirable properties of a multiple access protocol are (1) when only one node is active, the active node has a throughput of _R_ bps, and (2) when _M_ nodes are active, then each active node has a throughput of nearly _R_/_M_ bps. The ALOHA and CSMA protocols have this first property but not the second. This has motivated researchers to create another class of protocols—the **taking-turns protocols**. As with random access protocols, there are dozens of taking-turns protocols, and each one of these protocols has many variations. We’ll discuss two of the more important protocols here. The first one is the **polling protocol**. The polling protocol requires one of the nodes to be designated as a master node. The master node **polls
+## Taking-Turns Protocols
+Recall that two desirable properties of a multiple access protocol are (1) when only one node is active, the active node has a throughput of _R_ bps, and (2) when _M_ nodes are active, then each active node has a throughput of nearly _R_/_M_ bps. The ALOHA and CSMA protocols have this first property but not the second. This has motivated researchers to create another class of protocols—the **taking-turns protocols**. As with random access protocols, there are dozens of taking-turns protocols, and each one of these protocols has many variations. We’ll discuss two of the more important protocols here. The first one is the **polling protocol**. The polling protocol requires one of the nodes to be designated as a master node. The master node **polls
  each of the nodes in a round-robin fashion. In particular, the master node first sends a message to node 1, saying that it (node 1) can transmit up to some maximum number of frames. After node 1 transmits some frames, the master node tells node 2 it (node 2) can transmit up to the maximum number of frames. (The master node can determine when a node has finished sending its frames by observing the lack of a signal on the channel.) The procedure con- tinues in this manner, with the master node polling each of the nodes in a cyclic manner.
 
 The polling protocol eliminates the collisions and empty slots that plague ran- dom access protocols. This allows polling to achieve a much higher efficiency. Butit also has a few drawbacks. The first drawback is that the protocol introduces a polling delay—the amount of time required to notify a node that it can transmit. If, for example, only one node is active, then the node will transmit at a rate less than _R_ bps, as the master node must poll each of the inactive nodes in turn each time the active node has sent its maximum number of frames. The second drawback, which is potentially more serious, is that if the master node fails, the entire channel becomes inoperative. The Bluetooth protocol, which we will study in Section 6.3, is an exam- ple of a polling protocol.
 
 The second taking-turns protocol is the **token-passing protocol**. In this pro- tocol there is no master node. A small, special-purpose frame known as a **token** is exchanged among the nodes in some fixed order. For example, node 1 might always send the token to node 2, node 2 might always send the token to node 3, and node _N_ might always send the token to node 1. When a node receives a token, it holds onto the token only if it has some frames to transmit; otherwise, it immediately for- wards the token to the next node. If a node does have frames to transmit when it receives the token, it sends up to a maximum number of frames and then forwards the token to the next node. Token passing is decentralized and highly efficient. But it has its problems as well. For example, the failure of one node can crash the entire channel. Or if a node accidentally neglects to release the token, then some recovery procedure must be invoked to get the token back in circulation. Over the years many token-passing protocols have been developed, including the fiber distributed data interface (FDDI) protocol \[Jain 1994\] and the IEEE 802.5 token ring protocol \[IEEE 802.5 2012\], and each one had to address these as well as other sticky issues.
 
-## DOCSIS: The Link-Layer Protocol for Cable Internet AccessIn the previous three subsections, we’ve learned about three broad classes of mul- tiple access protocols: channel partitioning protocols, random access protocols, and taking turns protocols. A cable access network will make for an excellent case study here, as we’ll find aspects of _each_ of these three classes of multiple access protocols with the cable access network!
+## DOCSIS: The Link-Layer Protocol for Cable Internet Access
+In the previous three subsections, we’ve learned about three broad classes of mul- tiple access protocols: channel partitioning protocols, random access protocols, and taking turns protocols. A cable access network will make for an excellent case study here, as we’ll find aspects of _each_ of these three classes of multiple access protocols with the cable access network!
 
 Recall from Section 1.2.1 that a cable access network typically connects several thousand residential cable modems to a cable modem termination system (CMTS) at the cable network headend. The Data-Over-Cable Service Interface Specifica- tions (DOCSIS) \[DOCSIS 3.1 2014; Hamzeh 2015\] specifies the cable data network architecture and its protocols. DOCSIS uses FDM to divide the downstream (CMTS to modem) and upstream (modem to CMTS) network segments into multiple fre- quency channels. Each downstream channel is between 24 MHz and 192 MHz wide, with a maximum throughput of approximately 1.6 Gbps per channel; each upstream channel has channel widths ranging from 6.4 MHz to 96 MHz, with a maximum upstream throughput of approximately 1 Gbps. Each upstream and downstreamchannel is a broadcast channel. Frames transmitted on the downstream channel by the CMTS are received by all cable modems receiving that channel; since there is just a single CMTS transmitting into the downstream channel, however, there is no multiple access problem. The upstream direction, however, is more interesting and technically challenging, since multiple cable modems share the same upstream chan- nel (frequency) to the CMTS, and thus collisions can potentially occur.
 
 As illustrated in Figure 6.14, each upstream channel is divided into intervals of time (TDM-like), each containing a sequence of mini-slots during which cable modems can transmit to the CMTS. The CMTS explicitly grants permission to indi- vidual cable modems to transmit during specific mini-slots. The CMTS accomplishes this by sending a control message known as a MAP message on a downstream chan- nel to specify which cable modem (with data to send) can transmit during which mini-slot for the interval of time specified in the control message. Since mini-slots are explicitly allocated to cable modems, the CMTS can ensure there are no colliding transmissions during a mini-slot.
 
 But how does the CMTS know which cable modems have data to send in the first place? This is accomplished by having cable modems send mini-slot-request frames to the CMTS during a special set of interval mini-slots that are dedicated for this purpose, as shown in Figure 6.14. These mini-slot-request frames are transmit- ted in a random access manner and so may collide with each other. A cable modem can neither sense whether the upstream channel is busy nor detect collisions. Instead, the cable modem infers that its mini-slot-request frame experienced a collision if it does not receive a response to the requested allocation in the next downstream con- trol message. When a collision is inferred, a cable modem uses binary exponential
-
+![Alt text](image-13.png)
 **Figure 6.14**  ♦   Upstream and downstream channels between CMTS and cable modems
-
-**Residences with cable modems**
-
-Minislots containing minislot request frames
-
-Assigned minislots containing cable modem upstream data frames
-
-**Cable head end**
-
-MAP frame for interval \[_t_1,_t_2\]
-
-CMTS
-
-Downstream channel i
-
-Upstream channel j
-
-_t_1 _t_2backoff to defer the retransmission of its mini-slot-request frame to a future time slot. When there is little traffic on the upstream channel, a cable modem may actually transmit data frames during slots nominally assigned for mini-slot-request frames (and thus avoid having to wait for a mini-slot assignment).
+channel, a cable modem may actually transmit data frames during slots nominally assigned for mini-slot-request frames (and thus avoid having to wait for a mini-slot assignment).
 
 A cable access network thus serves as a terrific example of multiple access pro- tocols in action—FDM, TDM, random access, and centrally allocated time slots all within one network!
 
 # Switched Local Area Networks
 Having covered broadcast networks and multiple access protocols in the previ- ous section, let’s turn our attention next to switched local networks. Figure 6.15 shows a switched local network connecting three departments, two servers and a router with four switches. Because these switches operate at the link layer, they switch link-layer frames (rather than network-layer datagrams), don’t recognize network-layer addresses, and don’t use routing algorithms like OSPF to determine
-
+![Alt text](image-14.png)
 **Figure 6.15**  ♦  An institutional network connected together by four switches
-
-Mail server
-
-To external internet
-
-1 Gbps
-
-1 2 3
-
-4 56
-
-1 Gbps
-
-1 Gbps
-
-**Electrical Engineering Computer Science**
-
-100 Mbps (fiber)
-
-100 Mbps (fiber)
-
-100 Mbps (fiber)
-
-Mixture of 10 Mbps, 100 Mbps, 1 Gbps, Cat 5 cable
-
-Web server
-
-**Computer Engineering**paths through the network of layer-2 switches. Instead of using IP addresses, we will soon see that they use link-layer addresses to forward link-layer frames through the network of switches. We’ll begin our study of switched LANs by first covering link- layer addressing (Section 6.4.1). We then examine the celebrated Ethernet protocol (Section 6.4.2). After examining link-layer addressing and Ethernet, we’ll look at how link-layer switches operate (Section 6.4.3), and then see (Section 6.4.4) how these switches are often used to build large-scale LANs.
+paths through the network of layer-2 switches. Instead of using IP addresses, we will soon see that they use link-layer addresses to forward link-layer frames through the network of switches. We’ll begin our study of switched LANs by first covering link- layer addressing (Section 6.4.1). We then examine the celebrated Ethernet protocol (Section 6.4.2). After examining link-layer addressing and Ethernet, we’ll look at how link-layer switches operate (Section 6.4.3), and then see (Section 6.4.4) how these switches are often used to build large-scale LANs.
 
 ## Link-Layer Addressing and ARP
  Hosts and routers have link-layer addresses. Now you might find this surprising, recalling from Chapter 4 that hosts and routers have network-layer addresses as well. You might be asking, why in the world do we need to have addresses at both the network and link layers? In addition to describing the syntax and function of the link-layer addresses, in this section we hope to shed some light on why the two lay- ers of addresses are useful and, in fact, indispensable. We’ll also cover the Address Resolution Protocol (ARP), which provides a mechanism to translate IP addresses to link-layer addresses.
@@ -579,14 +312,9 @@ One interesting property of MAC addresses is that no two adapters have the same 
 An adapter’s MAC address has a flat structure (as opposed to a hierarchical structure) and doesn’t change no matter where the adapter goes. A laptop with an Ethernet interface always has the same MAC address, no matter where the computer goes. A smartphone with an 802.11 interface always has the same MAC address, no matter where the smartphone goes. Recall that, in contrast, IP addresses have a hier- archical structure (that is, a network part and a host part), and a host’s IP addresses needs to be changed when the host moves, i.e., changes the network to which it is attached. An adapter’s MAC address is analogous to a person’s social security num- ber, which also has a flat addressing structure and which doesn’t change no matter where the person goes. An IP address is analogous to a person’s postal address, which is hierarchical and which must be changed whenever a person moves. Just as a person may find it useful to have both a postal address and a social security number, it is useful for a host and router interfaces to have both a network-layer address and a MAC address.
 
 When an adapter wants to send a frame to some destination adapter, the sending adapter inserts the destination adapter’s MAC address into the frame and then sends the frame into the LAN. As we will soon see, a switch occasionally broadcasts an incom- ing frame onto all of its interfaces. We’ll see in Chapter 7 that 802.11 also broadcasts frames. Thus, an adapter may receive a frame that isn’t addressed to it. Thus, when an adapter receives a frame, it will check to see whether the destination MAC address
-
+![Alt text](image-15.png)
 **Figure 6.16**  ♦   Each interface connected to a LAN has a unique MAC address
-
-88-B2-2F-54-1A-0F5C-66-AB-90-75-B1
-
-1A-23-F9-CD-06-9B
-
-49-BD-D2-C7-56-2Ain the frame matches its own MAC address. If there is a match, the adapter extracts the enclosed datagram and passes the datagram up the protocol stack. If there isn’t a match, the adapter discards the frame, without passing the network-layer datagram up. Thus, the destination only will be interrupted when the frame is received.
+in the frame matches its own MAC address. If there is a match, the adapter extracts the enclosed datagram and passes the datagram up the protocol stack. If there isn’t a match, the adapter discards the frame, without passing the network-layer datagram up. Thus, the destination only will be interrupted when the frame is received.
 
 However, sometimes a sending adapter _does_ want all the other adapters on the LAN to receive and _process_ the frame it is about to send. In this case, the sending adapter inserts a special MAC **broadcast address** into the destination address field of the frame. For LANs that use 6-byte addresses (such as Ethernet and 802.11), the broadcast address is a string of 48 consecutive 1s (that is, FF-FF-FF-FF-FF-FF in hexadecimal notation).
 
@@ -596,7 +324,7 @@ Because there are both network-layer addresses (for example, Internet IP address
 
 To understand the need for a protocol such as ARP, consider the network shown in Figure 6.17. In this simple example, each host and router has a single IP address and single MAC address. As usual, IP addresses are shown in dotted-decimal
 
-KEEPING THE LAYERS INDEPENDENT
+**KEEPING THE LAYERS INDEPENDENT**
 
 There are several reasons why hosts and router interfaces have MAC addresses in addition to network-layer addresses. First, LANs are designed for arbitrary network-layer protocols, not just for IP and the Internet. If adapters were assigned IP addresses rather than “neutral” MAC addresses, then adapters would not easily be able to support other network-layer protocols (for example, IPX or DECnet). Second, if adapters were to use network-layer addresses instead of MAC addresses, the network-layer address would have to be stored in the adapter RAM and reconfigured every time the adapter was moved (or powered up). Another option is to not use any addresses in the adapters and have each adapter pass the data (typically, an IP datagram) of each frame it receives up the protocol stack. The network layer could then check for a matching network-layer address. One problem with this option is that the host would be interrupted by every frame sent on the LAN, including by frames that were destined for other hosts on the same broadcast LAN. In summary, in order for the layers to be largely independent building blocks in a network architecture, different layers need to have their own addressing scheme. We have now seen three types of addresses: host names for the application layer, IP addresses for the network layer, and MAC addresses for the link layer.
 
@@ -607,42 +335,16 @@ Now suppose that the host with IP address 222.222.222.220 wants to send an IP da
 The important question addressed in this section is, How does the sending host determine the MAC address for the destination host with IP address 222.222.222.222? As you might have guessed, it uses ARP. An ARP module in the sending host takes any IP address on the same LAN as input, and returns the corresponding MAC address. In the example at hand, sending host 222.222.222.220 provides its ARP module the IP address 222.222.222.222, and the ARP module returns the corre- sponding MAC address 49-BD-D2-C7-56-2A.
 
 So we see that ARP resolves an IP address to a MAC address. In many ways it is analogous to DNS (studied in Section 2.5), which resolves host names to IP addresses. However, one important difference between the two resolvers is that DNS resolves host names for hosts anywhere in the Internet, whereas ARP resolves IP addresses only for hosts and router interfaces on the same subnet. If a node in Cali- fornia were to try to use ARP to resolve the IP address for a node in Mississippi, ARP would return with an error.
-
+![Alt text](image-16.png)
 **Figure 6.17**  ♦   Each interface on a LAN has an IP address and a MAC address
-
-IP:222.222.222.221
-
-IP:222.222.222.220
-
-IP:222.222.222.223
-
-IP:222.222.222.222
-
-5C-66-AB-90-75-B1
-
-1A-23-F9-CD-06-9B
-
-49-BD-D2-C7-56-2A
-
-88-B2-2F-54-1A-0F
-
-**A**
-
-**B**
-
-**C**Now that we have explained what ARP does, let’s look at how it works. Each host and router has an **ARP table** in its memory, which contains mappings of IP addresses to MAC addresses. Figure 6.18 shows what an ARP table in host 222.222.222.220 might look like. The ARP table also contains a time-to-live (TTL) value, which indi- cates when each mapping will be deleted from the table. Note that a table does not necessarily contain an entry for every host and router on the subnet; some may have never been entered into the table, and others may have expired. A typical expiration time for an entry is 20 minutes from when an entry is placed in an ARP table.
+Now that we have explained what ARP does, let’s look at how it works. Each host and router has an **ARP table** in its memory, which contains mappings of IP addresses to MAC addresses. Figure 6.18 shows what an ARP table in host 222.222.222.220 might look like. The ARP table also contains a time-to-live (TTL) value, which indi- cates when each mapping will be deleted from the table. Note that a table does not necessarily contain an entry for every host and router on the subnet; some may have never been entered into the table, and others may have expired. A typical expiration time for an entry is 20 minutes from when an entry is placed in an ARP table.
 
 Now suppose that host 222.222.222.220 wants to send a datagram that is IP- addressed to another host or router on that subnet. The sending host needs to obtain the MAC address of the destination given the IP address. This task is easy if the sender’s ARP table has an entry for the destination node. But what if the ARP table doesn’t cur- rently have an entry for the destination? In particular, suppose 222.222.222.220 wants to send a datagram to 222.222.222.222. In this case, the sender uses the ARP protocol to resolve the address. First, the sender constructs a special packet called an **ARP packet**. An ARP packet has several fields, including the sending and receiving IP and MAC addresses. Both ARP query and response packets have the same format. The pur- pose of the ARP query packet is to query all the other hosts and routers on the subnet to determine the MAC address corresponding to the IP address that is being resolved.
 
 Returning to our example, 222.222.222.220 passes an ARP query packet to the adapter along with an indication that the adapter should send the packet to the MAC broadcast address, namely, FF-FF-FF-FF-FF-FF. The adapter encapsulates the ARP packet in a link-layer frame, uses the broadcast address for the frame’s destina- tion address, and transmits the frame into the subnet. Recalling our social security number/postal address analogy, an ARP query is equivalent to a person shouting out in a crowded room of cubicles in some company (say, AnyCorp): “What is the social security number of the person whose postal address is Cubicle 13, Room 112, Any- Corp, Palo Alto, California?” The frame containing the ARP query is received by all the other adapters on the subnet, and (because of the broadcast address) each adapter passes the ARP packet within the frame up to its ARP module. Each of these ARP modules checks to see if its IP address matches the destination IP address in the ARP packet. The one with a match sends back to the querying host a response ARP packet with the desired mapping. The querying host 222.222.222.220 can then update its ARP table and send its IP datagram, encapsulated in a link-layer frame whose desti- nation MAC is that of the host or router responding to the earlier ARP query.
-
+![Alt text](image-17.png)
 **Figure 6.18**  ♦  A possible ARP table in 222.222.222.220
-
-IP Address MAC Address TTL
-
-222.222.222.221 88-B2-2F-54-1A-0F 13:45:00
-
-222.222.222.223 5C-66-AB-90-75-B1 13:52:00There are a couple of interesting things to note about the ARP protocol. First, the query ARP message is sent within a broadcast frame, whereas the response ARP message is sent within a standard frame. Before reading on you should think about why this is so. Second, ARP is plug-and-play; that is, an ARP table gets built automatically—it doesn’t have to be configured by a system administrator. And if a host becomes disconnected from the subnet, its entry is eventually deleted from the other ARP tables in the subnet.
+There are a couple of interesting things to note about the ARP protocol. First, the query ARP message is sent within a broadcast frame, whereas the response ARP message is sent within a standard frame. Before reading on you should think about why this is so. Second, ARP is plug-and-play; that is, an ARP table gets built automatically—it doesn’t have to be configured by a system administrator. And if a host becomes disconnected from the subnet, its entry is eventually deleted from the other ARP tables in the subnet.
 
 Students often wonder if ARP is a link-layer protocol or a network-layer proto- col. As we’ve seen, an ARP packet is encapsulated within a link-layer frame and thus lies architecturally above the link layer. However, an ARP packet has fields contain- ing link-layer addresses and thus is arguably a link-layer protocol, but it also contains network-layer addresses and thus is also arguably a network-layer protocol. In the end, ARP is probably best considered a protocol that straddles the boundary between the link and network layers—not fitting neatly into the simple layered protocol stack we studied in Chapter 1. Such are the complexities of real-world protocols!
 
@@ -651,30 +353,9 @@ Students often wonder if ARP is a link-layer protocol or a network-layer proto- 
 It should now be clear how ARP operates when a host wants to send a datagram to another host _on the same subnet._ But now let’s look at the more complicated situ- ation when a host on a subnet wants to send a network-layer datagram to a host _off the subnet_ (that is, across a router onto another subnet). Let’s discuss this issue in the context of Figure 6.19, which shows a simple network consisting of two subnets interconnected by a router.
 
 There are several interesting things to note about Figure 6.19. Each host has exactly one IP address and one adapter. But, as discussed in Chapter 4, a router has an IP address for _each_ of its interfaces. For each router interface there is also an ARP module (in the router) and an adapter. Because the router in Figure 6.19 has two interfaces, it has two IP addresses, two ARP modules, and two adapters. Of course, each adapter in the network has its own MAC address.
-
+![Alt text](image-18.png)
 **Figure 6.19**  ♦  Two subnets interconnected by a router
-
-IP:111.111.111.110IP:111.111.111.111
-
-IP:111.111.111.112
-
-IP:222.222.222.221
-
-IP:222.222.222.222
-
-74-29-9C-E8-FF-55
-
-CC-49-DE-D0-AB-7D
-
-E6-E9-00-17-BB-4B
-
-1A-23-F9-CD-06-9B
-
-IP:222.222.222.220
-
-88-B2-2F-54-1A-0F
-
-49-BD-D2-C7-56-2AAlso note that Subnet 1 has the network address 111.111.111/24 and that Subnet 2 has the network address 222.222.222/24. Thus, all of the interfaces connected to Sub- net 1 have addresses of the form 111.111.111.xxx and all of the interfaces connected to Subnet 2 have addresses of the form 222.222.222.xxx.
+Also note that Subnet 1 has the network address 111.111.111/24 and that Subnet 2 has the network address 222.222.222/24. Thus, all of the interfaces connected to Sub- net 1 have addresses of the form 111.111.111.xxx and all of the interfaces connected to Subnet 2 have addresses of the form 222.222.222.xxx.
 
 Now let’s examine how a host on Subnet 1 would send a datagram to a host on Subnet 2. Specifically, suppose that host 111.111.111.111 wants to send an IP datagram to a host 222.222.222.222. The sending host passes the datagram to its adapter, as usual. But the sending host must also indicate to its adapter an appro- priate destination MAC address. What MAC address should the adapter use? One might be tempted to guess that the appropriate MAC address is that of the adapter for host 222.222.222.222, namely, 49-BD-D2-C7-56-2A. This guess, however, would be wrong! If the sending adapter were to use that MAC address, then none of the adapters on Subnet 1 would bother to pass the IP datagram up to its network layer, since the frame’s destination address would not match the MAC address of any adapter on Subnet 1. The datagram would just die and go to datagram heaven.
 
@@ -702,16 +383,9 @@ We can learn a lot about Ethernet by examining the Ethernet frame, which is show
 • _Source address (6 bytes)._ This field contains the MAC address of the adapter that transmits the frame onto the LAN, in this example, AA-AA-AA-AA-AA-AA.
 
 • _Type field (2 bytes)._ The type field permits Ethernet to multiplex network-layer protocols. To understand this, we need to keep in mind that hosts can use other network-layer protocols besides IP. In fact, a given host may support multi- ple network-layer protocols using different protocols for different applications.
-
+![Alt text](image-19.png)
 **Figure 6.20**  ♦  Ethernet frame structure
-
-Preamble CRC Dest.
-
-address Source address
-
-Type
-
-DataFor this reason, when the Ethernet frame arrives at adapter B, adapter B needs to know to which network-layer protocol it should pass (that is, demultiplex) the contents of the data field. IP and other network-layer protocols (for exam- ple, Novell IPX or AppleTalk) each have their own, standardized type number. Furthermore, the ARP protocol (discussed in the previous section) has its own type number, and if the arriving frame contains an ARP packet (i.e., has a type field of 0806 hexadecimal), the ARP packet will be demultiplexed up to the ARP protocol. Note that the type field is analogous to the protocol field in the network-layer datagram and the port-number fields in the transport-layer segment; all of these fields serve to glue a protocol at one layer to a protocol at the layer above.
+For this reason, when the Ethernet frame arrives at adapter B, adapter B needs to know to which network-layer protocol it should pass (that is, demultiplex) the contents of the data field. IP and other network-layer protocols (for exam- ple, Novell IPX or AppleTalk) each have their own, standardized type number. Furthermore, the ARP protocol (discussed in the previous section) has its own type number, and if the arriving frame contains an ARP packet (i.e., has a type field of 0806 hexadecimal), the ARP packet will be demultiplexed up to the ARP protocol. Note that the type field is analogous to the protocol field in the network-layer datagram and the port-number fields in the transport-layer segment; all of these fields serve to glue a protocol at one layer to a protocol at the layer above.
 
 • _Cyclic redundancy check (CRC) (4 bytes)._ As discussed in Section 6.2.3, the pur- pose of the CRC field is to allow the receiving adapter, adapter B, to detect bit errors in the frame.
 
@@ -731,38 +405,15 @@ As a PhD student at Harvard University in the early 1970s, Bob Metcalfe worked o
 
 Metcalfe and Boggs’s original Ethernet ran at 2.94 Mbps and linked up to 256 hosts separated by up to one mile. Metcalfe and Boggs succeeded at getting most of the researchers at Xerox PARC to communicate through their Alto computers. Metcalfe then forged an alliance between Xerox, Digital, and Intel to establish Ethernet as a 10 Mbps Ethernet standard, ratified by the IEEE. Xerox did not show much interest in commercializing Ethernet. In 1979, Metcalfe formed his own company, 3Com, which developed and commercialized networking technology, including Ethernet technol- ogy. In particular, 3Com developed and marketed Ethernet cards in the early 1980s for the immensely popular IBM PCs.
 
-**CASE HISTORY**10GBASE-T and 40GBASE-T. These and many other Ethernet technologies have been standardized over the years by the IEEE 802.3 CSMA/CD (Ethernet) working group \[IEEE 802.3 2020\]. While these acronyms may appear bewildering, there is actually considerable order here. The first part of the acronym refers to the speed of the standard: 10, 100, 1000, or 10G, for 10 Megabit (per second), 100 Megabit, Giga- bit, 10 Gigabit and 40 Gigibit Ethernet, respectively. “BASE” refers to baseband Ethernet, meaning that the physical media only carries Ethernet traffic; almost all of the 802.3 standards are for baseband Ethernet. The final part of the acronym refers to the physical media itself; Ethernet is both a link-layer _and_ a physical-layer specifica- tion and is carried over a variety of physical media including coaxial cable, copper wire, and fiber. Generally, a “T” refers to twisted-pair copper wires.
+**CASE HISTORY**
+10GBASE-T and 40GBASE-T. These and many other Ethernet technologies have been standardized over the years by the IEEE 802.3 CSMA/CD (Ethernet) working group \[IEEE 802.3 2020\]. While these acronyms may appear bewildering, there is actually considerable order here. The first part of the acronym refers to the speed of the standard: 10, 100, 1000, or 10G, for 10 Megabit (per second), 100 Megabit, Giga- bit, 10 Gigabit and 40 Gigibit Ethernet, respectively. “BASE” refers to baseband Ethernet, meaning that the physical media only carries Ethernet traffic; almost all of the 802.3 standards are for baseband Ethernet. The final part of the acronym refers to the physical media itself; Ethernet is both a link-layer _and_ a physical-layer specifica- tion and is carried over a variety of physical media including coaxial cable, copper wire, and fiber. Generally, a “T” refers to twisted-pair copper wires.
 
 Historically, an Ethernet was initially conceived of as a segment of coaxial cable. The early 10BASE-2 and 10BASE-5 standards specify 10 Mbps Ethernet over two types of coaxial cable, each limited in length to 500 meters. Longer runs could be obtained by using a **repeater**—a physical-layer device that receives a signal on the input side, and regenerates the signal on the output side. A coaxial cable corresponds nicely to our view of Ethernet as a broadcast medium—all frames transmitted by one interface are received at other interfaces, and Ethernet’s CDMA/CD protocol nicely solves the multiple access problem. Nodes simply attach to the cable, and _voila_, we have a local area network!
 
 Ethernet has passed through a series of evolutionary steps over the years, and today’s Ethernet is very different from the original bus-topology designs using coax- ial cable. In most installations today, nodes are connected to a switch via point-to- point segments made of twisted-pair copper wires or fiber-optic cables, as shown in Figures 6.15–6.17.
 
 In the mid-1990s, Ethernet was standardized at 100 Mbps, 10 times faster than 10 Mbps Ethernet. The original Ethernet MAC protocol and frame format were pre- served, but higher-speed physical layers were defined for copper wire (100BASE-T) and fiber (100BASE-FX, 100BASE-SX, 100BASE-BX). Figure 6.21 shows these different standards and the common Ethernet MAC protocol and frame format. 100 Mbps Ethernet is limited to a 100-meter distance over twisted pair, and to
-
-Physical
-
-Transport
-
-Network
-
-Link
-
-Application
-
-100BASE-TX
-
-100BASE-T4
-
-100BASE-T2
-
-MAC protocol and frame format
-
-100BASE-SX
-
-100BASE-FX
-
-100BASE-BX
-
+![Alt text](image-20.png)
 **Figure 6.21**  ♦   100 Mbps Ethernet standards: A common link layer, different physical layersseveral kilometers over fiber, allowing Ethernet switches in different buildings to be connected.
 
 Gigabit Ethernet is an extension to the highly successful 10 Mbps and 100 Mbps Ethernet standards. Offering a raw data rate of 40,000 Mbps, 40 Gigabit Ethernet maintains full compatibility with the huge installed base of Ethernet equipment. The standard for Gigabit Ethernet, referred to as IEEE 802.3z, does the following:
@@ -781,22 +432,16 @@ Let’s conclude our discussion of Ethernet technology by posing a question that
 
 As we’ve seen, today’s Ethernets are _very_ different from the original Ethernet conceived by Metcalfe and Boggs more than 40 years ago—speeds have increased by three orders of magnitude, Ethernet frames are carried over a variety of media, switched-Ethernets have become dominant, and now even the MAC protocol is often unnecessary! Is all of this _really_ still Ethernet? The answer, of course, is “yes, by definition.” It is interesting to note, however, that through all of these changes, therehas indeed been one enduring constant that has remained unchanged over 30 years— Ethernet’s frame format. Perhaps this then is the one true and timeless centerpiece of the Ethernet standard.
 
-## Link-Layer SwitchesUp until this point, we have been purposefully vague about what a switch actually does and how it works. The role of the switch is to receive incoming link-layer frames and forward them onto outgoing links; we’ll study this forwarding function in detail in this subsection. We’ll see that the switch itself is **transparent
+## Link-Layer Switches
+Up until this point, we have been purposefully vague about what a switch actually does and how it works. The role of the switch is to receive incoming link-layer frames and forward them onto outgoing links; we’ll study this forwarding function in detail in this subsection. We’ll see that the switch itself is **transparent
  to the hosts and routers in the subnet; that is, a host/router addresses a frame to another host/router (rather than addressing the frame to the switch) and happily sends the frame into the LAN, unaware that a switch will be receiving the frame and forward- ing it. The rate at which frames arrive to any one of the switch’s output interfaces may temporarily exceed the link capacity of that interface. To accommodate this problem, switch output interfaces have buffers, in much the same way that router output interfaces have buffers for datagrams. Let’s now take a closer look at how switches operate.
 
 **Forwarding and Filtering**
 
 **Filtering** is the switch function that determines whether a frame should be for- warded to some interface or should just be dropped. **Forwarding** is the switch function that determines the interfaces to which a frame should be directed, and then moves the frame to those interfaces. Switch filtering and forwarding are done with a **switch table**. The switch table contains entries for some, but not necessarily all, of the hosts and routers on a LAN. An entry in the switch table contains (1) a MAC address, (2) the switch interface that leads toward that MAC address, and (3) the time at which the entry was placed in the table. An example switch table for the uppermost switch in Figure 6.15 is shown in Figure 6.22. This description of frame forwarding may sound similar to our discussion of datagram forwarding
-
+![Alt text](image-21.png)
 **Figure 6.22**  ♦   Portion of a switch table for the uppermost switch in Figure 6.15
-
-TimeInterfaceAddress
-
-62-FE-F7-11-89-A3 1 9:32
-
-7C-BA-B2-B4-91-10 3 9:36
-
-............in Chapter 4. Indeed, in our discussion of generalized forwarding in Section 4.4, we learned that many modern packet switches can be configured to forward on the basis of layer-2 destination MAC addresses (i.e., function as a layer-2 switch) or layer-3 IP destination addresses (i.e., function as a layer-3 router). Nonetheless, we’ll make the important distinction that switches forward packets based on MAC addresses rather than on IP addresses. We will also see that a traditional (i.e., in a non-SDN context) switch table is constructed in a very different manner from a router’s forwarding table.
+in Chapter 4. Indeed, in our discussion of generalized forwarding in Section 4.4, we learned that many modern packet switches can be configured to forward on the basis of layer-2 destination MAC addresses (i.e., function as a layer-2 switch) or layer-3 IP destination addresses (i.e., function as a layer-3 router). Nonetheless, we’ll make the important distinction that switches forward packets based on MAC addresses rather than on IP addresses. We will also see that a traditional (i.e., in a non-SDN context) switch table is constructed in a very different manner from a router’s forwarding table.
 
 To understand how switch filtering and forwarding work, suppose a frame with destination address DD-DD-DD-DD-DD-DD arrives at the switch on interface _x_. The switch indexes its table with the MAC address DD-DD-DD-DD-DD-DD. There are three possible cases:
 
@@ -821,18 +466,9 @@ A switch has the wonderful property (particularly for the already-overworked net
 Let’s walk through the self-learning property for the uppermost switch in Fig- ure 6.15 and its corresponding switch table in Figure 6.22. Suppose at time 9:39 a frame with source address 01-12-23-34-45-56 arrives from interface 2. Suppose that this address is not in the switch table. Then the switch adds a new entry to the table, as shown in Figure 6.23.
 
 Continuing with this same example, suppose that the aging time for this switch is 60 minutes, and no frames with source address 62-FE-F7-11-89-A3 arrive to the switch between 9:32 and 10:32. Then at time 10:32, the switch removes this address from its table.
-
-**Figure 6.23**  ♦   Switch learns about the location of an adapter with address 01-12-23-34-45-56
-
-Address Interface Time
-
-01-12-23-34-45-56 2 9:39
-
-62-FE-F7-11-89-A3 1 9:32
-
-7C-BA-B2-B4-91-10 3 9:36
-
-.... .... ....Switches are **plug-and-play devices** because they require no intervention from a network administrator or user. A network administrator wanting to install a switch need do nothing more than connect the LAN segments to the switch interfaces. The administrator need not configure the switch tables at the time of installation or when a host is removed from one of the LAN segments. Switches are also full-duplex, meaning any switch interface can send and receive at the same time.
+![Alt text](image-22.png)
+**Figure 6.23**  ♦   Switch learns about the location of an adapter with address 
+Switches are **plug-and-play devices** because they require no intervention from a network administrator or user. A network administrator wanting to install a switch need do nothing more than connect the LAN segments to the switch interfaces. The administrator need not configure the switch tables at the time of installation or when a host is removed from one of the LAN segments. Switches are also full-duplex, meaning any switch interface can send and receive at the same time.
 
 **Properties of Link-Layer Switching**
 
@@ -842,13 +478,15 @@ Having described the basic operation of a link-layer switch, let’s now conside
 
 • _Heterogeneous links_. Because a switch isolates one link from another, the differ- ent links in the LAN can operate at different speeds and can run over different media. For example, the uppermost switch in Figure 6.15 might have three1 Gbps 1000BASE-T copper links, two 100 Mbps 100BASE-FX fiber links, and one 100BASE-T copper link. Thus, a switch is ideal for mixing legacy equipment with new equipment.
 
-• _Management_. In addition to providing enhanced security (see sidebar on Focus on Security), a switch also eases network management. For example, if an adapter malfunctions and continually sends Ethernet frames (called a jabbering adapter), a switch can detect the problem and internally disconnect the malfunctioning adapter. With this feature, the network administrator need not get out of bed and drive back to work in order to correct the problem. Similarly, a cable cut discon- nects only that host that was using the cut cable to connect to the switch. In the days of coaxial cable, many a network manager spent hours “walking the line” (or more accurately, “crawling the floor”) to find the cable break that brought down the entire network. Switches also gather statistics on bandwidth usage, collision rates, and traffic types, and make this information available to the network man- ager. This information can be used to debug and correct problems, and to plan how the LAN should evolve in the future. Researchers are exploring adding yet more management functionality into Ethernet LANs in prototype deployments \[Casado 2007; Koponen 2011\].**Switches Versus Routers**
+• _Management_. In addition to providing enhanced security (see sidebar on Focus on Security), a switch also eases network management. For example, if an adapter malfunctions and continually sends Ethernet frames (called a jabbering adapter), a switch can detect the problem and internally disconnect the malfunctioning adapter. With this feature, the network administrator need not get out of bed and drive back to work in order to correct the problem. Similarly, a cable cut discon- nects only that host that was using the cut cable to connect to the switch. In the days of coaxial cable, many a network manager spent hours “walking the line” (or more accurately, “crawling the floor”) to find the cable break that brought down the entire network. Switches also gather statistics on bandwidth usage, collision rates, and traffic types, and make this information available to the network man- ager. This information can be used to debug and correct problems, and to plan how the LAN should evolve in the future. Researchers are exploring adding yet more management functionality into Ethernet LANs in prototype deployments \[Casado 2007; Koponen 2011\].
+
+**Switches Versus Routers**
 
 As we learned in Chapter 4, routers are store-and-forward packet switches that for- ward packets using network-layer addresses. Although a switch is also a store-and- forward packet switch, it is fundamentally different from a router in that it forwards packets using MAC addresses. Whereas a router is a layer-3 packet switch, a switch is a layer-2 packet switch. Recall, however, that we learned in Section 4.4 that mod- ern switches using the “match plus action” operation can be used to forward a layer-2 frame based on the frame's destination MAC address, as well as a layer-3 datagram using the datagram's destination IP address. Indeed, we saw that switches using the OpenFlow standard can perform generalized packet forwarding based on any of eleven different frame, datagram, and transport-layer header fields.
 
 Even though switches and routers are fundamentally different, network admin- istrators must often choose between them when installing an interconnection device. For example, for the network in Figure 6.15, the network administrator could just as easily have used a router instead of a switch to connect the department LANs, servers, and internet gateway router. Indeed, a router would permit interdepartmental commu- nication without creating collisions. Given that both switches and routers are candi- dates for interconnection devices, what are the pros and cons of the two approaches?
 
-SNIFFING A SWITCHED LAN: SWITCH POISONING
+**SNIFFING A SWITCHED LAN: SWITCH POISONING**
 
 When a host is connected to a switch, it typically only receives frames that are intended for it. For example, consider a switched LAN in Figure 6.17. When host A sends a frame to host B, and there is an entry for host B in the switch table, then the switch will forward the frame _only_ to host B. If host C happens to be running a sniffer, host C will not be able to sniff this A-to-B frame. Thus, in a switched-LAN environment (in contrast to a broadcast link environment such as 802.11 LANs or hub–based Ethernet LANs), it is more difficult for an attacker to sniff frames. _However_, because the switch broadcasts frames that have destination addresses that are not in the switch table, the sniffer at C can still sniff some frames that are not intended for C. Furthermore, a sniffer will be able sniff all Ethernet broadcast frames with broad- cast destination address FF–FF–FF–FF–FF–FF. A well-known attack against a switch, called **switch poisoning**, is to send tons of packets to the switch with many different bogus source MAC addresses, thereby filling the switch table with bogus entries and leaving no room for the MAC addresses of the legitimate hosts. This causes the switch to broadcast most frames, which can then be picked up by the sniffer \[Skoudis 2006\]. As this attack is rather involved even for a sophisticated attacker, switches are significantly less vulnerable to sniffing than are hubs and wireless LANs.
 
@@ -857,44 +495,8 @@ When a host is connected to a switch, it typically only receives frames that are
 Now consider the pros and cons of routers. Because network addressing is often hierarchical (and not flat, as is MAC addressing), packets do not normally cycle through routers even when the network has redundant paths. (However, packets can cycle when router tables are misconfigured; but as we learned in Chapter 4, IP uses a special datagram header field to limit the cycling.) Thus, packets are not restricted to a spanning tree and can use the best path between source and destination. Because routers do not have the spanning tree restriction, they have allowed the Internet to be built with a rich topology that includes, for example, multiple active links between Europe and North America. Another feature of routers is that they provide firewall protection against layer-2 broadcast storms. Perhaps the most significant drawback of routers, though, is that they are not plug-and-play—they and the hosts that connect to them need their IP addresses to be configured. Also, routers often have a larger per-packet processing time than switches, because they have to process up through the layer-3 fields. Finally, there are two different ways to pronounce the word _router_, either as “rootor” or as “rowter,” and people waste a lot of time arguing over the proper pronunciation \[Perlman 1999\].
 
 Given that both switches and routers have their pros and cons (as summarized in Table 6.1), when should an institutional network (for example, a university campus
-
-**Figure 6.24**  ♦  Packet processing in switches, routers, and hosts
-
-Host
-
-Application
-
-Host
-
-Transport
-
-Network
-
-Link
-
-Physical
-
-Link
-
-Physical
-
-Network
-
-Switch Router
-
-Link
-
-Physical
-
-Application
-
-Transport
-
-Network
-
-Link
-
-Physicalnetwork or a corporate campus network) use switches, and when should it use rout- ers? Typically, small networks consisting of a few hundred hosts have a few LAN segments. Switches suffice for these small networks, as they localize traffic and increase aggregate throughput without requiring any configuration of IP addresses. But larger networks consisting of thousands of hosts typically include routers within the network (in addition to switches). The routers provide a more robust isolation of traffic, control broadcast storms, and use more “intelligent” routes among the hosts in the network.
+![Alt text](image-23.png)
+**Figure 6.24**  ♦  Packet processing in switches, routers, and hosts network or a corporate campus network) use switches, and when should it use rout- ers? Typically, small networks consisting of a few hundred hosts have a few LAN segments. Switches suffice for these small networks, as they localize traffic and increase aggregate throughput without requiring any configuration of IP addresses. But larger networks consisting of thousands of hosts typically include routers within the network (in addition to switches). The routers provide a more robust isolation of traffic, control broadcast storms, and use more “intelligent” routes among the hosts in the network.
 
 For more discussion of the pros and cons of switched versus routed networks, as well as a discussion of how switched LAN technology can be extended to accom- modate two orders of magnitude more hosts than today’s Ethernets, see \[Meyers 2004; Kim 2008\].
 
@@ -902,30 +504,18 @@ For more discussion of the pros and cons of switched versus routed networks, as 
  In our earlier discussion of Figure 6.15, we noted that modern institutional LANs are often configured hierarchically, with each workgroup (department) having its own switched LAN connected to the switched LANs of other groups via a switch hierarchy. While such a configuration works well in an ideal world, the real world is often far from ideal. Three drawbacks can be identified in the configuration in Figure 6.15:
 
 • _Lack of traffic isolation._ Although the hierarchy localizes group traffic to within a single switch, broadcast traffic (e.g., frames carrying ARP and DHCP mes- sages or frames whose destination has not yet been learned by a self-learning switch) must still traverse the entire institutional network. Limiting the scope of such broadcast traffic would improve LAN performance. Perhaps more impor- tantly, it also may be desirable to limit LAN broadcast traffic for security/privacy reasons. For example, if one group contains the company’s executive manage- ment team and another group contains disgruntled employees running Wireshark packet sniffers, the network manager may well prefer that the executives’ traffic never even reaches employee hosts. This type of isolation could be provided by
-
+![Alt text](image-24.png)
 **Table 6.1**  ♦   Comparison of the typical features of popular interconnection devices
-
-Hubs Routers Switches
-
-Traffic isolation No Yes Yes
-
-Plug and play Yes No Yes
-
-Optimal routing No Yes Noreplacing the center switch in Figure 6.15 with a router. We’ll see shortly that this isolation also can be achieved via a switched (layer 2) solution.
+replacing the center switch in Figure 6.15 with a router. We’ll see shortly that this isolation also can be achieved via a switched (layer 2) solution.
 
 • _Inefficient use of switches._ If instead of three groups, the institution had 10 groups, then 10 first-level switches would be required. If each group were small, say less than 10 people, then a single 96-port switch would likely be large enough to accommodate everyone, but this single switch would not provide traffic isolation.
 
 • _Managing users._ If an employee moves between groups, the physical cabling must be changed to connect the employee to a different switch in Figure 6.15. Employees belonging to two groups make the problem even harder.
 
 Fortunately, each of these difficulties can be handled by a switch that supports **virtual local area networks** (**VLANs**). As the name suggests, a switch that sup- ports VLANs allows multiple _virtual_ local area networks to be defined over a sin- gle _physical_ local area network infrastructure. Hosts within a VLAN communicate with each other as if they (and no other hosts) were connected to the switch. In a port-based VLAN, the switch’s ports (interfaces) are divided into groups by the network manager. Each group constitutes a VLAN, with the ports in each VLAN forming a broadcast domain (i.e., broadcast traffic from one port can only reach other ports in the group). Figure 6.25 shows a single switch with 16 ports. Ports 2 to 8 belong to the EE VLAN, while ports 9 to 15 belong to the CS VLAN (ports 1 and 16 are unassigned). This VLAN solves all of the difficulties noted above—EE and CS VLAN frames are isolated from each other, the two switches in Figure 6.15 have been replaced by a single switch, and if the user at switch port 8 joins the CS Department, the network operator simply reconfigures the VLAN software so that port 8 is now associated with the CS VLAN. One can easily imagine how the VLAN switch is configured and operates—the network manager declares a port to belong
-
+![Alt text](image-25.png)
 **Figure 6.25**  ♦  A single switch with two configured VLANsElectrical Engineering (VLAN ports 2–8)
-
-Computer Science (VLAN ports 9–15)
-
-9 15
-
-2 4 8 10 16to a given VLAN (with undeclared ports belonging to a default VLAN) using switch management software, a table of port-to-VLAN mappings is maintained within the switch; and switch hardware only delivers frames between ports belonging to the same VLAN.
+to a given VLAN (with undeclared ports belonging to a default VLAN) using switch management software, a table of port-to-VLAN mappings is maintained within the switch; and switch hardware only delivers frames between ports belonging to the same VLAN.
 
 But by completely isolating the two VLANs, we have introduced a new dif- ficulty! How can traffic from the EE Department be sent to the CS Department? One way to handle this would be to connect a VLAN switch port (e.g., port 1 in Fig- ure 6.25) to an external router and configure that port to belong both the EE and CS VLANs. In this case, even though the EE and CS departments share the same physi- cal switch, the logical configuration would look as if the EE and CS departments had separate switches connected via a router. An IP datagram going from the EE to the CS department would first cross the EE VLAN to reach the router and then be forwarded by the router back over the CS VLAN to the CS host. Fortunately, switch vendors make such configurations easy for the network manager by building a single device that contains both a VLAN switch _and_ a router, so a separate external router is not needed. A homework problem at the end of the chapter explores this scenario in more detail.
 
@@ -933,41 +523,9 @@ Returning again to Figure 6.15, let’s now suppose that rather than having a se
 
 A more scalable approach to interconnecting VLAN switches is known as **VLAN trunking**. In the VLAN trunking approach shown in Figure 6.26(b), a spe- cial port on each switch (port 16 on the left switch and port 1 on the right switch) is configured as a trunk port to interconnect the two VLAN switches. The trunk port belongs to all VLANs, and frames sent to any VLAN are forwarded over the trunk link to the other switch. But this raises yet another question: How does a switch know that a frame arriving on a trunk port belongs to a particular VLAN? The IEEE has defined an extended Ethernet frame format, 802.1Q, for frames crossing a VLAN trunk. As shown in Figure 6.27, the 802.1Q frame consists of the standard Ethernet frame with a four-byte **VLAN tag** added into the header that carries the identity of the VLAN to which the frame belongs. The VLAN tag is added into a frame by the switch at the sending side of a VLAN trunk, parsed, and removed by the switch at the receiving side of the trunk. The VLAN tag itself consists of a 2-byte Tag Protocol Identifier (TPID) field (with a fixed hexadecimal value of 81-00), a 2-byte Tag Con- trol Information field that contains a 12-bit VLAN identifier field, and a 3-bit priority field that is similar in intent to the IP datagram TOS field.**Figure 6.26**  ♦   Connecting two VLAN switches with two VLANs: (a) two cables (b) trunked168Electrical Engineering (VLAN ports 2–8)
 
-**b.**
-
-**a.**
-
-Electrical Engineering (VLAN ports 2, 3, 6)
-
-Trunk link
-
-Computer Science (VLAN ports 9–15)
-
-9 15
-
-2 4 8 10 16246 8Computer Science (VLAN ports 4, 5, 7)
-
+![Alt text](image-26.png)
 **Figure 6.27**  ♦   Original Ethernet frame (top), 802.1Q-tagged Ethernet VLAN frame (below)
-
-Preamble CRC Dest.
-
-address Source address
-
-Type
-
-Data
-
-Preamble CRC'Dest. address
-
-Source address
-
-Type
-
-Tag Control Information Tag Protocol Identifier
-
-Recomputed CRT
-
-DataIn this discussion, we’ve only briefly touched on VLANs and have focused on port- based VLANs. We should also mention that VLANs can be defined in several other ways. In MAC-based VLANs, the network manager specifies the set of MAC addresses that belong to each VLAN; whenever a device attaches to a port, the port is connected into the appropriate VLAN based on the MAC address of the device. VLANs can also be defined based on network-layer protocols (e.g., IPv4, IPv6, or Appletalk) and other criteria. It is also possible for VLANs to be extended across IP routers, allowing islands of LANs to be connected together to form a single VLAN that could span the globe \[Yu 2011\]. See the 802.1Q standard \[IEEE 802.1q 2005\] for more details.
+In this discussion, we’ve only briefly touched on VLANs and have focused on port- based VLANs. We should also mention that VLANs can be defined in several other ways. In MAC-based VLANs, the network manager specifies the set of MAC addresses that belong to each VLAN; whenever a device attaches to a port, the port is connected into the appropriate VLAN based on the MAC address of the device. VLANs can also be defined based on network-layer protocols (e.g., IPv4, IPv6, or Appletalk) and other criteria. It is also possible for VLANs to be extended across IP routers, allowing islands of LANs to be connected together to form a single VLAN that could span the globe \[Yu 2011\]. See the 802.1Q standard \[IEEE 802.1q 2005\] for more details.
 
 # Link Virtualization: A Network as a Link Layer
 Because this chapter concerns link-layer protocols, and given that we’re now nearing the chapter’s end, let’s reflect on how our understanding of the term _link_ has evolved. We began this chapter by viewing the link as a physical wire connecting two com- municating hosts. In studying multiple access protocols, we saw that multiple hosts could be connected by a shared wire and that the “wire” connecting the hosts could be radio spectra or other media. This led us to consider the link a bit more abstractly as a channel, rather than as a wire. In our study of Ethernet LANs (Figure 6.15), we saw that the interconnecting media could actually be a rather complex switched infrastructure. Throughout this evolution, however, the hosts themselves maintained the view that the interconnecting medium was simply a link-layer channel connect- ing two or more hosts. We saw, for example, that an Ethernet host can be blissfully unaware of whether it is connected to other LAN hosts by a single short LAN seg- ment (Figure 6.17) or by a geographically dispersed switched LAN (Figure 6.15) or by a VLAN (Figure 6.26).
@@ -981,85 +539,15 @@ In this section, we’ll consider Multiprotocol Label Switching (MPLS) net- work
 
 Let’s begin our study of MPLS by considering the format of a link-layer frame that is handled by an MPLS-capable router. Figure 6.28 shows that a link-layer frame transmitted between MPLS-capable devices has a small MPLS header added between the layer-2 (e.g., Ethernet) header and layer-3 (i.e., IP) header. RFC 3032 defines the format of the MPLS header for such links; headers are defined for ATM and frame-relayed networks as well in other RFCs. Among the fields in the MPLS
 
-PPP or Ethernet header
-
-MPLS header IP header Remainder of link-layer frame
-
-Label Exp S TTL
-
+![Alt text](image-27.png)
 **Figure 6.28**  ♦   MPLS header: Located between link- and network-layer headersheader are the label, 3 bits reserved for experimental use, a single S bit, which is used to indicate the end of a series of “stacked” MPLS headers (an advanced topic that we’ll not cover here), and a time-to-live field.
 
 It’s immediately evident from Figure 6.28 that an MPLS-enhanced frame can only be sent between routers that are both MPLS capable (since a non-MPLS-capable router would be quite confused when it found an MPLS header where it had expected to find the IP header!). An MPLS-capable router is often referred to as a **label- switched router**, since it forwards an MPLS frame by looking up the MPLS label in its forwarding table and then immediately passing the datagram to the appropriate output interface. Thus, the MPLS-capable router need _not_ extract the destination IP address and perform a lookup of the longest prefix match in the forwarding table. But how does a router know if its neighbor is indeed MPLS capable, and how does a router know what label to associate with the given IP destination? To answer these questions, we’ll need to take a look at the interaction among a group of MPLS-capable routers.
 
 In the example in Figure 6.29, routers R1 through R4 are MPLS capable. R5 and R6 are standard IP routers. R1 has advertised to R2 and R3 that it (R1) can route to destination A, and that a received frame with MPLS label 6 will be forwarded to destina- tion A. Router R3 has advertised to router R4 that it can route to destinations A and D, and that incoming frames with MPLS labels 10 and 12, respectively, will be switched toward those destinations. Router R2 has also advertised to router R4 that it (R2) can reach destination A, and that a received frame with MPLS label 8 will be switched toward A. Note that router R4 is now in the interesting position of having two MPLS
-
+![Alt text](image-28.png)
 **Figure 6.29**  ♦  MPLS-enhanced forwarding
-
-R4
-
-in label
-
-out label
-
-10 12 8
-
-A D A
-
-0 0 1
-
-dest out
-
-interface
-
-R6
-
-R5
-
-R3
-
-R2
-
-D
-
-A0 0
-
-1 1R1
-
-in label
-
-out label
-
-6 9
-
-A D
-
-1 0
-
-10 12
-
-dest out
-
-interface
-
-in label
-
-out label
-
-– A 06
-
-dest out
-
-interface in
-
-label out
-
-label
-
-6 A 08
-
-dest out
-
-interfacepaths to reach A: via interface 0 with outbound MPLS label 10, and via interface 1 with an MPLS label of 8. The broad picture painted in Figure 6.29 is that IP devices R5, R6, A, and D are connected together via an MPLS infrastructure (MPLS-capable routers R1, R2, R3, and R4) in much the same way that a switched LAN or an ATM network can connect together IP devices. And like a switched LAN or ATM network, the MPLS- capable routers R1 through R4 do so _without ever touching the IP header of a packet_.
+paths to reach A: via interface 0 with outbound MPLS label 10, and via interface 1 with an MPLS label of 8. The broad picture painted in Figure 6.29 is that IP devices R5, R6, A, and D are connected together via an MPLS infrastructure (MPLS-capable routers R1, R2, R3, and R4) in much the same way that a switched LAN or an ATM network can connect together IP devices. And like a switched LAN or ATM network, the MPLS- capable routers R1 through R4 do so _without ever touching the IP header of a packet_.
 
 In our discussion above, we’ve not specified the specific protocol used to distribute labels among the MPLS-capable routers, as the details of this signaling are well beyond the scope of this book. We note, however, that the IETF working group on MPLS has speci- fied in \[RFC 3468\] that an extension of the RSVP protocol, known as RSVP-TE \[RFC 3209\], will be the focus of its efforts for MPLS signaling. We’ve also not discussed how MPLS actually computes the paths for packets among MPLS capable routers, nor how it gathers link-state information (e.g., amount of link bandwidth unreserved by MPLS) to use in these path computations. Existing link-state routing algorithms (e.g., OSPF) have been extended to flood this information to MPLS-capable routers. Interestingly, the actual path computation algorithms are not standardized, and are currently vendor-specific.
 
@@ -1080,32 +568,9 @@ The worker bees in a data center are the hosts. The hosts in data centers, calle
 **Load Balancing**
 
 A cloud data center, such as one operated by Google, Microsoft, Amazon, and Ali- baba, provides many applications concurrently, such as search, e-mail, and video applications. To support requests from external clients, each application is associ- ated with a publicly visible IP address to which clients send their requests and from which they receive responses. Inside the data center, the external requests are first
-
+![Alt text](image-29.png)
 **Figure 6.30**  ♦  A data center network with a hierarchical topology
-
-Internet
-
-**A**
-
-1 2 3 4 5 6 7 8
-
-**C**
-
-**B**
-
-Server racks
-
-TOR switches
-
-Tier-2 switches
-
-Tier-1 switches
-
-Access router
-
-Border router
-
-Load balancerdirected to a load balancer whose job it is to distribute requests to the hosts, balanc- ing the load across the hosts as a function of their current load \[Patel 2013; Eisenbud 2016\]. A large data center will often have several load balancers, each one devoted to a set of specific cloud applications. Such a load balancer is sometimes referred to as a “layer-4 switch” since it makes decisions based on the destination port number (layer 4) as well as destination IP address in the packet. Upon receiving a request for a particular application, the load balancer forwards it to one of the hosts that handles the application. (A host may then invoke the services of other hosts to help process the request.) The load balancer not only balances the work load across hosts, but also provides a NAT-like function, translating the public external IP address to the inter- nal IP address of the appropriate host, and then translating back for packets traveling in the reverse direction back to the clients. This prevents clients from contacting hosts directly, which has the security benefit of hiding the internal network structure and preventing clients from directly interacting with the hosts.
+directed to a load balancer whose job it is to distribute requests to the hosts, balanc- ing the load across the hosts as a function of their current load \[Patel 2013; Eisenbud 2016\]. A large data center will often have several load balancers, each one devoted to a set of specific cloud applications. Such a load balancer is sometimes referred to as a “layer-4 switch” since it makes decisions based on the destination port number (layer 4) as well as destination IP address in the packet. Upon receiving a request for a particular application, the load balancer forwards it to one of the hosts that handles the application. (A host may then invoke the services of other hosts to help process the request.) The load balancer not only balances the work load across hosts, but also provides a NAT-like function, translating the public external IP address to the inter- nal IP address of the appropriate host, and then translating back for packets traveling in the reverse direction back to the clients. This prevents clients from contacting hosts directly, which has the security benefit of hiding the internal network structure and preventing clients from directly interacting with the hosts.
 
 **Hierarchical Architecture**
 
@@ -1131,18 +596,9 @@ There are several possible solutions to this problem:
 In order to reduce the cost of data centers, and at the same time improve their delay and throughput performance, as well as ease of expansion and deployment, Internet cloud giants are continually deploying new data center network designs. Although some of these designs are proprietary, others (e.g., \[FB 2019\]) are explicitly open or described in the open literature (e.g., \[Greenberg 2009b; Singh 2015\]). Many impor- tant trends can thus be identified.
 
 Figure 6.31 illustrates one of the most important trends in data center network- ing—the emergence of a hierarchical, tiered network interconnecting the data center hosts. This hierarchy conceptually serves the same purpose as a single (very, very!), large crossbar switch that we studied in Section 4.2.2, allowing any host in the data center to communicate with any other host. But as we have seen, this tiered
-
+![Alt text](image-30.png)
 **Figure 6.31**  ♦  Highly interconnected data network topology
-
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
-
-Server racks
-
-TOR switches
-
-Tier-2 switches
-
-Tier-1 switchesinterconnection network has many advantages over a conceptual crossbar switch, including multiple paths from source to destination and the increased capacity (due to multipath routing) and reliability (due to multiple switch- and link-disjoint paths between any two hosts).
+interconnection network has many advantages over a conceptual crossbar switch, including multiple paths from source to destination and the increased capacity (due to multipath routing) and reliability (due to multiple switch- and link-disjoint paths between any two hosts).
 
 The data center interconnection network is comprised of a large number of small- sized switches. For example, in Google’s Jupiter datacenter fabric, one configuration has 48 links between the ToR switch and its servers below, and connections up to 8 tier-2 switches; a tier-2 switch has links to 256 ToR switches and links up to 16 tier-1 switches \[Singh 2015\]. In Facebook’s data center architecture, each ToR switch connects up to four different tier-2 switches (each in a different “spline plane”), and each tier-2 switch connects up to 4 of the 48 tier-1 switches in its spline plane; there are four spline planes. Tier-1 and tier-2 switches connect down to a larger, scalable number of tier-2 or ToR switches, respec- tively, below \[FB 2019\]. For some of the largest data center operators, these switches are being built in-house from commodity, off-the-shelf, merchant silicon \[Greenberg 2009b; Roy 2015; Singh 2015\] rather than being purchased from switch vendors.
 
@@ -1182,24 +638,7 @@ When Bob first connects his laptop to the network, he can’t do anything (e.g.,
 
 3\. The broadcast Ethernet frame containing the DHCP request is the first frame sent by Bob’s laptop to the Ethernet switch. The switch broadcasts the incoming frame on all outgoing ports, including the port connected to the router.
 
-00:22:6B:45:1F:1B 68.85.2.1
-
-00:16:D3:23:68:8A 68.85.2.101
-
-comcast.net DNS server 68.87.71.226
-
-www.google.com Web server 64.233.169.105
-
-**School network 68.80.2.0/24**
-
-**Comcast’s network 68.80.0.0/13**
-
-**Google’s network 64.233.160.0/19**
-
-1–7 8–13
-
-18–24 14–17
-
+![Alt text](image-31.png)
 **Figure 6.32**  ♦   A day in the life of a Web page request: Network setting and actions4\. The router receives the broadcast Ethernet frame containing the DHCP request on its interface with MAC address 00:22:6B:45:1F:1B and the IP datagram is extracted from the Ethernet frame. The datagram’s broadcast IP destina- tion address indicates that this IP datagram should be processed by upper layer protocols at this node, so the datagram’s payload (a UDP segment) is thus **demultiplexed** (Section 3.2) up to UDP, and the DHCP request message is extracted from the UDP segment. The DHCP server now has the DHCP request message.
 
 5\. Let’s suppose that the DHCP server running within the router can allocate IP addresses in the **CIDR** (Section 4.3.3) block 68.85.2.0/24. In this example, all IP addresses used within the school are thus within Comcast’s address block. Let’s suppose the DHCP server allocates address 68.85.2.101 to Bob’s laptop. The DHCP server creates a **DHCP ACK message** (Section 4.3.3) containing this IP address, as well as the IP address of the DNS server (68.87.71.226), the IP address for the default gateway router (68.85.2.1), and the subnet block (68.85.2.0/24) (equivalently, the “network mask”). The DHCP message is put inside a UDP segment, which is put inside an IP datagram, which is put inside an Ethernet frame. The Ethernet frame has a source MAC address of the router’s interface to the home network (00:22:6B:45:1F:1B) and a destination MAC address of Bob’s laptop (00:16:D3:23:68:8A).
@@ -1208,7 +647,8 @@ www.google.com Web server 64.233.169.105
 
 7\. Bob’s laptop receives the Ethernet frame containing the DHCP ACK, extracts the IP datagram from the Ethernet frame, extracts the UDP segment from the IP datagram, and extracts the DHCP ACK message from the UDP segment. Bob’s DHCP client then records its IP address and the IP address of its DNS server. It also installs the address of the default gateway into its **IP forward- ing table** (Section 4.1). Bob’s laptop will send all datagrams with destination address outside of its subnet 68.85.2.0/24 to the default gateway. At this point, Bob’s laptop has initialized its networking components and is ready to begin processing the Web page fetch. (Note that only the last two DHCP steps of the four presented in Chapter 4 are actually necessary.)
 
-## Still Getting Started: DNS and ARP** When Bob types the URL for www.google.com into his Web browser, he begins the long chain of events that will eventually result in Google’s home page being displayed by his Web browser. Bob’s Web browser begins the process by creating a **TCP socket(Section 2.7) that will be used to send the **HTTP request
+## Still Getting Started: DNS and ARP
+ When Bob types the URL for www.google.com into his Web browser, he begins the long chain of events that will eventually result in Google’s home page being displayed by his Web browser. Bob’s Web browser begins the process by creating a **TCP socket(Section 2.7) that will be used to send the **HTTP request
  (Section 2.2) to www.google.com. In order to create the socket, Bob’s laptop will need to knowthe IP address of www.google.com. We learned in Section 2.5, that the **DNS protocol** is used to provide this name-to-IP-address translation service.
 
 8\. The operating system on Bob’s laptop thus creates a **DNS query message** (Section 2.5.3), putting the string “www.google.com” in the question section of the DNS message. This DNS message is then placed within a UDP segment with a destination port of 53 (DNS server). The UDP segment is then placed within an IP datagram with an IP destination address of 68.87.71.226 (the address of the DNS server returned in the DHCP ACK in step 5) and a source IP address of 68.85.2.101.
@@ -1223,7 +663,8 @@ www.google.com Web server 64.233.169.105
 
 13\. Bob’s laptop can now (_finally!_) address the Ethernet frame containing the DNS query to the gateway router’s MAC address. Note that the IP datagram in this frame has an IP destination address of 68.87.71.226 (the DNS server), while the frame has a destination address of 00:22:6B:45:1F:1B (the gateway router). Bob’s laptop sends this frame to the switch, which delivers the frame to the gateway router.
 
-## Still Getting Started: Intra-Domain Routing to the DNS Server14\. The gateway router receives the frame and extracts the IP datagram containing the DNS query. The router looks up the destination address of this datagram(68.87.71.226) and determines from its forwarding table that the datagram should be sent to the leftmost router in the Comcast network in Figure 6.32. The IP datagram is placed inside a link-layer frame appropriate for the link connecting the school’s router to the leftmost Comcast router and the frame is sent over this link.
+## Still Getting Started: Intra-Domain Routing to the DNS Server
+14\. The gateway router receives the frame and extracts the IP datagram containing the DNS query. The router looks up the destination address of this datagram(68.87.71.226) and determines from its forwarding table that the datagram should be sent to the leftmost router in the Comcast network in Figure 6.32. The IP datagram is placed inside a link-layer frame appropriate for the link connecting the school’s router to the leftmost Comcast router and the frame is sent over this link.
 
 15\. The leftmost router in the Comcast network receives the frame, extracts the IP datagram, examines the datagram’s destination address (68.87.71.226) and determines the outgoing interface on which to forward the datagram toward the DNS server from its forwarding table, which has been filled in by Comcast’s intra-domain protocol (such as **RIP**, **OSPF** or **IS-IS**, Section 5.3) as well as the **Internet’s inter-domain protocol**, **BGP** (Section 5.4).
 
@@ -1389,26 +830,9 @@ a. Consider sending an IP datagram from Host E to Host F. Will Host E ask router
 b. Suppose E would like to send an IP datagram to B, and assume that E’s ARP cache does not contain B’s MAC address. Will E perform an ARP query to find B’s MAC address? Why? In the Ethernet frame (containing the IP datagram destined to B) that is delivered to router R1, what are the source and destination IP and MAC addresses?
 
 c. Suppose Host A would like to send an IP datagram to Host B, and neither A’s ARP cache contains B’s MAC address nor does B’s ARP cache contain A’s MAC address. Further suppose that the switch S1’s forwarding table contains entries for Host B and router R1 only. Thus, A will broadcast an ARP request message. What actions will switch S1 perform once it receives the ARP request message? Will router R1 also receive this ARP request message? If
-
+![Alt text](image-32.png)
 **Figure 6.33**  ♦  Three subnets, interconnected by routers
-
-Subnet 3
-
-E
-
-F
-
-C
-
-Subnet 2
-
-D
-
-A
-
-B
-
-Subnet 1so, will R1 forward the message to Subnet 3? Once Host B receives this ARP request message, it will send back to Host A an ARP response message. But will it send an ARP query message to ask for A’s MAC address? Why? What will switch S1 do once it receives an ARP response message from Host B?
+so, will R1 forward the message to Subnet 3? Once Host B receives this ARP request message, it will send back to Host A an ARP response message. But will it send an ARP query message to ask for A’s MAC address? Why? What will switch S1 do once it receives an ARP response message from Host B?
 
 P16. Consider the previous problem, but suppose now that the router between sub- nets 2 and 3 is replaced by a switch. Answer questions (a)–(c) in the previous problem in this new context.
 
