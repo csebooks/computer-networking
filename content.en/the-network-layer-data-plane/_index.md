@@ -3,10 +3,6 @@ title: 'The Network Layer: Data Plane'
 weight: 4
 ---
 
-  
-
-333
-
 We learned in the previous chapter that the transport layer provides various forms of process-to-process communication by relying on the network layer’s host-to-host communication service. We also learned that the transport layer does so without any knowledge about how the network layer actually implements this service. So perhaps you’re now wondering, what’s under the hood of the host-to-host communication service, what makes it tick?
 
 In this chapter and the next, we’ll learn exactly how the network layer can pro- vide its host-to-host communication service. We’ll see that unlike the transport and application layers, _there is a piece of the network layer in each and every host and router in the network._ Because of this, network-layer protocols are among the most challenging (and therefore among the most interesting!) in the protocol stack.
@@ -22,68 +18,12 @@ This distinction between data-plane and control-plane functions in the network l
 # Overview of Network Layer
 Figure 4.1 shows a simple network with two hosts, H1 and H2, and several routers on the path between H1 and H2. Let’s suppose that H1 is sending information to H2, and consider the role of the network layer in these hosts and in the intervening routers. The network layer in H1 takes segments from the transport layer in H1, encapsulates each segment into a datagram, and then sends the datagrams to its nearby router, R1. At the receiving host, H2, the network layer receives the datagrams from its nearby router R2, extracts the transport-layer segments, and delivers the segments up to the transport layer at H2. The primary data-plane role of each router is to forward datagrams from its input links to its output links; the primary role of the network control plane is to coordinate these local, per-router forwarding actions so that datagrams are ultimately transferred end-to-end, along paths of routers between source and destination hosts. Note that the routers in Figure 4.1 are shown with a truncated protocol stack, that is, with no upper layers above the network layer, because routers do not run application- and transport-layer protocols such as those we examined in Chapters 2 and 3.
 
-## Forwarding and Routing: The Data and Control PlanesThe primary role of the network layer is deceptively simple—to move packets from a sending host to a receiving host. To do so, two important network-layer functions can be identified:
+## Forwarding and Routing: The Data and Control Planes
+The primary role of the network layer is deceptively simple—to move packets from a sending host to a receiving host. To do so, two important network-layer functions can be identified:
 
-• _Forwarding._ When a packet arrives at a router’s input link, the router must move the packet to the appropriate output link. For example, a packet arriving from Host H1 to Router R1 in Figure 4.1 must be forwarded to the next router on a path to H2. As we will see, forwarding is but one function (albeit the mostLink
+• _Forwarding._ When a packet arrives at a router’s input link, the router must move the packet to the appropriate output link. For example, a packet arriving from Host H1 to Router R1 in Figure 4.1 must be forwarded to the next router on a path to H2. As we will see, forwarding is but one function (albeit the most
 
-Physical
-
-**Network**
-
-**Enterprise Network**
-
-Link
-
-Physical
-
-Application
-
-Transport
-
-**Network**
-
-**End System H2**
-
-**Router R1**
-
-**Router R2**
-
-Link
-
-Physical
-
-Application
-
-Transport
-
-**Network**
-
-**End System H1**
-
-Link
-
-Physical
-
-**Network**
-
-Link
-
-Physical
-
-**Network**
-
-Link
-
-Physical
-
-**Network**
-
-Link
-
-Physical
-
-**Network**
-
+![Alt text](image.png)
 **Figure 4.1**  ♦  The network layercommon and important one!) implemented in the data plane. In the more general case, which we’ll cover in Section 4.4, a packet might also be blocked from exit- ing a router (for example, if the packet originated at a known malicious sending host, or if the packet were destined to a forbidden destination host), or might be duplicated and sent over multiple outgoing links.
 
 • _Routing._ The network layer must determine the route or path taken by packets as they flow from a sender to a receiver. The algorithms that calculate these paths are referred to as **routing algorithms**. A routing algorithm would determine, for example, the path along which packets flow from H1 to H2 in Figure 4.1. Routing is implemented in the control plane of the network layer.
@@ -95,46 +35,15 @@ A key element in every network router is its **forwarding table**. A router forw
 **Control Plane: The Traditional Approach** But now you are undoubtedly wondering how a router’s forwarding tables are con- figured in the first place. This is a crucial issue, one that exposes the important inter- play between forwarding (in data plane) and routing (in control plane). As shownin Figure 4.2, the routing algorithm determines the contents of the routers’ forward- ing tables. In this example, a routing algorithm runs in each and every router and both forwarding and routing functions are contained within a router. As we’ll see in Sections 5.3 and 5.4, the routing algorithm function in one router communicates with the routing algorithm function in other routers to compute the values for its forward- ing table. How is this communication performed? By exchanging routing messages containing routing information according to a routing protocol! We’ll cover routing algorithms and protocols in Sections 5.2 through 5.4.
 
 The distinct and different purposes of the forwarding and routing functions can be further illustrated by considering the hypothetical (and unrealistic, but technically feasible) case of a network in which all forwarding tables are configured directly by human network operators physically present at the routers. In this case, _no_ routing protocols would be required! Of course, the human operators would need to interact with each other to ensure that the forwarding tables were configured in such a way that packets reached their intended destinations. It’s also likely that human configu- ration would be more error-prone and much slower to respond to changes in the net- work topology than a routing protocol. We’re thus fortunate that all networks have both a forwarding _and_ a routing function!Local forwarding table
-
-header
-
-0100 0110 0111 1001
-
-3 2 2 1
-
-output
-
-**Control plane**
-
-**Data plane**
-
-Routing Algorithm
-
-Values in arriving packet’s header2 3
-
+![Alt text](image-1.png)
 **Figure 4.2**  ♦  Routing algorithms determine values in forward tables**Control Plane: The SDN Approach** The approach to implementing routing functionality shown in Figure 4.2—with each router having a routing component that communicates with the routing component of other routers—has been the traditional approach adopted by routing vendors in their products, at least until recently. Our observation that humans could manually configure forwarding tables does suggest, however, that there may be other ways for control- plane functionality to determine the contents of the data-plane forwarding tables.
 
 Figure 4.3 shows an alternative approach in which a physically separate, remote controller computes and distributes the forwarding tables to be used by each and every router. Note that the data plane components of Figures 4.2 and 4.3 are identi- cal. In Figure 4.3; however, control-plane routing functionality is separated from theLocal forwarding table
-
-header
-
-0100 0110 0111 1001
-
-3 2 2 1
-
-output
-
-Remote Controller
-
-Values in arriving packet’s header2 3
-
-**Control plane**
-
-**Data plane**
-
+![Alt text](image-2.png)
 **Figure 4.3**  ♦   A remote controller determines and distributes values in forwarding tablesphysical router—the routing device performs forwarding only, while the remote con- troller computes and distributes forwarding tables. The remote controller might be implemented in a remote data center with high reliability and redundancy, and might be managed by the ISP or some third party. How might the routers and the remote controller communicate? By exchanging messages containing forwarding tables and other pieces of routing information. The control-plane approach shown in Figure 4.3 is at the heart of **software-defined networking (SDN)**, where the network is “soft- ware-defined” because the controller that computes forwarding tables and interacts with routers is implemented in software. Increasingly, these software implementa- tions are also open, that is, similar to Linux OS code, the code is publically available, allowing ISPs (and networking researchers and students!) to innovate and propose changes to the software that controls network-layer functionality. We will cover the SDN control plane in Section 5.5.
 
-## Network Service ModelBefore delving into the network layer’s data plane, let’s wrap up our introduction by taking the broader view and consider the different types of service that might be offered by the network layer. When the transport layer at a sending host transmits a packet into the network (that is, passes it down to the network layer at the sending host), can the transport layer rely on the network layer to deliver the packet to the destination? When multiple packets are sent, will they be delivered to the transport layer in the receiving host in the order in which they were sent? Will the amount of time between the sending of two sequential packet transmissions be the same as the amount of time between their reception? Will the network provide any feed- back about congestion in the network? The answers to these questions and others are determined by the service model provided by the network layer. The **network service model
+## Network Service Model
+Before delving into the network layer’s data plane, let’s wrap up our introduction by taking the broader view and consider the different types of service that might be offered by the network layer. When the transport layer at a sending host transmits a packet into the network (that is, passes it down to the network layer at the sending host), can the transport layer rely on the network layer to deliver the packet to the destination? When multiple packets are sent, will they be delivered to the transport layer in the receiving host in the order in which they were sent? Will the amount of time between the sending of two sequential packet transmissions be the same as the amount of time between their reception? Will the network provide any feed- back about congestion in the network? The answers to these questions and others are determined by the service model provided by the network layer. The **network service model
  defines the characteristics of end-to-end delivery of packets between sending and receiving hosts.
 
 Let’s now consider some possible services that the network layer could provide. These services could include:
@@ -153,25 +62,14 @@ This is only a partial list of services that a network layer could provide—the
 
 The Internet’s network layer provides a single service, known as **best-effort service**. With best-effort service, packets are neither guaranteed to be received in the order in which they were sent, nor is their eventual delivery even guaranteed. There is no guarantee on the end-to-end delay nor is there a minimal bandwidth guaran- tee. It might appear that _best-effort service_ is a euphemism for _no service at all_—a network that delivered _no_ packets to the destination would satisfy the definition of best-effort delivery service! Other network architectures have defined and imple- mented service models that go beyond the Internet’s best-effort service. For example, the ATM network architecture \[Black 1995\] provides for guaranteed in-order delay, bounded delay, and guaranteed minimal bandwidth. There have also been proposed service model extensions to the Internet architecture; for example, the Intserv archi- tecture \[RFC 1633\] aims to provide end-end delay guarantees and congestion-free communication. Interestingly, in spite of these well-developed alternatives, the Internet’s basic best-effort service model combined with adequate bandwidth provi- sioning and bandwidth-adaptive application-level protocols such as the DASH pro- tocol we encountered in Section 2.6.2 have arguably proven to be more than “good enough” to enable an amazing range of applications, including streaming video ser- vices such as Netflix and video-over-IP, real-time conferencing applications such as Skype and Facetime.
 
-**An Overview of Chapter 4** Having now provided an overview of the network layer, we’ll cover the data-plane component of the network layer in the following sections in this chapter. In Section 4.2, we’ll dive down into the internal hardware operations of a router, including input and output packet processing, the router’s internal switching mechanism, and packet queuing and scheduling. In Section 4.3, we’ll take a look at traditional IP forwarding, in which packets are forwarded to output ports based on their destination IP addresses. We’ll encounter IP addressing, the celebrated IPv4 and IPv6 protocols and more. In Section 4.4, we’ll cover more generalized forwarding, where packets may be for- warded to output ports based on a large number of header values (i.e., not only based on destination IP address). Packets may be blocked or duplicated at the router, or may have certain header field values rewritten—all under software control. This more generalized form of packet forwarding is a key component of a modern network data plane, including the data plane in software-defined networks (SDN). In Section 4.5, we’ll learn about “middleboxes” that can perform functions in addition to forwarding.We mention here in passing that the terms _forwarding_ and _switching_ are often used interchangeably by computer-networking researchers and practitioners; we’ll use both terms interchangeably in this textbook as well. While we’re on the topic of terminology, it’s also worth mentioning two other terms that are often used inter- changeably, but that we will use more carefully. We’ll reserve the term _packet switch_ to mean a general packet-switching device that transfers a packet from input link interface to output link interface, according to values in a packet’s header fields. Some packet switches, called **link-layer switches** (examined in Chapter 6), base their forwarding decision on values in the fields of the link-layer frame; switches are thus referred to as link-layer (layer 2) devices. Other packet switches, called **routers**, base their forwarding decision on header field values in the network-layer datagram. Routers are thus network-layer (layer 3) devices. (To fully appreciate this important distinction, you might want to review Section 1.5.2, where we discuss network-layer datagrams and link-layer frames and their relationship.) Since our focus in this chap- ter is on the network layer, we’ll mostly use the term _router_ in place of _packet switch_.
+**An Overview of Chapter 4** Having now provided an overview of the network layer, we’ll cover the data-plane component of the network layer in the following Sections in this chapter. In Section 4.2, we’ll dive down into the internal hardware operations of a router, including input and output packet processing, the router’s internal switching mechanism, and packet queuing and scheduling. In Section 4.3, we’ll take a look at traditional IP forwarding, in which packets are forwarded to output ports based on their destination IP addresses. We’ll encounter IP addressing, the celebrated IPv4 and IPv6 protocols and more. In Section 4.4, we’ll cover more generalized forwarding, where packets may be for- warded to output ports based on a large number of header values (i.e., not only based on destination IP address). Packets may be blocked or duplicated at the router, or may have certain header field values rewritten—all under software control. This more generalized form of packet forwarding is a key component of a modern network data plane, including the data plane in software-defined networks (SDN). In Section 4.5, we’ll learn about “middleboxes” that can perform functions in addition to forwarding.We mention here in passing that the terms _forwarding_ and _switching_ are often used interchangeably by computer-networking researchers and practitioners; we’ll use both terms interchangeably in this textbook as well. While we’re on the topic of terminology, it’s also worth mentioning two other terms that are often used inter- changeably, but that we will use more carefully. We’ll reserve the term _packet switch_ to mean a general packet-switching device that transfers a packet from input link interface to output link interface, according to values in a packet’s header fields. Some packet switches, called **link-layer switches** (examined in Chapter 6), base their forwarding decision on values in the fields of the link-layer frame; switches are thus referred to as link-layer (layer 2) devices. Other packet switches, called **routers**, base their forwarding decision on header field values in the network-layer datagram. Routers are thus network-layer (layer 3) devices. (To fully appreciate this important distinction, you might want to review Section 1.5.2, where we discuss network-layer datagrams and link-layer frames and their relationship.) Since our focus in this chap- ter is on the network layer, we’ll mostly use the term _router_ in place of _packet switch_.
 
 # What’s Inside a Router?
 Now that we’ve overviewed the data and control planes within the network layer, the important distinction between forwarding and routing, and the services and functions of the network layer, let’s turn our attention to its forwarding function—the actual transfer of packets from a router’s incoming links to the appropriate outgoing links at that router.
 
 A high-level view of a generic router architecture is shown in Figure 4.4. Four router components can be identified:
 
-Input port Output port
-
-Input port Output port
-
-Routing processor
-
-_Routing, management_ control plane (software)
-
-_Forwarding_ data plane (hardware)
-
-Switch fabric
-
+![Alt text](image-3.png)
 **Figure 4.4**  ♦  Router architecture• _Input ports._ An **input port** performs several key functions. It performs the physi- cal layer function of terminating an incoming physical link at a router; this is shown in the leftmost box of an input port and the rightmost box of an output port in Figure 4.4. An input port also performs link-layer functions needed to interoperate with the link layer at the other side of the incoming link; this is represented by the middle boxes in the input and output ports. Perhaps most cru- cially, a lookup function is also performed at the input port; this will occur in the rightmost box of the input port. It is here that the forwarding table is consulted to determine the router output port to which an arriving packet will be forwarded via the switching fabric. Control packets (for example, packets carrying routing protocol information) are forwarded from an input port to the routing processor. Note that the term “port” here—referring to the physical input and output router interfaces—is distinctly different from the software ports associated with network applications and sockets discussed in Chapters 2 and 3. In practice, the number of ports supported by a router can range from a relatively small number in enterprise routers, to hundreds of 10 Gbps ports in a router at an ISP’s edge, where the num- ber of incoming lines tends to be the greatest. The Juniper MX2020, edge router, for example, supports up to 800 100 Gbps Ethernet ports, with an overall router system capacity of 800 Tbps \[Juniper MX 2020 2020\].
 
 • _Switching fabric._ The switching fabric connects the router’s input ports to its output ports. This switching fabric is completely contained within the router—a network inside of a network router!
@@ -194,41 +92,15 @@ Once the car enters the roundabout (which may be filled with other cars entering
 
 We can easily recognize the principal router components in Figure 4.4 in this analogy—the entry road and entry station correspond to the input port (with a lookup function to determine to local outgoing port); the roundabout corresponds to the switch fabric; and the roundabout exit road corresponds to the output port. With this analogy, it’s instructive to consider where bottlenecks might occur. What happens if cars arrive blazingly fast (for example, the roundabout is in Germany or Italy!) but the station attendant is slow? How fast must the attendant work to ensure there’s no backup on an entry road? Even with a blazingly fast attendant, what happens if carstraverse the roundabout slowly—can backups still occur? And what happens if most of the cars entering at all of the roundabout’s entrance ramps all want to leave the roundabout at the same exit ramp—can backups occur at the exit ramp or elsewhere? How should the roundabout operate if we want to assign priorities to different cars, or block certain cars from entering the roundabout in the first place? These are all analogous to critical questions faced by router and switch designers.
 
-In the following subsections, we’ll look at router functions in more detail. \[Turner 1988; McKeown 1997a; Partridge 1998; Iyer 2008; Serpanos 2011; Zilberman 2019\] provide a discussion of specific router architectures. For concreteness and simplicity, we’ll initially assume in this section that forwarding decisions are based only on the packet’s destination address, rather than on a generalized set of packet header fields. We will cover the case of more generalized packet forwarding in Section 4.4.
+In the following subSections, we’ll look at router functions in more detail. \[Turner 1988; McKeown 1997a; Partridge 1998; Iyer 2008; Serpanos 2011; Zilberman 2019\] provide a discussion of specific router architectures. For concreteness and simplicity, we’ll initially assume in this Section that forwarding decisions are based only on the packet’s destination address, rather than on a generalized set of packet header fields. We will cover the case of more generalized packet forwarding in Section 4.4.
 
 ## Input Port Processing and Destination-Based Forwarding
  A more detailed view of input processing is shown in Figure 4.5. As just discussed, the input port’s line-termination function and link-layer processing implement the physical and link layers for that individual input link. The lookup performed in the input port is central to the router’s operation—it is here that the router uses the for- warding table to look up the output port to which an arriving packet will be forwarded via the switching fabric. The forwarding table is either computed and updated by the routing processor (using a routing protocol to interact with the routing processors in other network routers) or is received from a remote SDN controller. The forwarding table is copied from the routing processor to the line cards over a separate bus (e.g., a PCI bus) indicated by the dashed line from the routing processor to the input line cards in Figure 4.4. With such a shadow copy at each line card, forwarding decisions can be made locally, at each input port, without invoking the centralized routing pro- cessor on a per-packet basis and thus avoiding a centralized processing bottleneck.
 
 Let’s now consider the “simplest” case that the output port to which an incoming packet is to be switched is based on the packet’s destination address. In the case of 32-bit IP addresses, a brute-force implementation of the forwarding table would have one entry for every possible destination address. Since there are more than 4 billion possible addresses, this option is totally out of the question.
-
-Line termination
-
-Data link processing (protocol,
-
-decapsulation)
-
-Lookup, fowarding, queuing Switch
-
-fabric
-
+![Alt text](image-4.png)
 **Figure 4.5**  ♦  Input port processingAs an example of how this issue of scale can be handled, let’s suppose that our router has four links, numbered 0 through 3, and that packets are to be forwarded to the link interfaces as follows:
-
-**Destination Address Range Link Interface**
-
-11001000 00010111 00010000 00000000 through 0 11001000 00010111 00010111 11111111
-
-11001000 00010111 00011000 00000000 through 1 11001000 00010111 00011000 11111111
-
-11001000 00010111 00011001 00000000 through 2 11001000 00010111 00011111 11111111
-
-Otherwise 3
-
-Clearly, for this example, it is not necessary to have 4 billion entries in the router’s forwarding table. We could, for example, have the following forwarding table with just four entries:
-
-**Prefix Link Interface**
-
-11001000 00010111 00010 0 11001000 00010111 00011000 1 11001000 00010111 00011 2 Otherwise 3
-
+![Alt text](image-5.png)
 With this style of forwarding table, the router matches a **prefix** of the packet’s des- tination address with the entries in the table; if there’s a match, the router forwards the packet to a link associated with the match. For example, suppose the packet’s destination address is 11001000 00010111 00010110 10100001; because the 21-bit prefix of this address matches the first entry in the table, the router forwards the packet to link interface 0. If a prefix doesn’t match any of the first three entries, then the router forwards the packet to the default interface 3. Although this sounds simple enough, there’s a very important subtlety here. You may have noticed that it is possible for a destination address to match more than one entry. For example, the first 24 bits of the address 11001000 00010111 00011000 10101010 match the second entry in the table, and the first 21 bits of the address match the third entry in the table. When there are multiple matches, the router uses the **longest prefix matching rule**; that is, it finds the longest matching entry in the table and forwards the packet to the link interface associated with the longest prefix match. We’ll see exactly _why_ thislongest prefix-matching rule is used when we study Internet addressing in more detail in Section 4.3.
 
 Given the existence of a forwarding table, lookup is conceptually simple— hardware logic just searches through the forwarding table looking for the longest prefix match. But at Gigabit transmission rates, this lookup must be performed in nanoseconds (recall our earlier example of a 10 Gbps link and a 64-byte IP data- gram). Thus, not only must lookup be performed in hardware, but techniques beyond a simple linear search through a large table are needed; surveys of fast lookup algo- rithms can be found in \[Gupta 2001, Ruiz-Sanchez 2001\]. Special attention must also be paid to memory access times, resulting in designs with embedded on-chip DRAM and faster SRAM (used as a DRAM cache) memories. In practice, Ternary Content Addressable Memories (TCAMs) are also often used for lookup \[Yu 2004\]. With a TCAM, a 32-bit IP address is presented to the memory, which returns the content of the forwarding table entry for that address in essentially constant time. The Cisco Catalyst 6500 and 7600 Series routers and switches can hold upwards of a million TCAM forwarding table entries \[Cisco TCAM 2014\].
@@ -239,75 +111,24 @@ Let’s close our discussion of input port processing by noting that the input p
  The switching fabric is at the very heart of a router, as it is through this fabric that the packets are actually switched (that is, forwarded) from an input port to an output port. Switching can be accomplished in a number of ways, as shown in Figure 4.6:
 
 • _Switching via memory._ The simplest, earliest routers were traditional computers, with switching between input and output ports being done under direct control of the CPU (routing processor). Input and output ports functioned as traditional I/O devices in a traditional operating system. An input port with an arriving packet first signaled the routing processor via an interrupt. The packet was then copied from the input port into processor memory. The routing processor then extracted the destination address from the header, looked up the appropriate output port in the forwarding table, and copied the packet to the output port’s buffers. In this scenario, if the memory bandwidth is such that a maximum of _B_ packets per second can be written into, or read from, memory, then the overall forwarding throughput (the total rate at which packets are transferred from input ports to out- put ports) must be less than _B_/2. Note also that two packets cannot be forwarded
-
-**Memory** A
-
-B
-
-C
-
-X
-
-Y
-
-Z
-
-Memory
-
-Key:
-
-Input port Output port
-
-A
-
-X Y Z
-
-B
-
-C
-
-**Interconnection Network**
-
-A
-
-B
-
-C
-
-X
-
-Y
-
-Z
-
-**Bus**
-
+![Alt text](image-6.png)
 **Figure 4.6**  ♦  Three switching techniquesat the same time, even if they have different destination ports, since only one memory read/write can be done at a time over the shared system bus.
 
 Some modern routers switch via memory. A major difference from early routers, however, is that the lookup of the destination address and the storing of the packet into the appropriate memory location are performed by processing on the input line cards. In some ways, routers that switch via memory look very much like shared- memory multiprocessors, with the processing on a line card switching (writing) packets into the memory of the appropriate output port. Cisco’s Catalyst 8500 series switches \[Cisco 8500 2020\] internally switches packets via a shared memory.
 
 • _Switching via a bus._ In this approach, an input port transfers a packet directly to the output port over a shared bus, without intervention by the routing processor. This is typically done by having the input port pre-pend a switch-internal label (header) to the packet indicating the local output port to which this packet is being transferred and transmitting the packet onto the bus. All output ports receive the packet, but only the port that matches the label will keep the packet. The label is then removed at the output port, as this label is only used within the switch to cross the bus. If mul- tiple packets arrive to the router at the same time, each at a different input port, all but one must wait since only one packet can cross the bus at a time. Because every packet must cross the single bus, the switching speed of the router is limited to the bus speed; in our roundabout analogy, this is as if the roundabout could only contain one car at a time. Nonetheless, switching via a bus is often sufficient for routers that operate in small local area and enterprise networks. The Cisco 6500 router \[Cisco 6500 2020\] internally switches packets over a 32-Gbps-backplane bus.
 
-• _Switching via an interconnection network._ One way to overcome the bandwidth limitation of a single, shared bus is to use a more sophisticated interconnection net- work, such as those that have been used in the past to interconnect processors in a multiprocessor computer architecture. A crossbar switch is an interconnection net- work consisting of 2_N_ buses that connect _N_ input ports to _N_ output ports, as shown in Figure 4.6. Each vertical bus intersects each horizontal bus at a crosspoint, which can be opened or closed at any time by the switch fabric controller (whose logic is part of the switching fabric itself). When a packet arrives from port A and needs to be forwarded to port Y, the switch controller closes the crosspoint at the intersection of busses A and Y, and port A then sends the packet onto its bus, which is picked up (only) by bus Y. Note that a packet from port B can be forwarded to port X at the same time, since the A-to-Y and B-to-X packets use different input and output busses. Thus, unlike the previous two switching approaches, cross- bar switches are capable of forwarding multiple packets in parallel. A crossbar switch is **non-blocking**—a packet being forwarded to an output port will not be blocked from reaching that output port as long as no other packet is currently being forwarded to that output port. However, if two packets from two different input ports are destined to that same output port, then one will have to wait at the input, since only one packet can be sent over any given bus at a time. Cisco 12000 seriesswitches \[Cisco 12000 2020\] use a crossbar switching network; the Cisco 7600 series can be configured to use either a bus or crossbar switch \[Cisco 7600 2020\].
+• _Switching via an interconnection network._ One way to overcome the bandwidth limitation of a single, shared bus is to use a more sophisticated interconnection net- work, such as those that have been used in the past to interconnect processors in a multiprocessor computer architecture. A crossbar switch is an interconnection net- work consisting of 2_N_ buses that connect _N_ input ports to _N_ output ports, as shown in Figure 4.6. Each vertical bus intersects each horizontal bus at a crosspoint, which can be opened or closed at any time by the switch fabric controller (whose logic is part of the switching fabric itself). When a packet arrives from port A and needs to be forwarded to port Y, the switch controller closes the crosspoint at the interSection of busses A and Y, and port A then sends the packet onto its bus, which is picked up (only) by bus Y. Note that a packet from port B can be forwarded to port X at the same time, since the A-to-Y and B-to-X packets use different input and output busses. Thus, unlike the previous two switching approaches, cross- bar switches are capable of forwarding multiple packets in parallel. A crossbar switch is **non-blocking**—a packet being forwarded to an output port will not be blocked from reaching that output port as long as no other packet is currently being forwarded to that output port. However, if two packets from two different input ports are destined to that same output port, then one will have to wait at the input, since only one packet can be sent over any given bus at a time. Cisco 12000 seriesswitches \[Cisco 12000 2020\] use a crossbar switching network; the Cisco 7600 series can be configured to use either a bus or crossbar switch \[Cisco 7600 2020\].
 
 More sophisticated interconnection networks use multiple stages of switching elements to allow packets from different input ports to proceed towards the same output port at the same time through the multi-stage switching fabric. See \[Tobagi 1990\] for a survey of switch architectures. The Cisco CRS employs a three-stage non-blocking switching strategy. A router’s switching capacity can also be scaled by running multiple switching fabrics in parallel. In this approach, input ports and output ports are connected to _N_ switching fabrics that operate in parallel. An input port breaks a packet into _K_ smaller chunks, and sends (“sprays”) the chunks through _K_ of these _N_ switching fabrics to the selected output port, which reas- sembles the _K_ chunks back into the original packet.
 
 ## Output Port Processing
  Output port processing, shown in Figure 4.7, takes packets that have been stored in the output port’s memory and transmits them over the output link. This includes selecting (i.e., scheduling) and de-queuing packets for transmission, and performing the needed link-layer and physical-layer transmission functions.
 
-## Where Does Queuing Occur?If we consider input and output port functionality and the configurations shown in Figure 4.6, it’s clear that packet queues may form at both the input ports _and_ the output ports, just as we identified cases where cars may wait at the inputs and out- puts of the traffic intersection in our roundabout analogy. The location and extent of queuing (either at the input port queues or the output port queues) will depend on the traffic load, the relative speed of the switching fabric, and the line speed. Let’s now consider these queues in a bit more detail, since as these queues grow large, the router’s memory can eventually be exhausted and **packet loss
+## Where Does Queuing Occur?
+If we consider input and output port functionality and the configurations shown in Figure 4.6, it’s clear that packet queues may form at both the input ports _and_ the output ports, just as we identified cases where cars may wait at the inputs and out- puts of the traffic interSection in our roundabout analogy. The location and extent of queuing (either at the input port queues or the output port queues) will depend on the traffic load, the relative speed of the switching fabric, and the line speed. Let’s now consider these queues in a bit more detail, since as these queues grow large, the router’s memory can eventually be exhausted and **packet loss
  will occur when no memory is available to store arriving packets. Recall that in our earlier discussions, we said that packets were “lost within the network” or “dropped at a router.” _It is here, at these queues within a router, where such packets are actually dropped and lost._
-
-Line termination
-
-Data link processing (protocol,
-
-encapsulation)
-
-Queuing (buffer management)Switch
-
-fabric
-
+![Alt text](image-7.png)
 **Figure 4.7**  ♦  Output port processingSuppose that the input and output line speeds (transmission rates) all have an identical transmission rate of _R_line packets per second, and that there are _N_ input ports and _N_ output ports. To further simplify the discussion, let’s assume that all packets have the same fixed length, and that packets arrive to input ports in a synchronous manner. That is, the time to send a packet on any link is equal to the time to receive a packet on any link, and during such an interval of time, either zero or one packets can arrive on an input link. Define the switching fabric transfer rate _R_switch as the rate at which packets can be moved from input port to output port. If _R_switch is _N_ times faster than _R_line, then only negligible queuing will occur at the input ports. This is because even in the worst case, where all _N_ input lines are receiving packets, and all packets are to be forwarded to the same output port, each batch of _N_ packets (one packet per input port) can be cleared through the switch fabric before the next batch arrives.
 
 **Input Queuing**
@@ -317,36 +138,12 @@ But what happens if the switch fabric is not fast enough (relative to the input 
 Figure 4.8 shows an example in which two packets (darkly shaded) at the front of their input queues are destined for the same upper-right output port. Suppose that the switch fabric chooses to transfer the packet from the front of the upper-left queue. In this case, the darkly shaded packet in the lower-left queue must wait. But not only must this darkly shaded packet wait, so too must the lightly shaded packet that is queued behind that packet in the lower-left queue, even though there is _no_ conten- tion for the middle-right output port (the destination for the lightly shaded packet). This phenomenon is known as **head-of-the-line (HOL) blocking** in an input-queued switch—a queued packet in an input queue must wait for transfer through the fabric (even though its output port is free) because it is blocked by another packet at the head of the line. \[Karol 1987\] shows that due to HOL blocking, the input queue will grow to unbounded length (informally, this is equivalent to saying that significant packet loss will occur) under certain assumptions as soon as the packet arrival rate on the input links reaches only 58 percent of their capacity. A number of solutions to HOL blocking are discussed in \[McKeown 1997\].**Output Queuing**
 
 Let’s next consider whether queuing can occur at a switch’s output ports. Suppose that _R_switch is again _N_ times faster than _R_line and that packets arriving at each of the _N_ input ports are destined to the same output port. In this case, in the time it takes to send a single packet onto the outgoing link, _N_ new packets will arrive at this output port (one from each of the _N_ input ports). Since the output port can transmit only a single packet in a unit of time (the packet transmission time), the _N_ arriving packets will have to queue (wait) for transmission over the outgoing link. Then _N_ more packets can possibly arrive in the time it takes to transmit just one of the _N_ packets that had just previously been queued. And so on. Thus, packet queues can form at the output ports even when the switching fabric is _N_ times faster than the port line speeds. Eventually, the number of queued packets can grow large enough to exhaust avail- able memory at the output port.
-
-Switch fabric
-
-Output port contention at time _t_ — one dark packet can be transferred
-
-Light blue packet experiences HOL blocking
-
-Switch fabric
-
-Key:
-
-destined for upper output port
-
-destined for middle output port
-
-destined for lower output port
-
+![Alt text](image-8.png)
 **Figure 4.8**  ♦  HOL blocking at and input-queued switchWhen there is not enough memory to buffer an incoming packet, a decision must be made to either drop the arriving packet (a policy known as **drop-tail**) or remove one or more already-queued packets to make room for the newly arrived packet. In some cases, it may be advantageous to drop (or mark the header of) a packet _before_ the buffer is full in order to provide a congestion signal to the sender. This mark- ing could be done using the Explicit Congestion Notification bits that we studied in Section 3.7.2. A number of proactive packet-dropping and -marking policies (which collectively have become known as **active queue management (AQM)** algorithms) have been proposed and analyzed \[Labrador 1999, Hollot 2002\]. One of the most widely studied and implemented AQM algorithms is the **Random Early Detection (RED)** algorithm \[Christiansen 2001\]. More recent AQM policies include PIE (the Proportional Integral controller Enhanced \[RFC 8033\]), and CoDel \[Nichols 2012\].
 
 Output port queuing is illustrated in Figure 4.9. At time _t,_ a packet has arrived at each of the incoming input ports, each destined for the uppermost outgoing port. Assuming identical line speeds and a switch operating at three times the line speed, one time unit later (that is, in the time needed to receive or send a packet), all three original packets have been transferred to the outgoing port and are queued awaiting transmis- sion. In the next time unit, one of these three packets will have been transmitted over the outgoing link. In our example, two _new_ packets have arrived at the incoming side of the
-
-Switch fabric
-
-Output port contention at time _t_
-
-One packet time later
-
-Switch fabric
-
-**Figure 4.9**  ♦  Output port queuingswitch; one of these packets is destined for this uppermost output port. A consequence of such queuing is that a **packet scheduler** at the output port must choose one packet, among those queued, for transmission—a topic we’ll cover in the following section.
+![Alt text](image-9.png)
+**Figure 4.9**  ♦  Output port queuingswitch; one of these packets is destined for this uppermost output port. A consequence of such queuing is that a **packet scheduler** at the output port must choose one packet, among those queued, for transmission—a topic we’ll cover in the following Section.
 
 **How Much Buffering Is “Enough?”**
 
@@ -359,25 +156,7 @@ It’s temping to think that more buffering _must_ be better—larger buffers wo
 In the discussion above, we’ve implicitly assumed that many independent send- ers are competing for bandwidth and buffers at a congested link. While this is prob- ably an excellent assumption for routers within the network core, at the network edgethis may not hold. Figure 4.10(a) shows a home router sending TCP segments to a remote game server. Following \[Nichols 2012\], suppose that it takes 20 ms to trans- mit a packet (containing a gamer’s TCP segment), that there are negligible queuing delays elsewhere on the path to the game server, and that the RTT is 200 ms. As shown in Figure 4.10(b), suppose that at time _t_ \= 0, a burst of 25 packets arrives to the queue. One of these queued packets is then transmitted once every 20 ms, so that at _t_ \= 200 msec, the first ACK arrives, just as the 21st packet is being transmitted. This ACK arrival causes the TCP sender to send another packet, which is queued at the outgoing link of the home router. At _t_ \= 220, the next ACK arrives, and another TCP segment is released by the gamer and is queued, as the 22nd packet is being transmitted, and so on. You should convince yourself that in this scenario, ACK clocking results in a new packet arriving at the queue every time a queued packet is sent, resulting in queue size at the home router’s outgoing link that is _always_ five packets! That is, the end-end-pipe is full (delivering packets to the destination at the path bottleneck rate of one packet every 20 ms), but the amount of queuing delay is constant and _persistent_. As a result, the gamer is unhappy with the delay, and the par- ent (who even knows wireshark!) is confused because he or she doesn’t understand why delays are persistent and excessively long, even when there is no other traffic on the home network.
 
 This scenario above of long delay due to persistent buffering is known as **buff- erbloat** and illustrates that not only is throughput important, but also minimal delay is important as well \[Kleinrock 2018\], and that the interaction among senders at the network edge and queues within the network can indeed be complex and subtle. The DOCSIS 3.1 standard for cable networks that we will study in Chapter 6, recently added a specific AQM mechanism \[RFC 8033, RFC 8034\] to combat bufferbloat, while preserving bulk throughput performance.
-
-250 ms RTT
-
-Time (ms)
-
-Q u
-
-eu e
-
-le n
-
-g th
-
-0 2005
-
-**a. b.**
-
-**Home Network** Internet
-
+![Alt text](image-10.png)
 **Figure 4.10**  ♦  Bufferbloat: persistent queues## Packet Scheduling
  Let’s now return to the question of determining the order in which queued packets are transmitted over an outgoing link. Since you yourself have undoubtedly had to wait in long lines on many occasions and observed how waiting customers are served, you’re no doubt familiar with many of the queuing disciplines commonly used in routers. There is first-come-first-served (FCFS, also known as first-in-first-out, FIFO). The British are famous for patient and orderly FCFS queuing at bus stops and in the mar- ketplace (“Oh, are you queuing?”). Other countries operate on a priority basis, with one class of waiting customers given priority service over other waiting customers. There is also round-robin queuing, where customers are again divided into classes (as in priority queuing) but each class of customer is given service in turn.
 
@@ -385,49 +164,17 @@ g th
 
 Figure 4.11 shows the queuing model abstraction for the FIFO link-scheduling dis- cipline. Packets arriving at the link output queue wait for transmission if the link is currently busy transmitting another packet. If there is not sufficient buffering space to hold the arriving packet, the queue’s packet-discarding policy then determines whether the packet will be dropped (lost) or whether other packets will be removed from the queue to make space for the arriving packet, as discussed above. In our discussion below, we’ll ignore packet discard. When a packet is completely transmit- ted over the outgoing link (that is, receives service) it is removed from the queue.
 
-The FIFO (also known as first-come-first-served, or FCFS) scheduling discipline selects packets for link transmission in the same order in which they arrived at the output link queue. We’re all familiar with FIFO queuing from service centers, where arriving customers join the back of the single waiting line, remain in order, and are then served when they reach the front of the line. Figure 4.12 shows the FIFO queue in operation. Packet arrivals are indicated by numbered arrows above the upper time- line, with the number indicating the order in which the packet arrived. Individual packet departures are shown below the lower timeline. The time that a packet spends in service (being transmitted) is indicated by the shaded rectangle between the two timelines. In
-
-Arrivals Departures
-
-Queue (waiting area)
-
-Link (server)
-
-**Figure 4.11**  ♦  FIFO queuing abstractionour examples here, let’s assume that each packet takes three units of time to be transmit- ted. Under the FIFO discipline, packets leave in the same order in which they arrived. Note that after the departure of packet 4, the link remains idle (since packets 1 through 4 have been transmitted and removed from the queue) until the arrival of packet 5.
+The FIFO (also known as first-come-first-served, or FCFS) scheduling discipline selects packets for link transmission in the same order in which they arrived at the output link queue. We’re all familiar with FIFO queuing from service centers, where arriving customers join the back of the single waiting line, remain in order, and are then served when they reach the front of the line. Figure 4.12 shows the FIFO queue in operation. Packet arrivals are indicated by numbered arrows above the upper time- line, with the number indicating the order in which the packet arrived. Individual packet departures are shown below the lower timeline. The time that a packet spends in service (being transmitted) is indicated by the shaded rectangle between the two timelines. 
+![Alt text](image-11.png)
+**Figure 4.11**  ♦ In FIFO queuing abstractionour examples here, let’s assume that each packet takes three units of time to be transmit- ted. Under the FIFO discipline, packets leave in the same order in which they arrived. Note that after the departure of packet 4, the link remains idle (since packets 1 through 4 have been transmitted and removed from the queue) until the arrival of packet 5.
 
 **Priority Queuing**
 
 Under priority queuing, packets arriving at the output link are classified into prior- ity classes upon arrival at the queue, as shown in Figure 4.13. In practice, a network operator may configure a queue so that packets carrying network management infor- mation (for example, as indicated by the source or destination TCP/UDP port num- ber) receive priority over user traffic; additionally, real-time voice-over-IP packets might receive priority over non-real-time traffic such e-mail packets. Each priority class typically has its own queue. When choosing a packet to transmit, the priority
-
-Time
-
-Arrivals
-
-Departures
-
-Packet in service
-
-Time1 2 3 4 5
-
-2 3_t_ = 0 _t_ = 2 _t_ = 4 _t_ = 6 _t_ = 8 _t_ = 10 _t_ = 12 _t_ = 14
-
-2 3 4 5
-
-4 5
-
+![Alt text](image-12.png)
 **Figure 4.12**  ♦  The FIFO queue in operation
-
-Arrivals Departures
-
-Low-priority queue (waiting area)
-
-Classify
-
-High-priority queue (waiting area)
-
-Link (server)
-
-**Figure 4.13**  ♦  The priority queuing modelNET NEUTRALITY
+![Alt text](image-13.png)
+**Figure 4.13**  ♦  The priority queuing model NET NEUTRALITY
 
 We’ve seen that packet scheduling mechanisms (e.g., priority traffic scheduling disciplines such a strict priority, and WFQ) can be used to provide different levels of service to differ- ent “classes” of traffic. The definition of what precisely constitutes a “class” of traffic is up to an ISP to decide, but could be potentially based on any set of fields in the IP datagram header. For example, the port field in the IP datagram header could be used to classify datagrams according to the “well-know service” associated with that port: SNMP network management datagram (port 161) might be assigned to a higher priority class than an IMAP e-mail protocol (ports 143, or 993) datagram and therefore receive better service. An ISP could also potentially use a datagram’s source IP address to provide priority to datagrams being sent by certain companies (who have presumably paid the ISP for this privilege) over datagrams being sent from other companies (who have not paid); an ISP
 
@@ -436,21 +183,7 @@ We’ve seen that packet scheduling mechanisms (e.g., priority traffic schedulin
 queuing discipline will transmit a packet from the highest priority class that has a nonempty queue (that is, has packets waiting for transmission). The choice among packets in the same priority class is typically done in a FIFO manner.
 
 Figure 4.14 illustrates the operation of a priority queue with two priority classes. Packets 1, 3, and 4 belong to the high-priority class, and packets 2 and 5 belong to the low-priority class. Packet 1 arrives and, finding the link idle, begins transmission. During the transmission of packet 1, packets 2 and 3 arrive and are queued in the low- and high-priority queues, respectively. After the transmission of packet 1, packet 3 (a high-priority packet) is selected for transmission over packet 2 (which, even though it arrived earlier, is a low-priority packet). At the end of the transmission of packet 3, packet 2 then begins transmission. Packet 4 (a high-priority packet) arrives during the transmission of packet 2 (a low-priority packet). Under a **non-preemptive priority queuing** discipline, the transmission of a packet is not interrupted once it
-
-Arrivals
-
-Departures
-
-Packet in service1 23 4 5
-
-2 34 5
-
-Time
-
-Time _t_ = 0 _t_ = 2 _t_ = 4 _t_ = 6 _t_ = 8 _t_ = 10 _t_ = 12 _t_ = 14
-
-23 4 5
-
+![Alt text](image-14.png)
 **Figure 4.14**  ♦  The priority queue in operationcould even block traffic with a source IP address in a given company, or country. There are many _mechanisms_ that would allow an ISP to provide different levels of service to dif- ferent classes of traffic. The real question is what _policies_ and _laws_ determine what an ISP can actually do. Of course, these laws will vary by country; see \[Smithsonian 2017\] for a brief survey. Here, we’ll briefly consider US policy on what has come to be known as “net neutrality.”
 
 The term “net neutrality” doesn’t have a precise decision, but the March 2015 _Order on Protecting and Promoting an Open Internet_ \[FCC 2015\] by the US Federal Communications Commission provides three “clear, bright line” rules that are now often associated with net neutrality:
@@ -474,40 +207,16 @@ Under the round robin queuing discipline, packets are sorted into classes as wit
 Figure 4.15 illustrates the operation of a two-class round robin queue. In this example, packets 1, 2, and 4 belong to class 1, and packets 3 and 5 belong to the second class. Packet 1 begins transmission immediately upon arrival at the output queue. Packets 2 and 3 arrive during the transmission of packet 1 and thus queue for transmission. After the transmission of packet 1, the link scheduler looks for a class 2 packet and thus transmits packet 3. After the transmission of packet 3, the scheduler looks for a class 1 packet and thus transmits packet 2. After the transmission of packet 2, packet 4 is the only queued packet; it is thus transmitted immediately after packet 2.
 
 A generalized form of round robin queuing that has been widely implemented in routers is the so-called **weighted fair queuing (WFQ) discipline** \[Demers 1990; Parekh 1993. WFQ is illustrated in Figure 4.16. Here, arriving packets are classified and queued in the appropriate per-class waiting area. As in round robin scheduling, a WFQ scheduler will serve classes in a circular manner—first serving class 1, then serving class 2, then serving class 3, and then (assuming there are three classes) repeating the service pattern. WFQ is also a work-conserving queuing discipline and
-
-Arrivals
-
-Packet in service1 23 4 5
-
-2 3
-
-1 23 4 5
-
-4 5
-
-Departures
-
-Time
-
-Time _t_ = 0 _t_ = 2 _t_ = 4 _t_ = 6 _t_ = 8 _t_ = 10 _t_ = 12 _t_ = 14
-
+![Alt text](image-15.png)
 **Figure 4.15**  ♦  The two-class robin queue in operationthus will immediately move on to the next class in the service sequence when it finds an empty class queue.
 
 WFQ differs from round robin in that each class may receive a differential amount of service in any interval of time. Specifically, each class, _i_, is assigned a weight, _wi_. Under WFQ, during any interval of time during which there are class _i_ packets to send, class _i_ will then be guaranteed to receive a fraction of service equal to _wi_\>(g_wj_), where the sum in the denominator is taken over all classes that also have packets queued for transmission. In the worst case, even if all classes have queued packets, class _i_ will still be guaranteed to receive a fraction _wi_ >(g_wj_) of the bandwidth, where in this worst case the sum in the denominator is over _all_ classes. Thus, for a link with transmission rate _R_, class _i_ will always achieve a throughput of at least _R_ \# _wi_ >(g_wj_). Our descrip- tion of WFQ has been idealized, as we have not considered the fact that packets are discrete and a packet’s transmission will not be interrupted to begin transmission of another packet; \[Demers 1990; Parekh 1993\] discuss this packetization issue.
 
 # The Internet Protocol (IP): IPv4, Addressing, IPv6, and More
-Our study of the network layer thus far in Chapter 4—the notion of the data and con- trol plane component of the network layer, our distinction between forwarding and routing, the identification of various network service models, and our look inside a router—have often been without reference to any specific computer network archi- tecture or protocol. In this section, we’ll focus on key aspects of the network layer on today’s Internet and the celebrated Internet Protocol (IP).
+Our study of the network layer thus far in Chapter 4—the notion of the data and con- trol plane component of the network layer, our distinction between forwarding and routing, the identification of various network service models, and our look inside a router—have often been without reference to any specific computer network archi- tecture or protocol. In this Section, we’ll focus on key aspects of the network layer on today’s Internet and the celebrated Internet Protocol (IP).
 
 There are two versions of IP in use today. We’ll first examine the widely deployed IP protocol version 4, which is usually referred to simply as IPv4 \[RFC 791\] in Section 4.3.1. We’ll examine IP version 6 \[RFC 2460; RFC 4291\], which has
-
-Classify Arrivals Departures
-
-**_w_1**
-
-**_w_2**
-
-**_w_3** Link
-
+![Alt text](image-16.png)
 **Figure 4.16**  ♦  Weighted fair queuingbeen proposed to replace IPv4, in Section 4.3.4. In between, we’ll primarily cover Internet addressing—a topic that might seem rather dry and detail-oriented but we’ll see is crucial to understanding how the Internet’s network layer works. To master IP addressing is to master the Internet’s network layer itself!
 
 ## IPv4 Datagram Format
@@ -516,31 +225,7 @@ Classify Arrivals Departures
 • _Version number._ These 4 bits specify the IP protocol version of the datagram. By looking at the version number, the router can determine how to interpret the remainder of the IP datagram. Different versions of IP use different datagram formats. The datagram format for IPv4 is shown in Figure 4.17. The datagram format for the new version of IP (IPv6) is discussed in Section 4.3.4.
 
 • _Header length._ Because an IPv4 datagram can contain a variable number of options (which are included in the IPv4 datagram header), these 4 bits are needed
-
-Version Type of serviceHeader length
-
-Upper-layer protocol
-
-16-bit Identifier
-
-Time-to-live
-
-13-bit Fragmentation offsetFlags
-
-Datagram length (bytes)
-
-Header checksum
-
-32 bits
-
-32-bit Source IP address
-
-32-bit Destination IP address
-
-Options (if any)
-
-Data
-
+![Alt text](image-17.png)
 **Figure 4.17**  ♦  IPv4 datagram formatto determine where in the IP datagram the payload (for example, the transport- layer segment being encapsulated in this datagram) actually begins. Most IP data- grams do not contain options, so the typical IP datagram has a 20-byte header.
 
 • _Type of service._ The type of service (TOS) bits were included in the IPv4 header to allow different types of IP datagrams to be distinguished from each other. For example, it might be useful to distinguish real-time datagrams (such as those used by an IP telephony application) from non-real-time traffic (e.g., FTP). The specific level of service to be provided is a policy issue determined and config- ured by the network administrator for that router. We also learned in Section 3.7.2 that two of the TOS bits are used for Explicit Congestion Notification.
@@ -564,7 +249,7 @@ Data
 Note that an IP datagram has a total of 20 bytes of header (assuming no options). If the datagram carries a TCP segment, then each datagram carries a total of 40 bytes of header (20 bytes of IP header plus 20 bytes of TCP header) along with the application-layer message.
 
 ## IPv4 Addressing
- We now turn our attention to IPv4 addressing. Although you may be thinking that addressing must be a straightforward topic, hopefully by the end of this section you’ll be convinced that Internet addressing is not only a juicy, subtle, and interesting topicbut also one that is of central importance to the Internet. An excellent treatment of IPv4 addressing can be found in the first chapter in \[Stewart 1999\].
+ We now turn our attention to IPv4 addressing. Although you may be thinking that addressing must be a straightforward topic, hopefully by the end of this Section you’ll be convinced that Internet addressing is not only a juicy, subtle, and interesting topicbut also one that is of central importance to the Internet. An excellent treatment of IPv4 addressing can be found in the first chapter in \[Stewart 1999\].
 
 Before discussing IP addressing, however, we’ll need to say a few words about how hosts and routers are connected into the Internet. A host typically has only a single link into the network; when IP in the host wants to send a datagram, it does so over this link. The boundary between the host and the physical link is called an **interface**. Now consider a router and its interfaces. Because a router’s job is to receive a datagram on one link and forward the datagram on some other link, a router necessarily has two or more links to which it is connected. The boundary between the router and any one of its links is also called an interface. A router thus has multiple interfaces, one for each of its links. Because every host and router is capable of send- ing and receiving IP datagrams, IP requires each host and router interface to have its own IP address. _Thus, an IP address is technically associated with an interface, rather than with the host or router containing that interface._
 
@@ -579,24 +264,8 @@ Figure 4.18 provides an example of IP addressing and interfaces. In this figure,
 In IP terms, this network interconnecting three host interfaces and one router interface forms a **subnet** \[RFC 950\]. (A subnet is also called an _IP network_ or simplya _network_ in the Internet literature.) IP addressing assigns an address to this subnet: 223.1.1.0/24, where the /24 (“slash-24”) notation, sometimes known as a **subnet mask**, indicates that the leftmost 24 bits of the 32-bit quantity define the subnet address. The 223.1.1.0/24 subnet thus consists of the three host interfaces (223.1.1.1, 223.1.1.2, and 223.1.1.3) and one router interface (223.1.1.4). Any additional hosts attached to the 223.1.1.0/24 subnet would be _required_ to have an address of the form 223.1.1.xxx. There are two additional subnets shown in Figure 4.18: the 223.1.2.0/24 network and the 223.1.3.0/24 subnet. Figure 4.19 illustrates the three IP subnets pre- sent in Figure 4.18.
 
 The IP definition of a subnet is not restricted to Ethernet segments that connect multiple hosts to a router interface. To get some insight here, consider Figure 4.20, which shows three routers that are interconnected with each other by point-to-point links. Each router has three interfaces, one for each point-to-point link and one for the broadcast link that directly connects the router to a pair of hosts. What subnets are present here? Three subnets, 223.1.1.0/24, 223.1.2.0/24, and 223.1.3.0/24, are similar to the subnets we encountered in Figure 4.18. But note that there are three additional subnets in this example as well: one subnet, 223.1.9.0/24, for the inter- faces that connect routers R1 and R2; another subnet, 223.1.8.0/24, for the interfaces that connect routers R2 and R3; and a third subnet, 223.1.7.0/24, for the interfaces that connect routers R3 and R1. For a general interconnected system of routers and hosts, we can use the following recipe to define the subnets in the system:
-
-223.1.1.1
-
-223.1.2.1
-
-223.1.2.2
-
-223.1.1.2
-
-223.1.1.4 223.1.2.9
-
-223.1.3.27
-
-223.1.1.3
-
-223.1.3.1 223.1.3.2
-
-**Figure 4.18**  ♦  Interface addresses and subnets_To determine the subnets, detach each interface from its host or router, creating islands of isolated networks, with interfaces terminating the end points of the isolated networks. Each of these isolated networks is called a **subnet**._
+![Alt text](image-18.png)
+**Figure 4.18**  ♦  Interface addresses and subnets_To determine the subnets, detach each interface from its host or router, creating islands of isolated networks, with interfaces terminating the end points of the isolated networks. Each of these isolated networks is called a **subnet**.
 
 If we apply this procedure to the interconnected system in Figure 4.20, we get six islands or subnets.
 
@@ -605,97 +274,23 @@ From the discussion above, it’s clear that an organization (such as a company 
 The Internet’s address assignment strategy is known as **Classless Interdomain Routing (CIDR**—pronounced _cider_) \[RFC 4632\]. CIDR generalizes the notion of subnet addressing. As with subnet addressing, the 32-bit IP address is divided into two parts and again has the dotted-decimal form _a.b.c.d/x_, where _x_ indicates the number of bits in the first part of the address.
 
 The _x_ most significant bits of an address of the form _a.b.c.d/x_ constitute the network portion of the IP address, and are often referred to as the **prefix** (or _network prefix_) of the address. An organization is typically assigned a block of contiguous addresses, that is, a range of addresses with a common prefix (see the Principles in Practice feature). In this case, the IP addresses of devices within the organization will share the common prefix. When we cover the Internet’s BGP routing protocol in
-
-223.1.1.0/24
-
-223.1.2.0/24
-
-223.1.3.0/24
-
+![Alt text](image-19.png)
 **Figure 4.19**  ♦  Subnet addressesSection 5.4, we’ll see that only these _x_ leading prefix bits are considered by routers outside the organization’s network. That is, when a router outside the organization forwards a datagram whose destination address is inside the organization, only the leading _x_ bits of the address need be considered. This considerably reduces the size of the forwarding table in these routers, since a _single_ entry of the form _a.b.c.d/x_ will be sufficient to forward packets to _any_ destination within the organization.
 
 The remaining 32-_x_ bits of an address can be thought of as distinguishing among the devices _within_ the organization, all of which have the same network prefix. These are the bits that will be considered when forwarding packets at routers _within_ the organiza- tion. These lower-order bits may (or may not) have an additional subnetting structure, such as that discussed above. For example, suppose the first 21 bits of the CIDRized address a.b.c.d/21 specify the organization’s network prefix and are common to the IP addresses of all devices in that organization. The remaining 11 bits then identify the specific hosts in the organization. The organization’s internal structure might be such that these 11 rightmost bits are used for subnetting within the organization, as discussed above. For example, a.b.c.d/24 might refer to a specific subnet within the organization.
 
 Before CIDR was adopted, the network portions of an IP address were constrained to be 8, 16, or 24 bits in length, an addressing scheme known as **classful addressing**,
-
-223.1.8.1 223.1.8.0
-
-223.1.9.1 223.1.7.1
-
-223.1.2.6
-
-223.1.2.1 223.1.2.2 223.1.3.1 223.1.3.2
-
-223.1.1.3
-
-223.1.7.0223.1.9.2
-
-223.1.3.27
-
-223.1.1.1 223.1.1.4
-
-R1
-
-R2 R3
-
+![Alt text](image-20.png)
 **Figure 4.20**  ♦  Three routers interconnecting six subnetssince subnets with 8-, 16-, and 24-bit subnet addresses were known as class A, B, and C networks, respectively. The requirement that the subnet portion of an IP address be exactly 1, 2, or 3 bytes long turned out to be problematic for supporting the rapidly growing number of organizations with small and medium-sized subnets. A class C (/24) subnet could accommodate only up to 28 2 2 5 254 hosts (two of the 28 5 256 addresses are reserved for special use)—too small for many organizations. However, a class B (/16) subnet, which supports up to 65,634 hosts, was too large. Under classful addressing, an organization with, say, 2,000 hosts was typically allocated a class B (/16) subnet address. This led to a rapid depletion of the class B address space and poor utilization of the assigned address space. For example, the organization that used a class B address for its 2,000 hosts was allocated enough of the address space for up to 65,534 interfaces—leaving more than 63,000 addresses that could not be used by other organizations.
 
 This example of an ISP that connects eight organizations to the Internet nicely illustrates how carefully allocated CIDRized addresses facilitate routing. Suppose, as shown in Figure 4.21, that the ISP (which we’ll call Fly-By-Night-ISP) advertises to the outside world that it should be sent any datagrams whose first 20 address bits match 200.23.16.0/20. The rest of the world need not know that within the address block 200.23.16.0/20 there are in fact eight other organizations, each with its own subnets. This ability to use a single prefix to advertise multiple networks is often referred to as **address aggregation** (also **route aggregation** or **route summarization**).
 
 Address aggregation works extremely well when addresses are allocated in blocks to ISPs and then from ISPs to client organizations. But what happens when addresses are not allocated in such a hierarchical manner? What would happen, for example, if Fly-By-Night-ISP acquires ISPs-R-Us and then has Organization 1 connect to the Internet through its subsidiary ISPs-R-Us? As shown in Figure 4.21, the subsidiary ISPs-R-Us owns the address block 199.31.0.0/16, but Organization 1’s IP addresses are unfortunately outside of this address block. What should be done here? Certainly, Organization 1 could renumber all of its routers and hosts to have addresses within the ISPs-R-Us address block. But this is a costly solution, and Organization 1 might well be reassigned to another subsidiary in the future. The solution typically adopted is for Organization 1 to keep its IP addresses in 200.23.18.0/23. In this case, as shown in Figure 4.22, Fly-By-Night-ISP continues to advertise the address block 200.23.16.0/20 and ISPs-R-Us continues to advertise 199.31.0.0/16. However, ISPs-R-Us now _also_ advertises the block of addresses for Organization 1, 200.23.18.0/23. When other routers in the larger Internet see the address blocks 200.23.16.0/20 (from Fly-By-Night-ISP) and 200.23.18.0/23 (from ISPs- R-Us) and want to route to an address in the block 200.23.18.0/23, they will use _longest prefix matching_ (see Section 4.2.1), and route toward ISPs-R-Us, as it advertises the long- est (i.e., most-specific) address prefix that matches the destination address.
 
-**PRINCIPLES IN PRACTICE**Organization 0
-
-200.23.16.0/23
-
-Organization 1
-
-Fly-By-Night-ISP
-
-“Send me anything with addresses beginning 200.23.16.0/20”
-
-ISPs-R-Us
-
-200.23.18.0/23
-
-Organization 2
-
-200.23.20.0/23
-
-Organization 7
-
-200.23.30.0/23
-
-Internet
-
-“Send me anything with addresses beginning 199.31.0.0/16”
-
+**PRINCIPLES IN PRACTICE**
+![Alt text](image-22.png)
 **Figure 4.21**  ♦  Hierarchical addressing and route aggregation
-
-Organization 0
-
-200.23.16.0/23
-
-Organization 2
-
-Fly-By-Night-ISP
-
-“Send me anything with addresses beginning 200.23.16.0/20”
-
-ISPs-R-Us
-
-200.23.20.0/23
-
-Organization 7
-
-200.23.30.0/23
-
-Organization 1
-
-200.23.18.0/23
-
-Internet “Send me anything with addresses beginning 199.31.0.0/16 or 200.23.18.0/23”
-
+![Alt text](image-23.png)
 **Figure 4.22**  ♦  ISPs-R-Us has a more specific route to Organization 1We would be remiss if we did not mention yet another type of IP address, the IP broadcast address 255.255.255.255. When a host sends a datagram with destination address 255.255.255.255, the message is delivered to all hosts on the same subnet. Routers optionally forward the message into neighboring subnets as well (although they usually don’t).
 
 Having now studied IP addressing in detail, we need to know how hosts and subnets get their addresses in the first place. Let’s begin by looking at how an organization gets a block of addresses for its devices, and then look at how a device (such as a host) is assigned an address from within the organization’s block of addresses.
@@ -729,51 +324,10 @@ DHCP is a client-server protocol. A client is typically a newly arriving host wa
 • _DHCP server discovery._ The first task of a newly arriving host is to find a DHCP server with which to interact. This is done using a **DHCP discover message**, which a client sends within a UDP packet to port 67. The UDP packet is encap- sulated in an IP datagram. But to whom should this datagram be sent? The host doesn’t even know the IP address of the network to which it is attaching, much less the address of a DHCP server for this network. Given this, the DHCP client creates an IP datagram containing its DHCP discover message along with the broadcast destination IP address of 255.255.255.255 and a “this host” source IP address of 0.0.0.0. The DHCP client passes the IP datagram to the link layer, which then broadcasts this frame to all nodes attached to the subnet (we will cover the details of link-layer broadcasting in Section 6.4).
 
 • _DHCP server offer(s)._ A DHCP server receiving a DHCP discover message responds to the client with a **DHCP offer message** that is broadcast to all
+![Alt text](image-24.png)
+**Figure 4.23**  ♦  DHCP client and server
 
-223.1.1.1
-
-223.1.1.2
-
-223.1.1.4 223.1.2.9
-
-223.1.3.27
-
-223.1.1.3
-
-223.1.3.1 223.1.3.2
-
-223.1.2.1
-
-223.1.2.5
-
-223.1.2.2
-
-Arriving DHCP client
-
-DHCP server
-
-**Figure 4.23**  ♦  DHCP client and server**DHCP server:** 223.1.2.5
-
-**Arriving client**
-
-DHCP discover
-
-Time Time
-
-src: 0.0.0.0, 68 dest: 255.255.255.255,67 DHCPDISCOVER yiaddr: 0.0.0.0 transaction ID: 654
-
-src: 223.1.2.5, 67 dest: 255.255.255.255,68 DHCPOFFER yiaddrr: 223.1.2.4 transaction ID: 654 DHCP server ID: 223.1.2.5 Lifetime: 3600 secs
-
-DHCP offer
-
-src: 223.1.2.5, 67 dest: 255.255.255.255,68 DHCPACK yiaddrr: 223.1.2.4 transaction ID: 655 DHCP server ID: 223.1.2.5 Lifetime: 3600 secs
-
-DHCP ACK
-
-src: 0.0.0.0, 68 dest: 255.255.255.255, 67 DHCPREQUEST yiaddrr: 223.1.2.4 transaction ID: 655 DHCP server ID: 223.1.2.5 Lifetime: 3600 secs
-
-DHCP request
-
+![Alt text](image-25.png)
 **Figure 4.24**  ♦  DHCP client-server interaction
 
 nodes on the subnet, again using the IP broadcast address of 255.255.255.255. (You might want to think about why this server reply must also be broadcast). Since several DHCP servers can be present on the subnet, the client may find itself in the enviable position of being able to choose from among several offers. Each server offer message contains the transaction ID of the received discover message, the proposed IP address for the client, the network mask, and an IP **address lease time**—the amount of time for which the IP address will be valid. It is common for the server to set the lease time to several hours or days \[Droms 2002\].• _DHCP request._ The newly arriving client will choose from among one or more server offers and respond to its selected offer with a **DHCP request message**, echoing back the configuration parameters.
@@ -784,39 +338,15 @@ Once the client receives the DHCP ACK, the interaction is complete and the clien
 
 From a mobility aspect, DHCP does have one very significant shortcoming. Since a new IP address is obtained from DHCP each time a node connects to a new subnet, a TCP connection to a remote application cannot be maintained as a mobile node moves between subnets. In Chapter 7, we will learn how mobile cel- lular networks allow a host to retain its IP address and ongoing TCP connections as it moves between base stations in a provider’s cellular network. Additional details about DHCP can be found in \[Droms 2002\] and \[dhc 2020\]. An open source refer- ence implementation of DHCP is available from the Internet Systems Consortium \[ISC 2020\].
 
-## Network Address Translation (NAT)Given our discussion about Internet addresses and the IPv4 datagram format, we’re now well aware that every IP-capable device needs an IP address. With the proliferation of small office, home office (SOHO) subnets, this would seem to imply that whenever a SOHO wants to install a LAN to connect multiple machines, a range of addresses would need to be allocated by the ISP to cover all of the SOHO’s IP devices (including phones, tablets, gaming devices, IP TVs, printers and more). If the subnet grew bigger, a larger block of addresses would have to be allocated. But what if the ISP had already allocated the contiguous portions of the SOHO network’s current address range? And what typical homeowner wants (or should need) to know how to manage IP addresses in the first place? Fortunately, there is a simpler approach to address allocation that has found increasingly widespread use in such scenarios: **network address translation (NAT)
+## Network Address Translation (NAT)
+Given our discussion about Internet addresses and the IPv4 datagram format, we’re now well aware that every IP-capable device needs an IP address. With the proliferation of small office, home office (SOHO) subnets, this would seem to imply that whenever a SOHO wants to install a LAN to connect multiple machines, a range of addresses would need to be allocated by the ISP to cover all of the SOHO’s IP devices (including phones, tablets, gaming devices, IP TVs, printers and more). If the subnet grew bigger, a larger block of addresses would have to be allocated. But what if the ISP had already allocated the contiguous portions of the SOHO network’s current address range? And what typical homeowner wants (or should need) to know how to manage IP addresses in the first place? Fortunately, there is a simpler approach to address allocation that has found increasingly widespread use in such scenarios: **network address translation (NAT)
  \[RFC 2663; RFC 3022; Huston 2004, Zhang 2007; Huston 2017\].
 
 Figure 4.25 shows the operation of a NAT-enabled router. The NAT-enabled router, residing in the home, has an interface that is part of the home network on the right of Figure 4.25. Addressing within the home network is exactly as we have seen above—all four interfaces in the home network have the same subnet address of 10.0.0.0/24. The address space 10.0.0.0/8 is one of three portions of the IP address space that is reserved in \[RFC 1918\] for a **private network** or a **realm with private addresses**, such as the home network in Figure 4.25. A realm with private addresses refers to a network whose addresses only have meaning todevices within that network. To see why this is important, consider the fact that there are hundreds of thousands of home networks, many using the same address space, 10.0.0.0/24. Devices within a given home network can send packets to each other using 10.0.0.0/24 addressing. However, packets forwarded _beyond_ the home network into the larger global Internet clearly cannot use these addresses (as either a source or a destination address) because there are hundreds of thousands of net- works using this block of addresses. That is, the 10.0.0.0/24 addresses can only have meaning within the given home network. But if private addresses only have meaning within a given network, how is addressing handled when packets are sent to or received from the global Internet, where addresses are necessarily unique? The answer lies in understanding NAT.
 
 The NAT-enabled router does not _look_ like a router to the outside world. Instead the NAT router behaves to the outside world as a _single_ device with a _single_ IP address. In Figure 4.25, all traffic leaving the home router for the larger Internet has a source IP address of 138.76.29.7, and all traffic entering the home router must have a destination address of 138.76.29.7. In essence, the NAT-enabled router is hiding the details of the home network from the outside world. (As an aside, you might wonder where the home network computers get their addresses and where the router gets its single IP address. Often, the answer is the same—DHCP! The router gets its address from the ISP’s DHCP server, and the router runs a DHCP server to provide addresses to computers within the NAT-DHCP-router-controlled home network’s address space.)2
 
-10.0.0.1
-
-138.76.29.7
-
-10.0.0.4 10.0.0.2
-
-10.0.0.3
-
-**NAT translation table**
-
-WAN side
-
-138.76.29.7, 5001
-
-LAN side
-
-10.0.0.1, 3345
-
-. . . . . .
-
-S = 138.76.29.7, 5001 D = 128.119.40.186, 804 S = 128.119.40.186, 80 D = 138.76.29.7, 5001
-
-S = 128.119.40.186, 80 D = 10.0.0.1, 3345
-
-S = 10.0.0.1, 3345 D = 128.119.40.186, 80
-
+![Alt text](image-26.png)
 **Figure 4.25**  ♦  Network address translationIf all datagrams arriving at the NAT router from the WAN have the same desti- nation IP address (specifically, that of the WAN-side interface of the NAT router), then how does the router know the internal host to which it should forward a given datagram? The trick is to use a **NAT translation table** at the NAT router, and to include port numbers as well as IP addresses in the table entries.
 
 Consider the example in Figure 4.25. Suppose a user sitting in a home net- work behind host 10.0.0.1 requests a Web page on some Web server (port 80) with IP address 128.119.40.186. The host 10.0.0.1 assigns the (arbitrary) source port number 3345 and sends the datagram into the LAN. The NAT router receives the datagram, generates a new source port number 5001 for the datagram, replaces the source IP address with its WAN-side IP address 138.76.29.7, and replaces the original source port number 3345 with the new source port number 5001. When generating a new source port number, the NAT router can select any source port number that is not currently in the NAT translation table. (Note that because a port number field is 16 bits long, the NAT protocol can support over 60,000 simul- taneous connections with a single WAN-side IP address for the router!) NAT in the router also adds an entry to its NAT translation table. The Web server, blissfully unaware that the arriving datagram containing the HTTP request has been manipulated by the NAT router, responds with a datagram whose destination address is the IP address of the NAT router, and whose destination port number is 5001. When this datagram arrives at the NAT router, the router indexes the NAT translation table using the destination IP address and destination port number to obtain the appropriate IP address (10.0.0.1) and destination port number (3345) for the browser in the home network. The router then rewrites the datagram’s destination address and destination port number, and forwards the datagram into the home network.
@@ -826,7 +356,7 @@ NAT has enjoyed widespread deployment in recent years. But NAT is not without de
 More “philosophical” arguments have also been raised against NAT by architectural purists. Here, the concern is that routers are meant to be layer 3 (i.e., network-layer) devices, and should process packets only up to the net- work layer. NAT violates this principle that hosts should be talking directly with each other, without interfering nodes modifying IP addresses, much less port numbers. We’ll return to this debate later in Section 4.5, when we cover middleboxes.## IPv6
  In the early 1990s, the Internet Engineering Task Force began an effort to develop a successor to the IPv4 protocol. A prime motivation for this effort was the realization that the 32-bit IPv4 address space was beginning to be used up, with new subnets
 
-INSPECTING DATAGRAMS: FIREWALLS AND INTRUSION DETECTION SYSTEMS
+**INSPECTING DATAGRAMS: FIREWALLS AND INTRUSION DETECTION SYSTEMS**
 
 Suppose you are assigned the task of administering a home, departmental, university, or corporate network. Attackers, knowing the IP address range of your network, can easily send IP datagrams to addresses in your range. These datagrams can do all kinds of devious things, including mapping your network with ping sweeps and port scans, crashing vulnerable hosts with malformed packets, scanning for open TCP/UDP ports on servers in your network, and infecting hosts by including malware in the packets. As the network administrator, what are you going to do about all those bad guys out there, each capable of sending malicious packets into your network? Two popular defense mechanisms to malicious packet attacks are firewalls and intrusion detection systems (IDSs).
 
@@ -861,21 +391,7 @@ As noted above, a comparison of Figure 4.26 with Figure 4.17 reveals the sim- pl
 • _Flow label._ As discussed above, this 20-bit field is used to identify a flow of datagrams.
 
 • _Payload length._ This 16-bit value is treated as an unsigned integer giving the number of bytes in the IPv6 datagram following the fixed-length, 40-byte data- gram header.
-
-Version Traffic class
-
-Payload length Next hdr Hop limit
-
-Flow label
-
-32 bits
-
-Source address (128 bits)
-
-Destination address (128 bits)
-
-Data
-
+![Alt text](image-27.png)
 **Figure 4.26**  ♦  IPv6 datagram format• _Next header._ This field identifies the protocol to which the contents (data field) of this datagram will be delivered (for example, to TCP or UDP). The field uses the same values as the protocol field in the IPv4 header.
 
 • _Hop limit._ The contents of this field are decremented by one by each router that forwards the datagram. If the hop limit count reaches zero, a router must discard that datagram.
@@ -898,64 +414,16 @@ One option would be to declare a flag day—a given time and date when all Inter
 
 The approach to IPv4-to-IPv6 transition that has been most widely adopted in practice involves **tunneling** \[RFC 4213\]. The basic idea behind tunneling—a key concept with applications in many other scenarios beyond IPv4-to-IPv6 transition, including wide use in the all-IP cellular networks that we’ll cover in Chapter 7—is the following. Suppose two IPv6 nodes (in this example, B and E in Figure 4.27) want to interoperate using IPv6 datagrams but are connected to each other by inter- vening IPv4 routers. We refer to the intervening set of IPv4 routers between two IPv6 routers as a **tunnel**, as illustrated in Figure 4.27. With tunneling, the IPv6 node on the sending side of the tunnel (in this example, B) takes the _entire_ IPv6 datagram and puts it in the data (payload) field of an IPv4 datagram. This IPv4 datagram is then addressed to the IPv6 node on the receiving side of the tunnel (in this example, E) and sent to the first node in the tunnel (in this example, C). The intervening IPv4 routers in the tunnel route this IPv4 datagram among themselves, just as they would any other datagram, blissfully unaware that the IPv4 datagram itself contains a com- plete IPv6 datagram. The IPv6 node on the receiving side of the tunnel eventually receives the IPv4 datagram (it is the destination of the IPv4 datagram!), determines that the IPv4 datagram contains an IPv6 datagram (by observing that the protocol number field in the IPv4 datagram is 41 \[RFC 4213\], indicating that the IPv4 payload is a IPv6 datagram), extracts the IPv6 datagram, and then routes the IPv6 datagram exactly as it would if it had received the IPv6 datagram from a directly connected IPv6 neighbor.
 
-We end this section by noting that while the adoption of IPv6 was initially slow to take off \[Lawton 2001; Huston 2008b\], momentum has been building. NIST \[NIST IPv6 2020\] reports that more than a third of US government second-level domains are IPv6-enabled. On the client side, Google reports that about 25 percent of the clients accessing Google services do so via IPv6 \[Google IPv6 2020\]. Other recent measurements \[Czyz 2014\] indicate that IPv6 adoption has been accelerating. The proliferation of devices such as IP-enabled phones and other portable devicesprovides an additional push for more widespread deployment of IPv6. Europe’s Third Generation Partnership Program \[3GPP 2020\] has specified IPv6 as the stand- ard addressing scheme for mobile multimedia.
+We end this Section by noting that while the adoption of IPv6 was initially slow to take off \[Lawton 2001; Huston 2008b\], momentum has been building. NIST \[NIST IPv6 2020\] reports that more than a third of US government second-level domains are IPv6-enabled. On the client side, Google reports that about 25 percent of the clients accessing Google services do so via IPv6 \[Google IPv6 2020\]. Other recent measurements \[Czyz 2014\] indicate that IPv6 adoption has been accelerating. The proliferation of devices such as IP-enabled phones and other portable devicesprovides an additional push for more widespread deployment of IPv6. Europe’s Third Generation Partnership Program \[3GPP 2020\] has specified IPv6 as the stand- ard addressing scheme for mobile multimedia.
 
 One important lesson that we can learn from the IPv6 experience is that it is enor- mously difficult to change network-layer protocols. Since the early 1990s, numerous new network-layer protocols have been trumpeted as the next major revolution for the Internet, but most of these protocols have had limited penetration to date. These protocols include IPv6, multicast protocols, and resource reservation protocols; a dis- cussion of these latter two classes of protocols can be found in the online supplement to this text. Indeed, introducing new protocols into the network layer is like replac- ing the foundation of a house—it is difficult to do without tearing the whole house down or at least temporarily relocating the house’s residents. On the other hand, the Internet has witnessed rapid deployment of new protocols at the application layer. The classic examples, of course, are the Web, instant messaging, streaming media, distributed games, and various forms of social media. Introducing new application- layer protocols is like adding a new layer of paint to a house—it is relatively easy to do, and if you choose an attractive color, others in the neighborhood will copy you.
-
-A B C D E F
-
-IPv6
-
-_A_ to _B_: IPv6
-
-**Physical view**
-
-_B_ to _C_: IPv4 (encapsulating IPv6)
-
-_D_ to _E_: IPv4 (encapsulating IPv6)
-
-_E_ to _F_: IPv6
-
-IPv6 IPv4 IPv4 IPv6 IPv6
-
-Flow: _X_ Source: _A_ Dest: _F_
-
-_data_
-
-Source: _B_ Dest: _E_
-
-Source: _B_ Dest: _E_
-
-A B E F
-
-IPv6
-
-**Logical view**
-
-IPv6
-
-Tunnel
-
-IPv6 IPv6
-
-Flow: _X_ Source: _A_ Dest: _F_
-
-_data_
-
-Flow: _X_ Source: _A_ Dest: _F_
-
-_data_
-
-Flow: _X_ Source: _A_ Dest: _F_
-
-_data_
-
+![Alt text](image-28.png)
 **Figure 4.27**  ♦  TunnelingIn summary, in the future, we can certainly expect to see changes in the Internet’s network layer, but these changes will likely occur on a time scale that is much slower than the changes that will occur at the application layer.
 
 # Generalized Forwarding and SDN
 Recall that Section 4.2.1 characterized destination-based forwarding as the two steps of looking up a destination IP address (“match”), then sending the packet into the switching fabric to the specified output port (“action”). Let’s now consider a signifi- cantly more general “match-plus-action” paradigm, where the “match” can be made over multiple header fields associated with different protocols at different layers in the protocol stack. The “action” can include forwarding the packet to one or more output ports (as in destination-based forwarding), load balancing packets across multiple outgoing interfaces that lead to a service (as in load balancing), rewriting header values (as in NAT), purposefully blocking/dropping a packet (as in a fire- wall), sending a packet to a special server for further processing and action (as in DPI), and more.
 
-In generalized forwarding, a match-plus-action table generalizes the notion of the destination-based forwarding table that we encountered in Section 4.2.1. Because forwarding decisions may be made using network-layer and/or link-layer source and destination addresses, the forwarding devices shown in Figure 4.28 are more accurately described as “packet switches” rather than layer 3 “routers” or layer 2 “switches.” Thus, in the remainder of this section, and in Section 5.5, we’ll refer to these devices as packet switches, adopting the terminology that is gaining wide- spread adoption in SDN literature.
+In generalized forwarding, a match-plus-action table generalizes the notion of the destination-based forwarding table that we encountered in Section 4.2.1. Because forwarding decisions may be made using network-layer and/or link-layer source and destination addresses, the forwarding devices shown in Figure 4.28 are more accurately described as “packet switches” rather than layer 3 “routers” or layer 2 “switches.” Thus, in the remainder of this Section, and in Section 5.5, we’ll refer to these devices as packet switches, adopting the terminology that is gaining wide- spread adoption in SDN literature.
 
 Figure 4.28 shows a match-plus-action table in each packet switch, with the table being computed, installed, and updated by a remote controller. We note that while it is possible for the control components at the individual packet switches to interact with each other (e.g., in a manner similar to that in Figure 4.2), in practice, generalized match-plus-action capabilities are implemented via a remote controller that computes, installs, and updates these tables. You might take a minute to compare Figures 4.2, 4.3, and 4.28—what similarities and differences do you notice between destination-based forwarding shown in Figures 4.2 and 4.3, and generalized forward- ing shown in Figure 4.28?
 
@@ -964,41 +432,7 @@ Our following discussion of generalized forwarding will be based on Open- Flow \
 Each entry in the match-plus-action forwarding table, known as a **flow table** in OpenFlow, includes:
 
 • _A set of header field values_ to which an incoming packet will be matched. As in the case of destination-based forwarding, hardware-based matching is most rap- idly performed in TCAM memory, with more than a million destination address entries being possible \[Bosshart 2013\]. A packet that matches no flow table entry can be dropped or sent to the remote controller for more processing. In practice, a flow table may be implemented by multiple flow tables for performance or cost reasons \[Bosshart 2013\], but we’ll focus here on the abstraction of a single flow table.Remote Controller
-
-Values in arriving packet’s header2 3
-
-Local flow table
-
-**...**
-
-**...**
-
-**...**
-
-**...**
-
-**...**
-
-**...**
-
-**...**
-
-**...**
-
-**...**
-
-**...**
-
-**...**
-
-**...**
-
-Headers Counters Actions
-
-**Control plane**
-
-**Data plane**
-
+![Alt text](image-29.png)
 **Figure 4.28**  ♦   Generalized forwarding: Each packet switch contains a match-plus-action table that is computed and distributed by a remote controller• _A set of counters_ that are updated as packets are matched to flow table entries. These counters might include the number of packets that have been matched by that table entry, and the time since the table entry was last updated.
 
 • _A set of actions to be taken_ when a packet matches a flow table entry. These actions might be to forward the packet to a given output port, to drop the packet, makes copies of the packet and sent them to multiple output ports, and/or to rewrite selected header fields.
@@ -1007,29 +441,7 @@ We’ll explore matching and actions in more detail in Sections 4.4.1 and 4.4.2,
 
 ## Match
  Figure 4.29 shows the 11 packet-header fields and the incoming port ID that can be matched in an OpenFlow 1.0 match-plus-action rule. Recall from Section 1.5.2 that a link-layer (layer 2) frame arriving to a packet switch will contain a net- work-layer (layer 3) datagram as its payload, which in turn will typically con- tain a transport-layer (layer 4) segment. The first observation we make is that OpenFlow’s match abstraction allows for a match to be made on selected fields from _three_ layers of protocol headers (thus rather brazenly defying the layer- ing principle we studied in Section 1.5). Since we’ve not yet covered the link layer, suffice it to say that the source and destination MAC addresses shown in Figure 4.29 are the link-layer addresses associated with the frame’s sending and receiving interfaces; by forwarding on the basis of Ethernet addresses rather than IP addresses, we can see that an OpenFlow-enabled device can equally perform
-
-Ingress Port
-
-Src MAC
-
-Dst MAC
-
-Eth Type
-
-VLAN ID
-
-VLAN Pri
-
-IP Src IP Dst IP
-
-Proto IP
-
-TOS TCP/UDP Src Port
-
-TCP/UDP Dst Port
-
-Transport layerNetwork layerLink layer
-
+![Alt text](image-30.png)
 **Figure 4.29**  ♦  Packet matching fields, OpenFlow 1.0 flow tableas a router (layer-3 device) forwarding datagrams as well as a switch (layer-2 device) forwarding frames. The Ethernet type field corresponds to the upper layer protocol (e.g., IP) to which the frame’s payload will be de-multiplexed, and the VLAN fields are concerned with so-called virtual local area networks that we’ll study in Chapter 6. The set of 12 values that can be matched in the OpenFlow 1.0 specification has grown to 41 values in more recent OpenFlow specifications \[Bosshart 2014\].
 
 The ingress port refers to the input port at the packet switch on which a packet is received. The packet’s IP source address, IP destination address, IP protocol field, and IP type of service fields were discussed earlier in Section 4.3.1. The transport-layer source and destination port number fields can also be matched.
@@ -1053,99 +465,33 @@ Given OpenFlow’s success, one can surmise that its designers indeed chose thei
 
 ## OpenFlow Examples of Match-plus-action in Action
  Having now considered both the match and action components of generalized forwarding, let’s put these ideas together in the context of the sample network shown in Figure 4.30. The network has 6 hosts (h1, h2, h3, h4, h5 and h6) and three packet switches (s1, s2 and s3), each with four local interfaces (numbered 1 through 4). We’ll consider a number of network-wide behaviors that we’d like to implement, and the flow table entries in s1, s2 and s3 needed to implement this behavior.
-
-1 4
-
-s3
-
-s1
-
-s2 2 32 3Host h6 10.3.0.6
-
-OpenFlow controller
-
-Host h5 10.3.0.5
-
-Host h1 10.1.0.1
-
-Host h2 10.1.0.2
-
-Host h3 10.2.0.3
-
-Host h4 10.2.0.44
-
-2 3
-
+![Alt text](image-31.png)
 **Figure 4.30**  ♦   OpenFlow match-plus-action network with three packet switches, 6 hosts, and an OpenFlow controller**A First Example: Simple Forwarding**
 
 As a very simple example, suppose that the desired forwarding behavior is that packets from h5 or h6 destined to h3 or h4 are to be forwarded from s3 to s1, and then from s1 to s2 (thus completely avoiding the use of the link between s3 and s2). The flow table entry in s1 would be:
-
-s1 Flow Table (Example 1)
-
-Match Action
-
-Ingress Port = 1 ; IP Src = 10.3.\*.\* ; IP Dst = 10.2.\*.\* Forward(4)
-
-… …
-
+![Alt text](image-32.png)
 Of course, we’ll also need a flow table entry in s3 so that datagrams sent from h5 or h6 are forwarded to s1 over outgoing interface 3:
-
-s3 Flow Table (Example 1)
-
-Match Action
-
-IP Src = 10.3.\*.\* ; IP Dst = 10.2.\*.\* Forward(3)
-
-… …
-
+![Alt text](image-33.png)
 Lastly, we’ll also need a flow table entry in s2 to complete this first example, so that datagrams arriving from s1 are forwarded to their destination, either host h3 or h4:
-
-s2 Flow Table (Example 1)
-
-Match Action
-
-Ingress port = 2 ; IP Dst = 10.2.0.3 Forward(3)
-
-Ingress port = 2 ; IP Dst = 10.2.0.4 Forward(4)
-
-… …
-
+![Alt text](image-34.png)
 **A Second Example: Load Balancing**
 
 As a second example, let’s consider a load-balancing scenario, where datagrams from h3 destined to 10.1.\*.\* are to be forwarded over the direct link between s2 and s1, while datagrams from h4 destined to 10.1.\*.\* are to be forwarded over the link between s2 and s3 (and then from s3 to s1). Note that this behavior couldn’t be achieved with IP’s destination-based forwarding. In this case, the flow table in s2 would be:s2 Flow Table (Example 2)
-
-Match Action
-
-Ingress port = 3; IP Dst = 10.1.\*.\* Forward(2)
-
-Ingress port = 4; IP Dst = 10.1.\*.\* Forward(1)
-
-… …
-
+![Alt text](image-35.png)
 Flow table entries are also needed at s1 to forward the datagrams received from s2 to either h1 or h2; and flow table entries are needed at s3 to forward datagrams received on interface 4 from s2 over interface 3 toward s1. See if you can figure out these flow table entries at s1 and s3.
 
 **A Third Example: Firewalling**
 
 As a third example, let’s consider a firewall scenario in which s2 wants only to receive (on any of its interfaces) traffic sent from hosts attached to s3.
-
-s2 Flow Table (Example 3)
-
-Match Action
-
-IP Src = 10.3.\*.\* IP Dst = 10.2.0.3 Forward(3)
-
-IP Src = 10.3.\*.\* IP Dst = 10.2.0.4 Forward(4)
-
-… …
-
+![Alt text](image-36.png)
 If there were no other entries in s2’s flow table, then only traffic from 10.3.\*.\* would be forwarded to the hosts attached to s2.
 
 Although we’ve only considered a few basic scenarios here, the versatility and advantages of generalized forwarding are hopefully apparent. In homework prob- lems, we’ll explore how flow tables can be used to create many different logical behaviors, including virtual networks—two or more logically separate networks (each with their own independent and distinct forwarding behavior)—that use the _same_ physical set of packet switches and links. In Section 5.5, we’ll return to flow tables when we study the SDN controllers that compute and distribute the flow tables, and the protocol used for communicating between a packet switch and its controller.
 
-The match-plus-action flow tables that we’ve seen in this section are actually a limited form of _programmability_, specifying how a router should forward and manipulate (e.g., change a header field) a datagram, based on the match between the datagram’s header values and the matching conditions. One could imagine an even richer form of programmability—a programming language with higher-level constructs such as variables, general purpose arithmetic and Boolean operations, variables, functions, and conditional statements, as well as constructs specificallydesigned for datagram processing at line rate. P4 (Programming Protocol-independent Packet Processors) \[P4 2020\] is such a language, and has gained considerable inter- est and traction since its introduction five years ago \[Bosshart 2014\].
+The match-plus-action flow tables that we’ve seen in this Section are actually a limited form of _programmability_, specifying how a router should forward and manipulate (e.g., change a header field) a datagram, based on the match between the datagram’s header values and the matching conditions. One could imagine an even richer form of programmability—a programming language with higher-level constructs such as variables, general purpose arithmetic and Boolean operations, variables, functions, and conditional statements, as well as constructs specificallydesigned for datagram processing at line rate. P4 (Programming Protocol-independent Packet Processors) \[P4 2020\] is such a language, and has gained considerable inter- est and traction since its introduction five years ago \[Bosshart 2014\].
 
 # Middleboxes
-Routers are the workhorses of the network layer, and in this chapter, we’ve learned how they accomplish their “bread and butter” job of forwarding IP datagrams toward their destination. But in this chapter, and in earlier chapters, we’ve also encoun- tered other network equipment (“boxes”) within the network that sit on the data path and perform functions other than forwarding. We encountered Web caches in Sec- tion 2.2.5; TCP connection splitters in section 3.7; and network address translation (NAT), firewalls, and intrusion detection systems in Section 4.3.4. We learned in Section 4.4 that generalized forwarding allows a modern router to easily and natu- rally perform firewalling and load balancing with generalized “match plus action” operations.
+Routers are the workhorses of the network layer, and in this chapter, we’ve learned how they accomplish their “bread and butter” job of forwarding IP datagrams toward their destination. But in this chapter, and in earlier chapters, we’ve also encoun- tered other network equipment (“boxes”) within the network that sit on the data path and perform functions other than forwarding. We encountered Web caches in Sec- tion 2.2.5; TCP connection splitters in Section 3.7; and network address translation (NAT), firewalls, and intrusion detection systems in Section 4.3.4. We learned in Section 4.4 that generalized forwarding allows a modern router to easily and natu- rally perform firewalling and load balancing with generalized “match plus action” operations.
 
 In the past 20 years, we’ve seen tremendous growth in such **middleboxes**, which RFC 3234 defines as:
 
@@ -1163,15 +509,16 @@ Many other middleboxes \[RFC 3234\] provide capabilities belonging to these thre
 
 With the proliferation of middleboxes comes the attendant need to operate, manage, and upgrade this equipment. Separate specialized hardware boxes, separatesoftware stacks, and separate management/operation skills translate to significant operational and capital costs. It is perhaps not surprising then that researchers are exploring the use of commodity hardware (networking, computing, and storage) with specialized software built on top of a common software stack—_exactly_ the approach taken in SDN a decade earlier—to implement these services. This approach has become known as **network function virtualization (NFV)** \[Mijumbi 2016\]. An alternate approach that has also been explored is to outsource middlebox functional- ity to the cloud \[Sherry 2012\].
 
-For many years, the Internet architecture had a clear separation between the network layer and the transport/application layers. In these “good old days,” the network layer consisted of routers, operating within the network _core_, to forward datagrams toward their destinations using fields only in the IP datagram header. The transport and application layers were implemented in hosts operating at the network _edge_. Hosts exchanged packets among themselves in transport-layer segments and application-layer messages. Today’s middleboxes clearly violate this separation: a NAT box, sitting between a router and host, rewrites network-layer IP addresses and transport-layer port numbers; an in-network firewall blocks suspect datagrams using application-layer (e.g., HTTP), transport-layer, and network-layer header fields; e-mail security gateways are injected between the e-mail sender (whether malicious or not) and the intended e-mail receiver, filtering application-layer e-mail messages based on whitelisted/blacklisted IP addresses as well as e-mail message content. While there are those who have considered such middleboxes as a bit of an archi- tectural abomination \[Garfinkel 2003\], others have adopted the philosophy that such middleboxes “exist for important and permanent reasons”—that they fill an important need—and that we’ll have more, not fewer, middleboxes in the future \[Walfish 2004\]. See the section in attached sidebar on “The end-to-end argument” for a slightly differ- ent lens on the question of where to place service functionality in a network.
+For many years, the Internet architecture had a clear separation between the network layer and the transport/application layers. In these “good old days,” the network layer consisted of routers, operating within the network _core_, to forward datagrams toward their destinations using fields only in the IP datagram header. The transport and application layers were implemented in hosts operating at the network _edge_. Hosts exchanged packets among themselves in transport-layer segments and application-layer messages. Today’s middleboxes clearly violate this separation: a NAT box, sitting between a router and host, rewrites network-layer IP addresses and transport-layer port numbers; an in-network firewall blocks suspect datagrams using application-layer (e.g., HTTP), transport-layer, and network-layer header fields; e-mail security gateways are injected between the e-mail sender (whether malicious or not) and the intended e-mail receiver, filtering application-layer e-mail messages based on whitelisted/blacklisted IP addresses as well as e-mail message content. While there are those who have considered such middleboxes as a bit of an archi- tectural abomination \[Garfinkel 2003\], others have adopted the philosophy that such middleboxes “exist for important and permanent reasons”—that they fill an important need—and that we’ll have more, not fewer, middleboxes in the future \[Walfish 2004\]. See the Section in attached sidebar on “The end-to-end argument” for a slightly differ- ent lens on the question of where to place service functionality in a network.
 
-ARCHITECTURAL PRINCIPLES OF THE INTERNET
+**ARCHITECTURAL PRINCIPLES OF THE INTERNET**
 
 Given the phenomenal success of the Internet, one might naturally wonder about the architectural principles that have guided the development of what is arguably the larg- est and most complex engineered system ever built by humankind. RFC 1958, entitled “Architectural Principles of the Internet,” suggests that these principles, if indeed they exist, are truly minimal:
 
 “Many members of the Internet community would argue that there is no architecture, but only a tradition, which was not written down for the first 25 years (or at least not by the IAB). However, in very general terms, the community believes that the goal is connectivity, the tool is the Internet Protocol, and the intelligence is end to end rather than hidden in the network.” \[RFC 1958\]
 
-**PRINCIPLES IN PRACTICE**So there we have it! The goal was to provide connectivity, there would be just one net- work-layer protocol (the celebrated IP protocol we have studied in this chapter), and “intelli- gence” (one might say the “complexity”) would be placed at the network edge, rather than in the network core. Let’s look these last two considerations in a bit more detail.
+**PRINCIPLES IN PRACTICE**
+So there we have it! The goal was to provide connectivity, there would be just one net- work-layer protocol (the celebrated IP protocol we have studied in this chapter), and “intelli- gence” (one might say the “complexity”) would be placed at the network edge, rather than in the network core. Let’s look these last two considerations in a bit more detail.
 
 THE IP HOURGLASS
 
@@ -1179,21 +526,10 @@ By now, we’re well acquainted with the five-layer Internet protocol stack that
 
 For a discussion the narrow waist, including examples beyond the Internet, see \[Beck 2019; Akhshabi 2011\]. We note here that as the Internet architecture enters mid-life (certainly,
 
-IP
-
-TCP UDP
-
-HTTP SMTP QUIC DASH
-
-RTP …
-
-Ethernet PPP … WiFi BluetoothPDCP
-
-copper fiberradio
-
+![Alt text](image-37.png)
 **Figure 4.31** ♦ The narrow-waisted Internet hourglassthe Internet’s age of 40 to 50 years qualifies it for middle age!), one might observe that its “narrow waist” may indeed be widening a bit (as often happens in middle age!) via the rise of middleboxes.
 
-THE END-TO-END ARGUMENT
+**THE END-TO-END ARGUMENT**
 
 The third principle in RFC 1958—that “intelligence is end to end rather than hidden in the network”—speaks to the placement of functionality within the network. Here, we’ve seen that until the recent rise of middleboxes, most Internet functionality was indeed placed at the network’s edge. It’s worth noting that, in direct contrast with the 20th century telephone network—which had “dumb” (non-programmable) endpoints and smart switches—the Internet has always had smart endpoints (programmable computers), enabling complex functionality to be placed at those endpoints. But a more principled argument for actually placing functionality at the endpoints was made in an extremely influential paper \[Saltzer 1984\] that articulated the “end-to-end argument.” It stated:
 
@@ -1212,7 +548,7 @@ With our newfound understanding of the network-layer’s data plane, we’re now
 
 **Homework Problems and Questions**
 
-**Chapter 4 Review Questions** sECTiON 4.1 R1. Let’s review some of the terminology used in this textbook. Recall that the
+**Chapter 4 Review Questions** Section 4.1 R1. Let’s review some of the terminology used in this textbook. Recall that the
 
 name of a transport-layer packet is _segment_ and that the name of a link-layer packet is _frame_. What is the name of a network-layer packet? Recall that both routers and link-layer switches are called _packet switches_. What is the funda- mental difference between a router and link-layer switch?
 
@@ -1224,7 +560,7 @@ R4. What is the role of the forwarding table within a router?
 
 R5. We said that a network layer’s service model “defines the characteristics of end-to-end transport of packets between sending and receiving hosts.” What is the service model of the Internet’s network layer? What guarantees are made by the Internet’s service model regarding the host-to-host delivery of datagrams?
 
-sECTiON 4.2 R6. In Section 4.2, we saw that a router typically consists of input ports, output ports,
+Section 4.2 R6. In Section 4.2, we saw that a router typically consists of input ports, output ports,
 
 a switching fabric and a routing processor. Which of these are implemented in
 HOMEWORK PROBLEMs AND QuEsTiONs 
@@ -1255,7 +591,7 @@ R15. Give an example showing why a network operator might want one class of pack
 
 R16. What is an essential different between RR and WFQ packet scheduling? Is there a case (_Hint:_ Consider the WFQ weights) where RR and WFQ will behave exactly the same?
 
-sECTiON 4.3 R17. Suppose Host A sends Host B a TCP segment encapsulated in an IP data-
+Section 4.3 R17. Suppose Host A sends Host B a TCP segment encapsulated in an IP data-
 
 gram. When Host B receives the datagram, how does the network layer in Host B know it should pass the segment (that is, the payload of the datagram) to TCP rather than to UDP or to some other upper-layer protocol?
 
@@ -1287,7 +623,7 @@ R30. Compare and contrast the IPv4 and the IPv6 header fields. Do they have any 
 
 R31. It has been said that when IPv6 tunnels through IPv4 routers, IPv6 treats the IPv4 tunnels as link-layer protocols. Do you agree with this statement? Why or why not?
 
-sECTiON 4.4 R32. How does generalized forwarding differ from destination-based forwarding?
+Section 4.4 R32. How does generalized forwarding differ from destination-based forwarding?
 
 R33. What is the difference between a forwarding table that we encountered in destination-based forwarding in Section 4.1 and OpenFlow’s flow table that we encountered in Section 4.4?
 PROBLEMs 
@@ -1303,21 +639,7 @@ P1. Consider the network below.
 a. Show the forwarding table in router A, such that all traffic destined to host H3 is forwarded through interface 3.
 
 b. Can you write down a forwarding table in router A, such that all traffic from H1 destined to host H3 is forwarded through interface 3, while all traffic from H2 destined to host H3 is forwarded through interface 4? (_Hint:_ This is a trick question.)
-
-B
-
-A
-
-1 3
-
-2 4D2H3
-
-H1
-
-H21 2
-
-C
-
+![Alt text](image-38.png)
 P2. Suppose two packets arrive to two different input ports of a router at exactly the same time. Also suppose there are no other packets anywhere in the router.
 
 a. Suppose the two packets are to be forwarded to two different output ports. Is it possible to forward the two packets through the switch fabric at the same time when the fabric uses a shared bus?
@@ -1327,19 +649,7 @@ b. Suppose the two packets are to be forwarded to two different output ports. Is
 c. Suppose the two packets are to be forwarded to the same output port. Is it possible to forward the two packets through the switch fabric at the same time when the fabric uses a crossbar?P3. In Section 4.2.4, it was said that if _R\_switch_ is _N_ times faster than _R\_line_, then only negligible queuing will occur at the input ports, even if all the packets are to be forwarded to the same output port. Now suppose that _R\_switch = R\_line_, but all packets are to be forwarded to different output ports. Let _D_ be the time to transmit a packet. As a function of _D_, what is the maximum input queuing delay for a packet for the (a) memory, (b) bus, and (c) crossbar switching fabrics?
 
 P4. Consider the switch shown below. Suppose that all datagrams have the same fixed length, that the switch operates in a slotted, synchronous manner, and that in one time slot a datagram can be transferred from an input port to an output port. The switch fabric is a crossbar so that at most one datagram can be transferred to a given output port in a time slot, but different output ports can receive datagrams from different input ports in a single time slot. What is the minimal number of time slots needed to transfer the packets shown from input ports to their output ports, assuming any input queue scheduling order you want (i.e., it need not have HOL blocking)? What is the largest number of slots needed, assuming the worst-case scheduling order you can devise, assuming that a non-empty input queue is never idle?
-
-**X Y** Switch fabric
-
-Output port X
-
-Output port Y
-
-Output port Z
-
-**X**
-
-**YZ**
-
+![Alt text](image-39.png)
 P5. Suppose that the WEQ scheduling policy is applied to a buffer that supports three classes, and suppose the weights are 0.5, 0.25, and 0.25 for the three classes.
 
 a. Suppose that each class has a large number of packets in the buffer. In what sequence might the three classes be served in order to achieve the WFQ weights? (For round robin scheduling, a natural sequence is 123123123 . . .).
@@ -1348,19 +658,7 @@ b. Suppose that classes 1 and 2 have a large number of packets in the buffer, an
 PROBLEMs 
 
 P6. Consider the figure below. Answer the following questions:
-
-Time
-
-Arrivals
-
-Departures
-
-Packet in service
-
-Time1
-
-6 1084712_t_ = 0 _t_ = 2 _t_ = 4 _t_ = 6 _t_ = 8 _t_ = 10 _t_ = 12 _t_ = 14
-
+![Alt text](image-40.png)
 a. Assuming FIFO service, indicate the time at which packets 2 through 12 each leave the queue. For each packet, what is the delay between its arrival and the beginning of the slot in which it is transmitted? What is the average of this delay over all 12 packets?
 
 b. Now assume a priority service, and assume that odd-numbered packets are high priority, and even-numbered packets are low priority. Indicate the time at which packets 2 through 12 each leave the queue. For each packet, what is the delay between its arrival and the beginning of the slot in which it is transmitted? What is the average of this delay over all 12 packets?
@@ -1378,58 +676,20 @@ b. Now suppose that round robin service is used, with packets 1, 4, 5, 6, and 11
 c. Now suppose that WFQ service is used, with packets 1, 4, 5, 6, and 11 belonging to one class of traffic, and the remaining packets belonging to the second class of traffic. Class 1 has a WFQ weight of 1, while class 2 has a WFQ weight of 2 (note that these weights are different than in the previous question). Indicate the slots in which packets 2 through 12 each leave the queue. See also the caveat in the question above regarding WFQ service.
 
 P8. Consider a datagram network using 32-bit host addresses. Suppose a router has four links, numbered 0 through 3, and packets are to be forwarded to the link interfaces as follows:
-
-**Destination Address Range Link Interface**
-
-11100000 00000000 00000000 00000000 through 0
-
-11100000 00111111 11111111 11111111
-
-11100000 01000000 00000000 00000000 through 1
-
-11100000 01000000 11111111 11111111
-
-11100000 01000001 00000000 00000000 through 2
-
-11100001 01111111 11111111 11111111
-
-otherwise 3
-
+![Alt text](image-41.png)
 a. Provide a forwarding table that has five entries, uses longest prefix match- ing, and forwards packets to the correct link interfaces.
 
 b. Describe how your forwarding table determines the appropriate link inter- face for datagrams with destination addresses:
 
 11001000 10010001 01010001 01010101 11100001 01000000 11000011 00111100 11100001 10000000 00010001 01110111
-PROBLEMs 
+**PROBLEMS**
 
 P9. Consider a datagram network using 8-bit host addresses. Suppose a router uses longest prefix matching and has the following forwarding table:
-
-Prefix Match Interface
-
-00 0
-
-010 1
-
-011 2
-
-10 2
-
-11 3
-
+![Alt text](image-42.png)
 For each of the four interfaces, give the associated range of destination host addresses and the number of addresses in the range.
 
 P10. Consider a datagram network using 8-bit host addresses. Suppose a router uses longest prefix matching and has the following forwarding table:
-
-Prefix Match Interface
-
-1 0
-
-10 1
-
-111 2
-
-otherwise 3
-
+![Alt text](image-43.png)
 For each of the four interfaces, give the associated range of destination host addresses and the number of addresses in the range.
 
 P11. Consider a router that interconnects three subnets: Subnet 1, Subnet 2, and Subnet 3. Suppose all of the interfaces in each of these three subnets are required to have the prefix 223.1.17/24. Also suppose that Subnet 1 is required to support at least 60 interfaces, Subnet 2 is to support at least 90 interfaces, and Subnet 3 is to support at least 12 interfaces. Provide three network addresses (of the form a.b.c.d/x) that satisfy these constraints.
@@ -1459,7 +719,7 @@ b. Suppose each host has two ongoing TCP connections, all to port 80 at host 128
 P19. Suppose you are interested in detecting the number of hosts behind a NAT. You observe that the IP layer stamps an identification number sequentially on each IP packet. The identification number of the first IP packet generated by a host is a random number, and the identification numbers of the subsequent IP packets are sequentially assigned. Assume all IP packets generated by hosts behind the NAT are sent to the outside world.
 
 a. Based on this observation, and assuming you can sniff all packets sent by the NAT to the outside, can you outline a simple technique that detects the number of unique hosts behind a NAT? Justify your answer.
-PROBLEMs 
+**PROBLEMS** 
 
 b. If the identification numbers are not sequentially assigned but randomly assigned, would your technique work? Justify your answer.
 
@@ -1512,20 +772,7 @@ Vinton G. Cerf has served as Vice President and Chief Internet Evangelist for Go
 **Vinton G. Cerf**
 
 **AN INTERVIEW WITH…**
-
-C ou
-
-rte sy
-
-o f V
-
-in to
-
-n G
-
-. C er
-
-f
+![Alt text](image-44.png)
 with powerful and expandable technology, but I doubt we had a clear image of what the world would be like with billions of computers all interlinked on the Internet.
 
 What do you now envision for the future of networking and the Internet? What major challenges/obstacles do you think lie ahead in their development? I believe the Internet itself and networks in general will continue to proliferate. There are already billions of Internet-enabled devices on the Internet, including appliances like cell phones, refrigerators, personal digital assistants, home servers, televisions, as well as the usual array of laptops, servers, and so on. Big challenges include support for mobility, bat- tery life, capacity of the access links to the network, and ability to scale the optical core of the network in an unlimited fashion. The interplanetary extension of the Internet is a project that is well underway at NASA and other space agencies. We still need to add IPv6 \[128- bit\] addressing to the original IPv4 \[32-bit addresses\] packet format. The list is long!
