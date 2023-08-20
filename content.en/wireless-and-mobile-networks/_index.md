@@ -23,64 +23,17 @@ Figure 7.1 shows the setting in which we’ll consider the topics of wireless da
 • _Wireless links._ A host connects to a base station (defined below) or to another wireless host through a **wireless communication link**. Different wireless link technologies have different transmission rates and can transmit over different distances. Figure 7.2 shows two key characteristics, link transmission rates and coverage ranges, of the more popular wireless network standards. (The figure is only meant to provide a rough idea of these characteristics. For example, some of these types of networks are only now being deployed, and some link rates can increase or decrease beyond the values shown depending on distance, chan- nel conditions, and the number of users in the wireless network.) We’ll cover these standards later in the first half of this chapter; we’ll also consider other wireless link characteristics (such as their bit error rates and the causes of bit errors) in Section 7.2.In Figure 7.1, wireless links connect wireless hosts located at the edge of the network into the larger network infrastructure. We hasten to add that wireless links are also sometimes used _within_ a network to connect routers, switches, and other network equipment. However, our focus in this chapter will be on the use of wireless communication at the network edge, as it is here that many of the most exciting technical challenges, and most of the growth, are occurring.
 
 • _Base station._ The **base station** is a key part of the wireless network infrastructure. Unlike the wireless host and wireless link, a base station has no obvious counter- part in a wired network. A base station is responsible for sending and receiving data (e.g., packets) to and from a wireless host that is associated with that base station. A base station will often be responsible for coordinating the transmission of multiple wireless hosts with which it is associated. When we say a wireless host is “associated” with a base station, we mean that (1) the host is within the wireless communication distance of the base station, and (2) the host uses that base station to relay data between it (the host) and the larger network. **Cell towers** in cellular networks and **access points** in 802.11 wireless LANs are examples of base stations.
-
+![Alt text](image.png)
 **Figure 7.1**  ♦  Elements of a wireless network
-
-Network infrastructure
-
-Key:
-
-Wireless access point
-
-Coverage area
-
-Wireless host
 
 Wireless host in motionIn Figure 7.1, the base station is connected to the larger network (e.g., the Internet, corporate or home network), thus functioning as a link-layer relay between the wireless host and the rest of the world with which the host communicates.
 
 Hosts associated with a base station are often referred to as operating in **infrastructure mode**, since all traditional network services (e.g., address assign- ment and routing) are provided by the network to which a host is connected via the base station. In **ad hoc networks**, wireless hosts have no such infrastructure with which to connect. In the absence of such infrastructure, the hosts themselves must provide for services such as routing, address assignment, DNS-like name translation, and more.
 
 When a mobile host moves beyond the range of one base station and into the range of another, it will change its point of attachment into the larger network (i.e., change the base station with which it is associated)—a process referred to as **handoff** or **handover**. Such mobility raises many challenging questions. If a host can move, how does one find the mobile host’s current location in the network so that data can be forwarded to that mobile host? How is addressing performed, given that a host can be in one of many possible locations? If the host moves _during_ a TCP connection or phone call, how is data routed so that the connection
-
+![Alt text](image-1.png)
 **Figure 7.2**  ♦   Wireless transmission rates and range for WiFi, cellular 4G/5G and Bluetooth standards (note: axes are not linear)
-
-802.11ax
-
-802.11ac
-
-802.11n
-
-802.11 af,ah
-
-5G
-
-4G LTE
-
-802.11g
-
-802.11b
-
-Bluetooth
-
-Indoor Outdoor Mid range outdoor
-
-Long range outdoor
-
-10–30m 50–200m 200m–4Km 4Km–15Km
-
-14 Gbps
-
-10 Gbps
-
-3.5 Gbps
-
-600 Mbps
-
-54 Mbps
-
-2 Mbps
-
-11 Mbpscontinues uninterrupted? These and many (many!) other questions make wireless and mobile networking an area of exciting networking research.
+continues uninterrupted? These and many (many!) other questions make wireless and mobile networking an area of exciting networking research.
 
 • _Network infrastructure._ This is the larger network with which a wireless host may wish to communicate.
 
@@ -114,62 +67,18 @@ Having considered the impairments that can occur on a wireless channel, let’s 
 Figure 7.3 (adapted from \[Holland 2001\]) shows the bit error rate (BER)— roughly speaking, the probability that a transmitted bit is received in error at the receiver—versus the SNR for three different modulation techniques for encod- ing information for transmission on an idealized wireless channel. The theory of modulation and coding, as well as signal extraction and BER, is well beyond the scope of this text (see \[Schwartz 1980; Goldsmith 2005\] for a discussion of these topics). Nonetheless, Figure 7.3 illustrates several physical-layer charac- teristics that are important in understanding higher-layer wireless communica- tion protocols:
 
 • _For a given modulation scheme, the higher the SNR, the lower the BER._ Since a sender can increase the SNR by increasing its transmission power, a sender can decrease the probability that a frame is received in error by increasing its transmission power. Note, however, that there is arguably little practical gain in increasing the power beyond a certain threshold, say to decrease the BER from 10-12 to 10-13. There are also _disadvantages_ associated with increas- ing the transmission power: More energy must be expended by the sender
-
+![Alt text](image-2.png)
 **Figure 7.3**  ♦  Bit error rate, transmission rate, and SNR
-
-10–7
-
-10–6
-
-10–5
-
-10–4
-
-10–3
-
-10–2
-
-10–1
-
-10 20 30 400
-
-SNR (dB)
-
-B ER
-
-QAM16 (4 Mbps)
-
-QAM256 (8 Mbps)
-
-BPSK (1 Mbps)(an important concern for battery-powered mobile users), and the sender’s transmissions are more likely to interfere with the transmissions of another sender (see Figure 7.4(b)).
+(an important concern for battery-powered mobile users), and the sender’s transmissions are more likely to interfere with the transmissions of another sender (see Figure 7.4(b)).
 
 • _For a given SNR, a modulation technique with a higher bit transmission rate (whether in error or not) will have a higher BER._ For example, in Figure 7.3, with an SNR of 10 dB, BPSK modulation with a transmission rate of 1 Mbps has a BER of less than 10-7, while with QAM16 modulation with a transmission rate of 4 Mbps, the BER is 10-1, far too high to be practically useful. However, with an SNR of 20 dB, QAM16 modulation has a transmission rate of 4 Mbps and a BER of 10-7, while BPSK modulation has a transmission rate of only 1 Mbps and a BER that is so low as to be (literally) “off the charts.” If one can tolerate a BER of 10-7, the higher transmission rate offered by QAM16 would make it the preferred modulation technique in this situation. These considerations give rise to the final characteristic, described next.
 
 • _Dynamic selection of the physical-layer modulation technique can be used to adapt the modulation technique to channel conditions._ The SNR (and hence the BER) may change as a result of mobility or due to changes in the environ- ment. Adaptive modulation and coding are used in the 802.11 WiFi and in 4G and 5G cellular data networks that we’ll study in Sections 7.3 and 7.4. This allows, for example, the selection of a modulation technique that provides the highest transmission rate possible subject to a constraint on the BER, for given channel characteristics.
 
 A higher and time-varying bit error rate is not the only difference between a wired and wireless link. Recall that in the case of wired broadcast links, all nodes
-
+![Alt text](image-3.png)
 **Figure 7.4**  ♦  Hidden terminal problem caused by obstacle (a) and fading (b)
-
-A A
-
-C
-
-B C
-
-Location
-
-**b.a.**Si g
-
-n al
-
-s tr
-
-en g
-
-th
-
-Breceive the transmissions from all other nodes. In the case of wireless links, the situ- ation is not as simple, as shown in Figure 7.4. Suppose that Station A is transmit- ting to Station B. Suppose also that Station C is transmitting to Station B. With the so-called **hidden terminal problem**, physical obstructions in the environment (for example, a mountain or a building) may prevent A and C from hearing each other’s transmissions, even though A’s and C’s transmissions are indeed interfering at the destination, B. This is shown in Figure 7.4(a). A second scenario that results in unde- tectable collisions at the receiver results from the **fading** of a signal’s strength as it propagates through the wireless medium. Figure 7.4(b) illustrates the case where A and C are placed such that their signals are not strong enough to detect each other’s transmissions, yet their signals _are_ strong enough to interfere with each other at sta- tion B. As we’ll see in Section 7.3, the hidden terminal problem and fading make multiple access in a wireless network considerably more complex than in a wired network.
+receive the transmissions from all other nodes. In the case of wireless links, the situ- ation is not as simple, as shown in Figure 7.4. Suppose that Station A is transmit- ting to Station B. Suppose also that Station C is transmitting to Station B. With the so-called **hidden terminal problem**, physical obstructions in the environment (for example, a mountain or a building) may prevent A and C from hearing each other’s transmissions, even though A’s and C’s transmissions are indeed interfering at the destination, B. This is shown in Figure 7.4(a). A second scenario that results in unde- tectable collisions at the receiver results from the **fading** of a signal’s strength as it propagates through the wireless medium. Figure 7.4(b) illustrates the case where A and C are placed such that their signals are not strong enough to detect each other’s transmissions, yet their signals _are_ strong enough to interfere with each other at sta- tion B. As we’ll see in Section 7.3, the hidden terminal problem and fading make multiple access in a wireless network considerably more complex than in a wired network.
 
 ## CDMA
  Recall from Chapter 6 that when hosts communicate over a shared medium, a pro- tocol is needed so that the signals sent by multiple senders do not interfere at the receivers. In Chapter 6, we described three classes of medium access protocols: channel partitioning, random access, and taking turns. Code division multiple access (CDMA) belongs to the family of channel partitioning protocols. It is prevalent in wireless LAN and cellular technologies. Because CDMA is so important in the wire- less world, we’ll take a quick look at CDMA now, before getting into specific wire- less access technologies in the subsequent sections.
@@ -189,72 +98,9 @@ _m_\=1 _Zi_,_m_
 \# _cm_ (7.2)
 
 The reader might want to work through the details of the example in Figure 7.5 to see that the original data bits are indeed correctly recovered at the receiver using Equation 7.2.
-
+![Alt text](image-4.png)
 **Figure 7.5**  ♦  A simple CDMA example: Sender encoding, receiver decoding
-
-11 1 1
-
-–1 –1–1–1
-
-11 1 1
-
-–1 –1–1–1–1 –1–1
-
-1 1 1 1
-
-–1 –1–1–1
-
-1 1 1
-
-Time slot 1 received input
-
-Time slot 0 received input
-
-Code–1 –1–1–1
-
-1 1 1 1
-
-–1 –1–1–1
-
-1 1 1Data bits
-
-Code 11 1 1
-
-–1 –1–1–1
-
-11 1 1
-
-–1 –1–1–1
-
-_d_1 = –1
-
-_d_0 = 1
-
-Time slot 1
-
-**Sender** Channel output _Zi,m_
-
-**Receiver**
-
-_Zi,m di_ • _cm_\=
-
-_Zi,m • cm_
-
-_d M_
-
-_i m_\=1
-
-_M_S
-
-Time slot 1 channel output
-
-Time slot 0 channel output
-
-Time slot 0
-
-_d_1 = –1
-
-_d_0 = 1 –1The world is far from ideal, however, and as noted above, CDMA must work in the presence of interfering senders that are encoding and transmitting their data using a different assigned code. But how can a CDMA receiver recover a sender’s original data bits when those data bits are being tangled with bits being transmitted by other senders? CDMA works under the assumption that the interfering transmitted bit sig- nals are additive. This means, for example, that if three senders send a 1 value, and a fourth sender sends a -1 value during the same mini-slot, then the received signal at all receivers during that mini-slot is a 2 (since 1 + 1 + 1 - 1 = 2). In the presence of multiple senders, sender _s_ computes its encoded transmissions, _Zs_
+The world is far from ideal, however, and as noted above, CDMA must work in the presence of interfering senders that are encoding and transmitting their data using a different assigned code. But how can a CDMA receiver recover a sender’s original data bits when those data bits are being tangled with bits being transmitted by other senders? CDMA works under the assumption that the interfering transmitted bit sig- nals are additive. This means, for example, that if three senders send a 1 value, and a fourth sender sends a -1 value during the same mini-slot, then the received signal at all receivers during that mini-slot is a 2 (since 1 + 1 + 1 - 1 = 2). In the presence of multiple senders, sender _s_ computes its encoded transmissions, _Zs_
 
 _i_,_m_, in exactly the same manner as in Equation 7.1. The value received at a receiver during the _m_th mini-slot of the _i_th bit slot, however, is now the _sum_ of the transmitted bits from all _N_ senders during that mini-slot:
 
@@ -282,84 +128,9 @@ Recall our cocktail analogy from Chapter 6. A CDMA protocol is similar to having
 
 Our discussion here of CDMA is necessarily brief; in practice a number of dif- ficult issues must be addressed. First, in order for the CDMA receivers to be able to extract a particular sender’s signal, the CDMA codes must be carefully chosen. Second, our discussion has assumed that the received signal strengths from various senders are the same; in reality, this can be difficult to achieve. There is a consid- erable body of literature addressing these and other issues related to CDMA; see \[Pickholtz 1982; Viterbi 1995\] for details.# WiFi: 802.11 Wireless LANs
 Pervasive in the workplace, the home, educational institutions, cafés, airports, and street corners, wireless LANs are now one of the most important access network technologies in the Internet today. Although many technologies and standards for
-
+![Alt text](image-5.png)
 **Figure 7.6**  ♦  A two-sender CDMA example
 
-**Receiver 1**
-
-11 1 1
-
-–1 –1–1–1
-
-11 1 1
-
-–1 –1–1–1
-
-Time slot 1 received input
-
-Time slot 0 received input
-
-Data bits
-
-Data bits
-
-11 1 1
-
-–1 –1–1–1
-
-11 1 1
-
-–1 –1–1–1 Code
-
-**Senders**
-
-1 1 1
-
-–1
-
-1 1 1
-
-–1–1 –1
-
-1 1 1 1 1 Code
-
-Code
-
-\+ –2
-
-2 2 2 2 2
-
-–2–2
-
-2 2 2 2 2
-
-–2Channel, _Zi,m_ \*
-
-_Zi,m di_ • _cm_\=
-
-_Zi,m • cm_
-
-_d M_
-
-_i m_\=1
-
-_M_S
-
-_d_1 = –1
-
-_d_0 = 1
-
-_d_1 = 121\*
-
-22 2
-
-_Zi,m di_ • _cm_\=1 1 1
-
-_d_0 = 121
-
-_d_1 = –1
-
-_d_0 = 1 1
 wireless LANs were developed in the 1990s, one particular class of standards has clearly emerged as the winner: the **IEEE 802.11 wireless LAN**, also known as **WiFi**. In this section, we’ll take a close look at 802.11 wireless LANs, examining its frame structure, its medium access protocol, and its internetworking of 802.11 LANs with wired Ethernet LANs.
 
 As summarized in Table 7.1, there are several 802.11 standards \[IEEE 802.11 2020\]. The 802.11 b, g, n, ac, ax are successive generations of 802.11 technology aimed for wireless local area networks (WLANs), typically less than 70 m range in a home office, workplace, or business setting. The 802.11 n, ac, and ax standards have recently been branded as WiFi 4, 5 and 6, respectively—no doubt competing with 4G and 5G cellular network branding. The 802.11 af, ah standards operate over longer distances and are aimed at Internet of Things, sensor networks, and metering applications.
@@ -368,49 +139,26 @@ The different 802.11 b, g, n, ac, ax standards all share some common character- 
 
 However, as shown in Table 7.1, the standards have some major differences at the physical layer. 802.11 devices operate in two different frequency ranges: 2.4–2.485 GHz (referred to as the 2.4 GHz range) and 5.1–5.8 GHz (referred to as the 5 GHz range). The 2.4 GHz range is an unlicensed frequency band, where 802.11 devices may compete for frequency spectrum with 2.4 GHz phones and appli- ances such as microwave ovens. At 5 GHz, 802.11 LANs have a shorter transmis- sion distance for a given power level and suffer more from multipath propagation. The 802.11n, 802.11ac, and 802.11ax standards use multiple input multiple-output (MIMO) antennas; that is, two or more antennas on the sending side and two or more antennas on the receiving side that are transmitting/receiving different signals
 
-IEEE 802.11 standard Year Max data rate Range Frequency
-
-802.11 b 1999 11 Mbps 30 m 2.4 Ghz
-
-802.11 g 2003 54 Mbps 30 m 2.4 Ghz
-
-802.11 n (WiFi 4) 2009 600 70 m 2.4, 5 Ghz
-
-802.11 ac (WiFi 5) 2013 3.47 Gpbs 70 m 5 Ghz
-
-802.11 ax (WiFi 6) 2020 (expected) 14 Gbps 70 m 2.4, 5 Ghz
-
-802.11 af 2014 35–560 Mbps 1 Km unused TV bands (54–790 MHz)
-
-802.11 ah 2017 347 Mbps 1 Km 900 Mhz
-
+![Alt text](image-6.png)
 **Table 7.1**  ♦  Summary of IEEE 802.11 standards\[Diggavi 2004\]. 802.11ac and 802.11 ax base stations may transmit to multiple sta- tions simultaneously, and use “smart” antennas to adaptively beamform to target transmissions in the direction of a receiver. This decreases interference and increases the distance reached at a given data rate. The data rates shown in Table 7.1 are for an idealized environment, for example, a receiver close to the base station, with no interference—a scenario that we’re unlikely to experience in practice! So as the say- ing goes, YMMV: Your Mileage (or in this case your wireless data rate) May Vary.
 
-## The 802.11 Wireless LAN ArchitectureFigure 7.7 illustrates the principal components of the 802.11 wireless LAN architec- ture. The fundamental building block of the 802.11 architecture is the **basic service set (BSS)**. A BSS contains one or more wireless stations and a central **base station**, known as an **access point (AP)
+## The 802.11 Wireless LAN Architecture
+Figure 7.7 illustrates the principal components of the 802.11 wireless LAN architec- ture. The fundamental building block of the 802.11 architecture is the **basic service set (BSS)**. A BSS contains one or more wireless stations and a central **base station**, known as an **access point (AP)
  in 802.11 parlance. Figure 7.7 shows the AP in each of two BSSs connecting to an interconnection device (such as a switch or router), which in turn leads to the Internet. In a typical home network, there is one AP and one router (typically integrated together as one unit) that connects the BSS to the Internet.
 
 As with Ethernet devices, each 802.11 wireless station has a 6-byte MAC address that is stored in the firmware of the station’s adapter (that is, 802.11 network interface card). Each AP also has a MAC address for its wireless interface. As with Ethernet, these MAC addresses are administered by IEEE and are (in theory) globally unique.
 
 As noted in Section 7.1, wireless LANs that deploy APs are often referred to as **infrastructure wireless LANs**, with the “infrastructure” being the APs along with the
-
+![Alt text](image-7.png)
 **Figure 7.7**  ♦  IEEE 802.11 LAN architecture
-
-Internet Switch or router
-
-AP
-
-**BSS 1**
-
-**BSS 2**
-
-APwired Ethernet infrastructure that interconnects the APs and a router. Figure 7.8 shows that IEEE 802.11 stations can also group themselves together to form an ad hoc net- work—a network with no central control and with no connections to the “outside world.” Here, the network is formed “on the fly,” by mobile devices that have found themselves in proximity to each other, that have a need to communicate, and that find no preexist- ing network infrastructure in their location. An ad hoc network might be formed when people with laptops get together (e.g., in a conference room, a train, or a car) and want to exchange data in the absence of a centralized AP. There has been tremendous interest in ad hoc networking, as communicating portable devices continue to proliferate. In this section, though, we’ll focus our attention on infrastructure wireless LANs.
+wired Ethernet infrastructure that interconnects the APs and a router. Figure 7.8 shows that IEEE 802.11 stations can also group themselves together to form an ad hoc net- work—a network with no central control and with no connections to the “outside world.” Here, the network is formed “on the fly,” by mobile devices that have found themselves in proximity to each other, that have a need to communicate, and that find no preexist- ing network infrastructure in their location. An ad hoc network might be formed when people with laptops get together (e.g., in a conference room, a train, or a car) and want to exchange data in the absence of a centralized AP. There has been tremendous interest in ad hoc networking, as communicating portable devices continue to proliferate. In this section, though, we’ll focus our attention on infrastructure wireless LANs.
 
 **Channels and Association**
 
 In 802.11, each wireless station needs to associate with an AP before it can send or receive network-layer data. Although all of the 802.11 standards use association, we’ll discuss this topic specifically in the context of IEEE 802.11b, g, n, ac, ax.
 
 When a network administrator installs an AP, the administrator assigns a one- or two-word **Service Set Identifier (SSID)** to the access point. (When you choose Wi-Fi under Setting on your iPhone, for example, a list is displayed showing the SSID of each AP in range.) The administrator must also assign a channel number to the AP. To understand channel numbers, recall that 802.11 operates in the fre- quency range of 2.4 GHz to 2.4835 GHz. Within this 85 MHz band, 802.11 defines 11 partially overlapping channels. Any two channels are non-overlapping if and only if they are separated by four or more channels. In particular, the set of chan- nels 1, 6, and 11 is the only set of three non-overlapping channels. This means that an administrator could create a wireless LAN with an aggregate maximum trans- mission rate of three times the maximum transmission rate shown in Table 7.1 by installing three 802.11 APs at the same physical location, assigning channels 1, 6, and 11 to the APs, and interconnecting each of the APs with a switch.
-
+![Alt text](image-8.png)
 **Figure 7.8**  ♦  An IEEE 802.11 ad hoc network
 
 **BSS**Now that we have a basic understanding of 802.11 channels, let’s describe an interesting (and not completely uncommon) situation—that of a WiFi jungle. A **WiFi jungle** is any physical location where a wireless station receives a sufficiently strong signal from two or more APs. For example, in many cafés in New York City, a wire- less station can pick up a signal from numerous nearby APs. One of the APs might be managed by the café, while the other APs might be in residential apartments near the café. Each of these APs would likely be located in a different IP subnet and would have been independently assigned a channel.
@@ -421,29 +169,16 @@ The 802.11 standard requires that an AP periodically send **beacon frames**, eac
 
 The 802.11 standard does not specify an algorithm for selecting which of the available APs to associate with; that algorithm is left up to the designers of the 802.11 firmware and software in your wireless device. Typically, the device chooses the AP whose beacon frame is received with the highest signal strength. While a high signal strength is good (see, e.g., Figure 7.3), signal strength is not the only AP characteristic that will determine the performance a device receives. In particular, it’s possible that the selected AP may have a strong signal, but may be overloaded with other affiliated devices (that will need to share the wireless band- width at that AP), while an unloaded AP is not selected due to a slightly weaker signal. A number of alternative ways of choosing APs have thus recently been pro- posed \[Vasudevan 2005; Nicholson 2006; Sundaresan 2006\]. For an interesting and down-to-earth discussion of how signal strength is measured, see \[Bardwell 2004\].
 
-The process of scanning channels and listening for beacon frames is known as **passive scanning** (see Figure 7.9a). A wireless device can also perform **active scanning**, by broadcasting a probe frame that will be received by all APs within the wireless device’s range, as shown in Figure 7.9b. APs respond to the probe request frame with a probe response frame. The wireless device can then choose the AP with which to associate from among the responding APs.**Figure 7.9**  ♦  Active and passive scanning for access points
+The process of scanning channels and listening for beacon frames is known as **passive scanning** (see Figure 7.9a). A wireless device can also perform **active scanning**, by broadcasting a probe frame that will be received by all APs within the wireless device’s range, as shown in Figure 7.9b. APs respond to the probe request frame with a probe response frame. The wireless device can then choose the AP with which to associate from among the responding APs.
 
-1 1H1
-
-AP 2AP 1
-
-**BBS 1**
-
-**a. Passive scanning** 1\. Beacon frames sent from APs 2. Association Request frame sent: H1 to selected AP 3. Association Response frame sent: Selected AP to H1
-
-**a. Active scanning** 1\. Probe Request frame broadcast from H1 2. Probes Response frame sent from APs 3. Association Request frame sent: H1 to selected AP 4. Association Response frame sent: Selected AP to H1
-
-**BBS 2**
-
-2 2H1
-
-AP 2AP 1
-
-**BBS 1 BBS 2**After selecting the AP with which to associate, the wireless device sends an asso- ciation request frame to the AP, and the AP responds with an association response frame. Note that this second request/response handshake is needed with active scan- ning, since an AP responding to the initial probe request frame doesn’t know which of the (possibly many) responding APs the device will choose to associate with, in much the same way that a DHCP client can choose from among multiple DHCP servers (see Figure 4.21). Once associated with an AP, the device will want to join the subnet (in the IP addressing sense of Section 4.3.3) to which the AP belongs. Thus, the device will typically send a DHCP discovery message (see Figure 4.21) into the subnet via the AP in order to obtain an IP address on the subnet. Once the address is obtained, the rest of the world then views that device simply as another host with an IP address in that subnet.
+![Alt text](image-9.png)
+**Figure 7.9**  ♦  Active and passive scanning for access points
+After selecting the AP with which to associate, the wireless device sends an asso- ciation request frame to the AP, and the AP responds with an association response frame. Note that this second request/response handshake is needed with active scan- ning, since an AP responding to the initial probe request frame doesn’t know which of the (possibly many) responding APs the device will choose to associate with, in much the same way that a DHCP client can choose from among multiple DHCP servers (see Figure 4.21). Once associated with an AP, the device will want to join the subnet (in the IP addressing sense of Section 4.3.3) to which the AP belongs. Thus, the device will typically send a DHCP discovery message (see Figure 4.21) into the subnet via the AP in order to obtain an IP address on the subnet. Once the address is obtained, the rest of the world then views that device simply as another host with an IP address in that subnet.
 
 In order to create an association with a particular AP, the wireless device may be required to authenticate itself to the AP. 802.11 wireless LANs provide a number of alternatives for authentication and access. One approach, used by many companies, is to permit access to a wireless network based on a device’s MAC address. A second approach, used by many Internet cafés, employs usernames and passwords. In both cases, the AP typically communicates with an authentication server, relaying informa- tion between the wireless device and the authentication server using a protocol such as RADIUS \[RFC 2865\] or DIAMETER \[RFC 6733\]. Separating the authentication server from the AP allows one authentication server to serve many APs, centralizing the (often sensitive) decisions of authentication and access within the single server, and keepingAP costs and complexity low. We’ll see in chapter 8 that the new IEEE 802.11i protocol defining security aspects of the 802.11 protocol family takes precisely this approach.
 
-## The 802.11 MAC ProtocolOnce a wireless device is associated with an AP, it can start sending and receiving data frames to and from the access point. But because multiple wireless devices, or the AP itself may want to transmit data frames at the same time over the same channel, a multiple access protocol is needed to coordinate the transmissions. In the following, we'll refer to the devices or the AP as wireless “stations” that share the multiple access channel. As discussed in Chapter 6 and Section 7.2.1, broadly speaking there are three classes of multiple access protocols: channel partitioning (including CDMA), random access, and taking turns. Inspired by the huge success of Ethernet and its random access protocol, the designers of 802.11 chose a random access protocol for 802.11 wireless LANs. This random access protocol is referred to as **CSMA with collision avoidance**, or more succinctly as **CSMA/CA
+## The 802.11 MAC Protocol
+Once a wireless device is associated with an AP, it can start sending and receiving data frames to and from the access point. But because multiple wireless devices, or the AP itself may want to transmit data frames at the same time over the same channel, a multiple access protocol is needed to coordinate the transmissions. In the following, we'll refer to the devices or the AP as wireless “stations” that share the multiple access channel. As discussed in Chapter 6 and Section 7.2.1, broadly speaking there are three classes of multiple access protocols: channel partitioning (including CDMA), random access, and taking turns. Inspired by the huge success of Ethernet and its random access protocol, the designers of 802.11 chose a random access protocol for 802.11 wireless LANs. This random access protocol is referred to as **CSMA with collision avoidance**, or more succinctly as **CSMA/CA
 . As with Ethernet’s CSMA/CD, the “CSMA” in CSMA/CA stands for “carrier sense multiple access,” meaning that each station senses the channel before transmitting, and refrains from transmitting when the channel is sensed busy. Although both Ethernet and 802.11 use carrier-sensing ran- dom access, the two MAC protocols have important differences. First, instead of using collision detection, 802.11 uses collision-avoidance techniques. Second, because of the relatively high bit error rates of wireless channels, 802.11 (unlike Ethernet) uses a link-layer acknowledgment/retransmission (ARQ) scheme. We’ll describe 802.11’s collision-avoidance and link-layer acknowledgment schemes below.
 
 Recall from Sections 6.3.2 and 6.4.2 that with Ethernet’s collision-detection algorithm, an Ethernet station listens to the channel as it transmits. If, while transmit- ting, it detects that another station is also transmitting, it aborts its transmission and tries to transmit again after waiting a small, random amount of time. Unlike the 802.3 Ethernet protocol, the 802.11 MAC protocol does _not_ implement collision detection. There are two important reasons for this:
@@ -452,20 +187,9 @@ Recall from Sections 6.3.2 and 6.4.2 that with Ethernet’s collision-detection 
 
 • More importantly, even if the adapter could transmit and listen at the same time (and presumably abort transmission when it senses a busy channel), the adapter would still not be able to detect all collisions, due to the hidden terminal problem and fading, as discussed in Section 7.2.
 
-Because 802.11wireless LANs do not use collision detection, once a station begins to transmit a frame, _it transmits the frame in its entirety_; that is, once a station**Figure 7.10**  ♦  802.11 uses link-layer acknowledgments
-
-**Destination**
-
-DIFS
-
-SIFS
-
-data
-
-ack
-
-**Source**
-
+Because 802.11wireless LANs do not use collision detection, once a station begins to transmit a frame, _it transmits the frame in its entirety_; that is, once a station
+![Alt text](image-10.png)
+**Figure 7.10**  ♦  802.11 uses link-layer acknowledgments
 gets started, there is no turning back. As one might expect, transmitting entire frames (particularly long frames) when collisions are prevalent can significantly degrade a multiple access protocol’s performance. In order to reduce the likelihood of collisions, 802.11 employs several collision-avoidance techniques, which we’ll shortly discuss.
 
 Before considering collision avoidance, however, we’ll first need to examine 802.11’s **link-layer acknowledgment** scheme. Recall from Section 7.2 that when a station in a wireless LAN sends a frame, the frame may not reach the destination sta- tion intact for a variety of reasons. To deal with this non-negligible chance of failure, the 802.11 MAC protocol uses link-layer acknowledgments. As shown in Figure 7.10, when the destination station receives a frame that passes the CRC, it waits a short period of time known as the **Short Inter-frame Spacing (SIFS)** and then sends back an acknowledgment frame. If the transmitting station does not receive an acknowl- edgment within a given amount of time, it assumes that an error has occurred and retransmits the frame, using the CSMA/CA protocol to access the channel. If an acknowledgment is not received after some fixed number of retransmissions, the trans- mitting station gives up and discards the frame.Having discussed how 802.11 uses link-layer acknowledgments, we’re now in a position to describe the 802.11 CSMA/CA protocol. Suppose that a station (wireless device or an AP) has a frame to transmit.
@@ -489,38 +213,15 @@ The 802.11 MAC protocol also includes a nifty (but optional) reservation scheme 
 Let’s now consider why hidden terminals can be problematic. Suppose Station H1 is transmitting a frame and halfway through H1’s transmission, Station H2 wants to send a frame to the AP. H2, not hearing the transmission from H1, will first wait a DIFS interval and then transmit the frame, resulting in a collision. The channel will therefore be wasted during the entire period of H1’s transmission as well as during H2’s transmission.
 
 In order to avoid this problem, the IEEE 802.11 protocol allows a station to use a short **Request to Send (RTS)** control frame and a short **Clear to Send (CTS)** control frame to _reserve_ access to the channel. When a sender wants to send a DATA frame, it can first send an RTS frame to the AP, indicating the total time required to transmit the DATA frame and the acknowledgment (ACK) frame. When the AP receives the RTS frame, it responds by broadcasting a CTS frame. This CTS frame
-
+![Alt text](image-11.png)
 **Figure 7.11**  ♦   Hidden terminal example: H1 is hidden from H2, and vice versa
 
 APH1 H2serves two purposes: It gives the sender explicit permission to send and also instructs the other stations not to send for the reserved duration.
 
 Thus, in Figure 7.12, before transmitting a DATA frame, H1 first broadcasts an RTS frame, which is heard by all stations in its circle, including the AP. The AP then responds with a CTS frame, which is heard by all stations within its range, including H1 and H2. Station H2, having heard the CTS, refrains from transmitting for the time specified in the CTS frame. The RTS, CTS, DATA, and ACK frames are shown in Figure 7.12.
-
+![Alt text](image-12.png)
 **Figure 7.12**  ♦  Collision avoidance using the RTS and CTS frames
-
-**Destination All other nodes**
-
-Defer access
-
-**Source**
-
-DIFS
-
-ACK
-
-SIFS
-
-SIFS
-
-SIFS
-
-DATA
-
-CTS CTS
-
-ACK
-
-RTSThe use of the RTS and CTS frames can improve performance in two important ways:
+The use of the RTS and CTS frames can improve performance in two important ways:
 
 • The hidden station problem is mitigated, since a long DATA frame is transmitted only after the channel has been reserved.
 
@@ -550,54 +251,16 @@ Perhaps the most striking difference in the 802.11 frame is that it has _four_ a
 • Address 1 is the MAC address of the wireless station that is to receive the frame. Thus if a mobile wireless station transmits the frame, address 1 contains the MAC address of the destination AP. Similarly, if an AP transmits the frame, address 1 contains the MAC address of the destination wireless station.
 
 • To understand address 3, recall that the BSS (consisting of the AP and wireless stations) is part of a subnet, and that this subnet connects to other subnets via some router interface. Address 3 contains the MAC address of this router interface.
-
+![Alt text](image-13.png)
 **Figure 7.13**  ♦  The 802.11 frame
-
-Frame control2 2 4 1 1 1 1 1 1 1 1
-
-2 6 6 6 2 6 ## Frame (numbers indicate field length in bytes):Address 1Duration Payload CRC
-
-Protocol version
-
-To AP
-
-From AP
-
-More frag
-
-Power mgt
-
-More data
-
-Address 2
-
-Address 3
-
-Address 4
-
-Seq control
-
-Type Subtype Retry WEP Rsvd
-
 **Frame control field expanded (numbers indicate field length in bits):**To gain further insight into the purpose of address 3, let’s walk through an inter- networking example in the context of Figure 7.14. In this figure, there are two APs, each of which is responsible for a number of wireless stations. Each of the APs has a direct connection to a router, which in turn connects to the global Internet. We should keep in mind that an AP is a link-layer device, and thus neither “speaks” IP nor understands IP addresses. Consider now moving a datagram from the router interface R1 to the wireless Station H1. The router is not aware that there is an AP between it and H1; from the router’s perspective, H1 is just a host in one of the subnets to which it (the router) is connected.
 
 • The router, which knows the IP address of H1 (from the destination address of the datagram), uses ARP to determine the MAC address of H1, just as in an ordinary Eth- ernet LAN. After obtaining H1’s MAC address, router interface R1 encapsulates the datagram within an Ethernet frame. The source address field of this frame contains R1’s MAC address, and the destination address field contains H1’s MAC address.
 
 • When the Ethernet frame arrives at the AP, the AP converts the 802.3 Ethernet frame to an 802.11 frame before transmitting the frame into the wireless chan- nel. The AP fills in address 1 and address 2 with H1’s MAC address and its own MAC address, respectively, as described above. For address 3, the AP inserts the MAC address of R1. In this manner, H1 can determine (from address 3) the MAC address of the router interface that sent the datagram into the subnet.
-
+![Alt text](image-14.png)
 **Figure 7.14**  ♦   The use of address fields in 802.11 frames: Sending frames between H1 and R1
-
-Internet Router
-
-AP H1
-
-R1
-
-**BSS 1**
-
-**BSS 2**
-
-APNow consider what happens when the wireless station H1 responds by moving a datagram from H1 to R1.
+Now consider what happens when the wireless station H1 responds by moving a datagram from H1 to R1.
 
 • H1 creates an 802.11 frame, filling the fields for address 1 and address 2 with the AP’s MAC address and H1’s MAC address, respectively, as described above. For address 3, H1 inserts R1’s MAC address.
 
@@ -621,20 +284,13 @@ Let’s now look at a specific example of mobility between BSSs in the same sub-
 But what specifically happens when H1 moves from BSS1 to BSS2? As H1 wanders away from AP1, H1 detects a weakening signal from AP1 and starts to scan for a stronger signal. H1 receives beacon frames from AP2 (which in many corporate and university settings will have the same SSID as AP1). H1 then disassociates with AP1 and associates with AP2, while keeping its IP address and maintaining its ongoing TCP sessions.
 
 This addresses the handover problem from the host and AP viewpoint. But what about the switch in Figure 7.15? How does it know that the host has moved from one AP to another? As you may recall from Chapter 6, switches are “self-learning” and automatically build their forwarding tables. This self-learning feature nicely handles occasional moves (for example, when an employee gets transferred from one depart- ment to another); however, switches were not designed to support highly mobile users who want to maintain TCP connections while moving between BSSs. To appreciate the problem here, recall that before the move, the switch has an entry in its forwarding table that pairs H1’s MAC address with the outgoing switch interface through which H1 can be reached. If H1 is initially in BSS1, then a datagram des- tined to H1 will be directed to H1 via AP1. Once H1 associates with BSS2, however, its frames should be directed to AP2. One solution (a bit of a hack, really) is for AP2 to send a broadcast Ethernet frame with H1’s source address to the switch just after
-
+![Alt text](image-15.png)
 **Figure 7.15**  ♦  Mobility in the same subnet
-
-**BSS 1 BSS 2**
-
-H1
-
-Switch
-
-AP 1 AP 2the new association. When the switch receives the frame, it updates its forwarding table, allowing H1 to be reached via AP2. The 802.11f standards group is developing an inter-AP protocol to handle these and related issues.
+the new association. When the switch receives the frame, it updates its forwarding table, allowing H1 to be reached via AP2. The 802.11f standards group is developing an inter-AP protocol to handle these and related issues.
 
 Our discussion above has focused on mobility with the same LAN subnet. Recall that VLANs, which we studied in Section 6.4.4, can be used to connect together islands of LANs into a large virtual LAN that can span a large geographical region. Mobility among base stations within such a VLAN can be handled in exactly the same manner as above \[Yu 2011\].
 
-LOCATION DISCOVERY: GPS AND WIFI POSITIONING
+**LOCATION DISCOVERY: GPS AND WIFI POSITIONING**
 
 Many of the most useful and important smartphone apps today are location-based mobile apps, including Foursquare, Yelp, Uber, Pokémon Go, and Waze. These software apps all make use of an API that allows them to extract their current geographi- cal position directly from the smartphone. Have you ever wondered how your smart- phone obtains its geographical position? Today, it is done by combining two systems, the **Global Positioning System (GPS)** and the **WiFi Positioning System (WPS)**.
 
@@ -671,36 +327,9 @@ Although Bluetooth networks are small and relatively simple by design, they’re
 Bluetooth networks operate in the unlicensed 2.4 GHz Industrial, Scientific and Medical (ISM) radio band along with other home appliances such as micro- waves, garage door openers, and cordless phones. As a result, Bluetooth networks are designed explicitly with noise and interference in mind. The Bluetooth wire- less channel is operated in a TDM manner, with time slots of 625 microseconds. During each time slot, a sender transmits on one of 79 channels, with the channel (frequency) changing in a known but pseudo-random manner from slot to slot. This form of channel hopping, known as **frequency-hopping spread spectrum** (FHSS), is used so that interference from another device or appliance operating in the ISM band will only interfere with Bluetooth communications in at most a subset of the slots. Bluetooth data rates can reach up to 3 Mbps.
 
 Bluetooth networks are ad hoc networks—no network infrastructure (e.g., an access point) is needed. Instead, Bluetooth devices must organize _themselves_ into a piconet of up to eight active devices, as shown in Figure 7.16. One of these devices
-
+![Alt text](image-16.png)
 **Figure 7.16**  ♦  A Bluetooth piconet
-
-Radius of coverage
-
-Centralized Controller
-
-Client device
-
-Parked device
-
-Key:
-
-CC
-
-CC
-
-C
-
-C C C
-
-P
-
-P
-
-P
-
-P
-
-Pis designated as the centralized controller, with the remaining devices acting as clients. The centralized controller node truly rules the piconet—its clock determines time in the piconet (e.g., determines TDM slot boundaries), it determine the slot-to-slot frequency hopping sequence, it controls entry of client devices into the piconet, it controls the power (100 mW, 2.5mW, or 1 mW) at which client devices transmit; and uses polling to grant clients permission to transmit once admitted to the network. In addition to the active devices, there can also be up to 255 “parked” devices in the piconet. These parked devices are often in some form of “sleep mode” to conserve energy (as we saw with 802.11 power management) and will awaken periodically, according to the centralized controller’s schedule, to receive beacon messages from the centralized controller. A parked device cannot communicate until its status has been changed from parked to active by the centralized controller node.
+is designated as the centralized controller, with the remaining devices acting as clients. The centralized controller node truly rules the piconet—its clock determines time in the piconet (e.g., determines TDM slot boundaries), it determine the slot-to-slot frequency hopping sequence, it controls entry of client devices into the piconet, it controls the power (100 mW, 2.5mW, or 1 mW) at which client devices transmit; and uses polling to grant clients permission to transmit once admitted to the network. In addition to the active devices, there can also be up to 255 “parked” devices in the piconet. These parked devices are often in some form of “sleep mode” to conserve energy (as we saw with 802.11 power management) and will awaken periodically, according to the centralized controller’s schedule, to receive beacon messages from the centralized controller. A parked device cannot communicate until its status has been changed from parked to active by the centralized controller node.
 
 Because Bluetooth ad hoc networks must be **self-organizing**, it’s worth looking into how they bootstrap their network structure. When a centralized controller node wants to form a Bluetooth network, it must first determine which other Bluetooth devices are within range; this is the **neighbor discovery** problem. The centralized controller does this by broadcasting a series of 32 inquiry messages, each on a dif- ferent frequency channel, and repeats the transmission sequence for up to 128 times. A client device listens on its chosen frequency, hoping to hear one of the centralized controller’s inquiry messages on this frequency. When it hears an inquiry message, it backs off a random amount of time between 0 and 0.3 seconds (to avoid colli- sions with other responding nodes, reminiscent of Ethernet’s binary backoff) and then responds to the centralized controller with a message containing its device ID.
 
@@ -719,7 +348,8 @@ Our discussion here of 4G and 5G networks will be relatively brief. Mobile cellu
 
 Just as Internet RFCs define Internet-standard architecture and protocols, 4G and 5G networks are also defined by standards documents known as Technical Spec- ifications. These documents are freely available online at \[3GPP 2020\]. Just like RFCs, technical specifications can make for rather dense and detailed reading. But when you have a question, they are the definitive source for answers!
 
-## 4G LTE Cellular Networks: Architecture and ElementsThe 4G networks that are pervasive as of this writing in 2020 implement the 4G Long-Term Evolution standard, or more succinctly **4G LTE
+## 4G LTE Cellular Networks: Architecture and Elements
+The 4G networks that are pervasive as of this writing in 2020 implement the 4G Long-Term Evolution standard, or more succinctly **4G LTE
 . In this section, we’ll describe 4G LTE networks. Figure 7.17 shows the major elements of the 4G LTE network architecture. The network broadly divides into the radio network at the cellular network’s edge and the core network. All network elements communicate with each other using the IP protocol we studied in Chapter 4. As with earlier 2G and 3G networks, 4G LTE is full of rather obtuse acronyms and element names. We’ll try to cut through that jumble by first focusing on element functions and how the various elements of a 4G LTE network interact with each other in both the data and the control planes:
 
 • **Mobile Device.** This is a smartphone, tablet, laptop, or IoT device that connects into a cellular carrier’s network. This is where applications such as web browsers, map apps, voice and videoconference apps, mobile payment apps, and so much more are run. The mobile device typically implements the full 5-layer Internet pro- tocol stack, including the transport and application layers, as we saw with hosts at the Internet’s network edge. The mobile device is a network endpoint, with an IP address (obtained through NAT, as we’ll see). The mobile device also has a glob- ally unique 64-bit identifier called the **International Mobile Subscriber Iden- tity (IMSI)**, which is stored on its SIM (Subscriber Identity Module) card. The IMSI identifies the subscriber in the worldwide cellular carrier network system, including the country and home cellular carrier network to which the subscriber belongs. In some ways, the IMSI is analogous to a MAC address. The SIM card also stores information about the services that the subscriber is able to access and encryption key information for that subscriber. In the official 4G LTE jargon, the mobile device is referred to as **User Equipment (UE)**. However, in this text- book, we’ll use the more reader-friendly term “mobile device” throughout. We also note here that a mobile device is not always mobile; for example, the device might be a fixed temperature sensor or a surveillance camera.
@@ -731,45 +361,15 @@ As an aside, if you find LTE terminology a bit opaque, you aren’t alone! The e
 • **Home Subscriber Server (HSS).** As shown in Figure 7.18, the HSS is a control-plane element. The HSS is a database, storing information about the mobile devices for which the HSS’s network is their home network. It is used in conjunction with the MME (discussed below) for device authentication.
 
 • **Serving Gateway (S-GW), Packet Data Network Gateway (P-GW), and other network routers.** As shown in Figure 7.18, the Serving Gateway and the Packet Data Network Gateway are two routers (often collocated in practice) that
-
-Mobility Management Entity (**MME)**
-
-Serving Gateway (**S-GW**)
-
-Home Subscriber Service (**HSS**)
-
-PDN gateway (**P-GW**)
-
-all-IP Enhanced Packet Core (EPC)radio access network
-
-to Internet
-
-Mobile device Base
-
-station
-
+![Alt text](image-17.png)
 **Figure 7.17**  ♦  Elements of the 4G LTE architecturelie on the data path between the mobile device and the Internet. The PDN Gateway also provides NAT IP addresses to mobile devices and performs NAT functions (see Section 4.3.4). The PDN Gateway is the last LTE element that a datagram originating at a mobile device encounters before entering the larger Internet. To the outside world, the P-GW looks like any other gateway router; the mobility of the mobile nodes within the cellular carrier’s LTE network is hidden from the outside world behind the P-GW. In addition to these gateway routers, a cellular carrier’s all-IP core will have additional routers whose role is similar to that of traditional IP routers—to forward IP datagrams among themselves along paths that will typically terminate at elements of the LTE core network.
 
 • **Mobility Management Entity (MME).** The MME is also a control-plane element, as shown in Figure 7.18. Along with the HSS, it plays an important role in authen- ticating a device wanting to connect into its network. It also sets up the tunnels on the data path from/to the device and the PDN Internet gateway router, and maintains information about an active mobile device’s cell location within the carrier’s cel- lular network. But, as shown in Figure 7.18, it is not in the forwarding path for the mobile device’s datagrams being sent to and from the Internet.
 
 _Authentication._ It is important for the network and the mobile device attaching to the network to _mutually_ authenticate each other—for the network to know that the attaching device is indeed the device associated with a given IMSI, and for the mobile device to know that the network to which it is attaching is also a legitimate cellular carrier network. We will cover authentication in Chapter 8 and cover 4G authentication in Section 8.8. Here, we simply note that the MME plays a middleman role between the mobile and Home Subscriber Service (HSS) in the mobile’s home network. Specifically, after receiving an attach request from mobile device, the local MME contacts the HSS in the mobile’s home network. The mobile’s home HSS then returns enough encrypted infor- mation to the local MME to prove to the mobile device that the home HSS is performing authentication through this MME, and for the mobile device to prove to the MME that it is indeed the mobile associated with that IMSI. When a mobile device is attached to its home network, the HSS to be contacted dur- ing authentication is located within that same home network. However, when a mobile device is roaming on a visited network operated by a different cellular network carrier, the MME in that roaming network will need to contact the HSS in the mobile device’s home network.
 
-_Path setup._ As shown in the bottom half of Figure 7.18, the data path from the mobile device to the carrier’s gateway router consists of a wireless first hop between the mobile device and the base station, and concatenated IP tunnels between the base station and the Serving Gateway, and the Serving Gateway and the PDN Gateway. Tunnels are setup under the control of the MME and used for data forwarding (rather than direct forwarding among network routers) to facilitate device mobility—when a device moves, only the tunnel endpoint**Control plane**
-
-**User data plane**
-
-MME
-
-HSS
-
-Base station
-
-Base station
-
-P-GWS-GW
-
-S-GW P-GW
-
+_Path setup._ As shown in the bottom half of Figure 7.18, the data path from the mobile device to the carrier’s gateway router consists of a wireless first hop between the mobile device and the base station, and concatenated IP tunnels between the base station and the Serving Gateway, and the Serving Gateway and the PDN Gateway. Tunnels are setup under the control of the MME and used for data forwarding (rather than direct forwarding among network routers) to facilitate device mobility—when a device moves, only the tunnel endpoint
+![Alt text](image-18.png)
 **Figure 7.18**  ♦  LTE data-plane and control-plane elements
 
 terminating at the base station needs to be changed, while other tunnel end- points, and the Quality of Service associated with a tunnel, remain unchanged.
@@ -777,37 +377,7 @@ terminating at the base station needs to be changed, while other tunnel end- poi
 _Cell location tracking._ As the device moves between cells, the base stations will update the MME on the device’s location. If the mobile device is in a sleep mode but nonetheless moving between cells, the base stations can no longer track the device’s location. In this case, it will be the responsibility of the MME to locate the device for wakeup, through a process known as **paging.**
 
 Table 7.2 summarizes the key LTE architectural elements that we have dis- cussed above and compares these functions with those we encountered in our study of WiFi wireless LANs (WLANs).
-
-LTE Element Description Similar WLAN function(s)
-
-Mobile device (UE: User equipment) End user’s IP-capable wireless/mobile device (e.g., smartphone, tablet, laptop)
-
-Host, end-system
-
-Base Station (eNode-B) Network side of wireless access link into LTE network
-
-Access point (AP), although the LTE base station performs many functions not found in WLANs
-
-The Mobility Management Entity (MME)
-
-Coordinator for mobile device services: authentication, mobility management
-
-Access point (AP), although the MME performs many functions not found in WLANs
-
-Home Subscriber Server (HSS) Located in a mobile device’s _home_ network, providing authentication, access privileges in home and visited networks
-
-No WLAN equivalent
-
-Serving Gateway (S-GW), PDN-Gateway (P-GW)
-
-Routers in a cellular carrier’s network, coordinating forwarding to outside of the carrier’s network
-
-iBGP and eBGP routers in access ISP network
-
-Radio Access Network Wireless link between mobile device and a base station
-
-802.11 wireless link between mobile and AP
-
+![Alt text](image-19.png)
 **Table 7.2**  ♦  LTE Elements, and similar WLAN (WiFi) functionsTHE ARCHITECTURAL EVOLUTION FROM 2G TO 3G TO 4G
 
 In a relatively short span of 20 years, cellular carrier networks have undergone an astonishing transition from being almost exclusively circuit-switched telephone net- works to being all-IP packet-switched data networks which include voice as just one of many applications. How did this transition happen from an architectural stand- point? Was there a “flag day,” when the previous telephony-oriented networks were turned “off” and the all-IP cellular network was turned “on”? Or did elements in the previous telephony-oriented networks begin taking on dual circuit (legacy) and packet (new) functionality, as we saw with the IPv4-to-IPv6 transition in Section 4.3.5?
@@ -815,43 +385,9 @@ In a relatively short span of 20 years, cellular carrier networks have undergone
 Figure 7.19 is taken from the earlier 7th edition of this textbook, which covered both 2G and 3G cellular networks. (We have retired this historical material, which is still available on this book’s website, in favor of a deeper coverage of 4G LTE in this 8th edition). Although the 2G network is a circuit-switched mobile telephone network, a comparison of Figures 7.17 and 7.19 illustrates a similar conceptual structure, albeit for voice rather than for data services—a wireless edge controlled by a base station, a gateway from the carrier’s network to the outside world, and aggregation points between the base stations and the gateway.
 
 **CASE HISTORY**
-
-Base station controller
-
-Base station controller
-
-Mobile Switching
-
-Center
-
-Gateway Mobile Switching
-
-Center
-
-Base Station System (BSS)
-
-Base Station System (BSS)
-
-Public Telephone Network
-
-G
-
+![Alt text](image-20.png)
 **Figure 7.19**  ♦   Elements of the 2G cellular architecture, supporting circuit-switched voice service with the carrier’s core networkGateway Mobile Switching Center
-
-G
-
-Radio Network Controller (RNC) Gateway GPRS
-
-Support Node Serving GPRS Support Node
-
-G
-
-Mobile Switching Center
-
-Public Telephone Network
-
-Public Internet
-
+![Alt text](image-21.png)
 **Figure 7.20**  ♦   3G system architecture: supporting separate circuit-switched voice service and packet-switched data service with the carrier’s core network
 
 Figure 7.20 (also taken from the 7th edition of this textbook) shows the main archi- tectural components of the 3G cellular architecture, which supports both circuit-switched voice service _and_ packet-switched data services. Here, the transition from a voice-only network to a combined voice and data network is clear: the existing core 2G cellular voice network elements remained untouched. _However, additional cellular data func- tionality was added in parallel to, and functioned independently from, the existing core voice network at that time._ As shown in Figure 7.20, the splitting point into these two separate core voice and data networks happened at the network edge, at the base station in the radio access network. The alternative—integrating new data services directly into the core elements of the existing cellular voice network—would have raised the same challenges encountered in integrating new (IPv6) and legacy (IPv4) technolo- gies in the Internet. The carriers also wanted to leverage and exploit their considerable investment of existing infrastructure (and profitable services!) in their existing cellular voice network.## LTE Protocols Stacks
@@ -864,61 +400,7 @@ LTE divides the mobile device’s link layer into three sublayers:
 • _Packet Data Convergence._ This uppermost sublayer of the link layer sits just below IP. The Packet Data Convergence Protocol (PDCP) \[3GPP PDCP 2019\] performs IP header/compression in order to decrease the number of bits sent over the wireless link, and encryption/decryption of the IP datagram using keys that were established via signaling messages between the LTE mobile device and the Mobility Management Entity (MME) when the mobile device first attached to the network; we’ll cover aspects of LTE security in Section 8.8.2.
 
 • _Radio Link Control._ The Radio Link Control (RLC) Protocol \[3GPP RLCP 2018\] performs two important functions: _(i)_ fragmenting (on the sending side) and reassembly (on the receiving) of IP datagrams that are too large to fit into
-
-Base station PDN Gateway (P-GW)
-
-Serving Gateway (S-GW)
-
-to/ from Internet
-
-IP Packet Data Convergence
-
-Radio Link
-
-Medium Access
-
-Li n
-
-k
-
-GTP-U
-
-IP
-
-Link
-
-Physical
-
-UDP GTP-U
-
-IP
-
-Link
-
-Physical
-
-UDP GTP-U
-
-IP
-
-Link
-
-Physical
-
-UDP Application
-
-Physical
-
-Transport IP
-
-Packet Data Convergence
-
-Radio Link
-
-Medium Access
-
-Physical
-
+![Alt text](image-22.png)
 **Figure 7.21**  ♦  LTE data-plane protocol stacksthe underlying link-layer frames, and _(ii)_ link-layer reliable data transfer at the through the use of an ACK/NAK-based ARQ protocol. Recall the we’ve studied the basic elements of ARQ protocols in Section 3.4.1.
 
 • _Medium Access Control (MAC)._ The MAC layer performs transmission sched- uling, that is, the requesting and use of the radio transmission slots described in Section 7.4.4. The MAC sublayer also performs additional error detection/ correction functions, including the use of redundant bit transmission as a forward error-correction technique. The amount of redundancy can be adapted to channel conditions.
@@ -930,29 +412,17 @@ Figure 7.21 also shows the use of tunnels in the user data path. As discussed ab
 
 The particular allocation of time slots to mobile devices is not mandated by the LTE standard. Instead, the decision of which mobile devices will be allowed to trans- mit in a given time slot on a given frequency is determined by the scheduling algo- rithms provided by the LTE equipment vendor and/or the network operator. With opportunistic scheduling \[Bender 2000; Kolding 2003; Kulkarni 2005\], matching the physical-layer protocol to the channel conditions between the sender and receiver and choosing the receivers to which packets will be sent based on channel conditions allow the base station to make best use of the wireless medium. In addition, userpriorities and contracted levels of service (e.g., silver, gold, or platinum) can be used in scheduling downstream packet transmissions. In addition to the LTE capabilities described above, LTE-Advanced allows for downstream bandwidths of hundreds of Mbps by allocating aggregated channels to a mobile device \[Akyildiz 2010\].
 
-## Additional LTE Functions: Network Attachment and Power ManagementLet’s conclude or study of 4G LTE here by considering two additional important LTE functions: _(i)_ the process with which a mobile device first attaches to the net- work and _(ii)_ the techniques used by the mobile device, in conjunction with core network elements, to manage its power use.
+## Additional LTE Functions: Network Attachment and Power Management
+Let’s conclude or study of 4G LTE here by considering two additional important LTE functions: _(i)_ the process with which a mobile device first attaches to the net- work and _(ii)_ the techniques used by the mobile device, in conjunction with core network elements, to manage its power use.
 
 **Network Attachment**
 
 The process by which a mobile device attaches to the cellular carrier’s network divides broadly into three phases:
 
 • _Attachment to a Base Station._ This first phase of device attachment is similar in purpose to, but quite different in practice from, the 802.11 association protocol that we studied in Section 7.31. A mobile device wishing to attach to a cellular carrier network will begin a bootstrap process to learn about, and then associate with, a nearby base station. The mobile device initially searches all channels in all frequency bands for a primary synchronization signal that is periodically broadcast
-
+![Alt text](image-23.png)
 **Figure 7.22**  ♦   Twenty 0.5-ms slots organized into 10 ms frames at each frequency. An eight-slot allocation is shown shaded.
-
-_f_1
-
-_f_2
-
-_f_3
-
-_f_4
-
-_f_5
-
-_f_6
-
-0 0.5 1.0 1.5 2.0 2.5 9.0 9.5 10.0every 5 ms by a base station. Once this signal is found, the mobile device remains on this frequency and locates the secondary synchronization signal. With information found in this second signal, the device can locate (following several further steps) additional information such as channel bandwidth, channel configurations, and the cellular carrier information of that base station. Armed with this information, the mobile device can select a base station to associate with (preferentially attaching to its home network, if available) and establish a control-plane signaling connection across the wireless hop with that base station. This mobile-to-base-station channel will be used through the remainder of the network attachment process.
+every 5 ms by a base station. Once this signal is found, the mobile device remains on this frequency and locates the secondary synchronization signal. With information found in this second signal, the device can locate (following several further steps) additional information such as channel bandwidth, channel configurations, and the cellular carrier information of that base station. Armed with this information, the mobile device can select a base station to associate with (preferentially attaching to its home network, if available) and establish a control-plane signaling connection across the wireless hop with that base station. This mobile-to-base-station channel will be used through the remainder of the network attachment process.
 
 • _Mutual Authentication._ In our earlier description of the Mobility Management Entity (MME) in Section 7.4.1, we noted that the base station contacts the local MME to perform mutual authentication—a process that we’ll study in further detail in Section 8.8.2. This is the second phase of network attachment, allowing the network to know that the attaching device is indeed the device associated with a given IMSI, and the mobile device to know that the network to which it is attaching is also a legitimate cellular carrier network. Once this second phase of network attachment is complete, the MME and mobile device have mutually authenticated each other, and the MME also knows the identity of the base station to which the mobile is attached. Armed with this information, the MME is now ready to configure the Mobile-device-to-PDN-gateway data path.
 
@@ -969,18 +439,7 @@ If the discontinuous reception state might be considered a “light sleep,” th
 
 Figure 7.23 shows a user’s mobile smartphone connected via a 4G base station into its **home network**. The user’s home mobile network is operated by a cellular
 
-**Home cellular carrier network**
-
-Gateway
-
-Home Subscriber Server
-
-Visited mobile carrier network
-
-Gateway
-
-**Public Internet and IPX**
-
+![Alt text](image-24.png)
 **Figure 7.23**  ♦   The global cellular data network: a network of networks.carrier such as Verizon, AT&T, T-Mobile, or Sprint in the United States; Orange in France; or SK Telecom in Korea. The user’s home network, in turn, is connected to the networks of other cellular carriers and to the global Internet, though one or more gateway routers in the home network, as shown in Figure 7.23. The mobile networks themselves interconnect with each other either via the public Internet or via an Internet Protocol Packet eXchange (IPX) Network \[GSMA 2018a\]. An IPX is a managed network specifically for interconnecting cellular carriers, similar to Internet eXchange Points (see Figure 1.15) for peering among ISPs. From Figure 7.23, we can see that the global cellular network is indeed a “network of networks”—just like the Internet (recall Figure 1.15 and Section 5.4). 4G networks can also peer with 3G cellular voice/data networks and earlier voice-only networks.
 
 We’ll return shortly to additional 4G LTE topics—mobility management in Section 7.6, and 4G security in Section 8.8.2—later, after developing the basic principles needed for these topics. Let’s now take a quick look at the emerging 5G networks.
@@ -1058,7 +517,7 @@ _(b)_ Device mobility only within same wireless access network, in single provid
 _(c)_ Device mobility among access networks in single provider network, _while maintaining ongoing connections_
 
 _(d)_ Device mobility among multiple provider networks, _while maintaining ongoing connections_
-
+![Alt text](image-25.png)
 **Figure 7.24**  ♦   Various degrees of mobility, from a network-layer perspectivecommunication, and billing/charging information. When a device is connected to a cellular network, other than its **home network**, that device is said to be **roaming** on a **visited network**. When a mobile device attaches to, and roams on, a visited network, coordination will be required between the home network and the visited network.
 
 The Internet does not have a similarly strong notion of a home network or a vis- ited network. In practice, a student’s home network might be the network operated by his/her school; for mobile professionals, their home network might be their com- pany network. The visited network might be the network of a school or a company they are visiting. But there is no notion of a home/visited network deeply embedded in the Internet’s architecture. The Mobile IP protocol \[Perkins 1998, RFC 5944\], which we will cover briefly in Section 7.6, was a proposal that strongly incorporated the notion of home/visited networks. But Mobile IP has seen limited deployment/use in practice. There are also activities underway that are built on top of the existing IP infrastructure to provide authenticated network access across visited IP networks. Eduroam \[Eduroam 2020\] is one such activity.
@@ -1079,29 +538,7 @@ What approaches might be used in a mobile network architecture that would allow 
 Perhaps the simplest approach to routing to a mobile device in a visited network is to simply use the existing IP addressing infrastructure—to add nothing new to the architecture. What could be easier!
 
 Recall from our discussion of Figure 4.21 that an ISP uses BGP to advertise routes to destination networks by enumerating the CIDRized address ranges of reach- able networks. A visited network could thus advertise to all other networks that a
-
-Home network gateway
-
-**Visited Network** 79.129/16
-
-**Home Network** 128.119/16
-
-Visited network gateway
-
-Mobility managerHome
-
-Subscriber Service
-
-Correspondent
-
-**Public or private Internet**
-
-Mobility manager
-
-NAT IP: 10.0.0.99 IMSI 78:4f:43:98:d9:27
-
-Permanent IP: 128.119.40.186 IMSI 78:4f:43:98:d9:27
-
+![Alt text](image-26.png)
 **Figure 7.25**  ♦  Elements of a mobile network architectureparticular mobile device is resident in its network simply by advertising a highly specific address—the mobile device’s full 32-bit IP permanent address—essentially informing other networks that it has the path to be used to forward datagrams to that mobile device. These neighboring networks would then propagate this routing infor- mation throughout the network as part of the normal BGP procedure of updating rout- ing information and forwarding tables. Since datagrams will always be forwarded to the router advertising the most specific destination for that address (see Section 4.3), all datagrams addressed to that mobile device will be forwarded to the visited net- work. If the mobile device leaves one visited network and joins another, the new vis- ited network can advertise a new, highly specific route to the mobile device, and the old visited network can withdraw its routing information regarding the mobile device.
 
 This solves two problems at once, and does so without making changes to the network-layer infrastructure! Other networks know the location of the mobile device, and it is easy to route datagrams to the mobile device, since the forwarding tables will direct datagrams to the visited network. The killer drawback, however, is that of scalability—network routers would have to maintain forwarding table entries for potentially billions of mobile devices, and update a device’s entry each time it roams to a different network. Clearly, this approach would not work in practice. Some addi- tional drawbacks are explored in the problems at the end of this chapter.
@@ -1113,31 +550,7 @@ Let’s next consider the visited network elements shown in Figure 7.25 in more 
 **Indirect Routing to a Mobile Device**
 
 Let’s again consider the correspondent that wants to send a datagram to a mobile device. In the **indirect routing** approach, the correspondent simply addresses the datagram to the mobile device’s permanent address and sends the datagram into the network, blissfully unaware of whether the mobile device is resident in its home network or in a visited network; mobility is thus completely transparent to the cor- respondent. Such datagrams are first routed, as usual, to the mobile device’s home network. This is illustrated in step 1 in Figure 7.26.
-
-Home network gateway
-
-**Visited Network** 79.129/16
-
-**Home Network** 128.119/16
-
-Visited network gateway
-
-Mobility manager
-
-Home Subscriber
-
-Service
-
-Correspondent
-
-Mobility manager
-
-NAT IP: 10.0.0.99 IMSI 78:4f:43:98:d9:27
-
-Permanent IP: 128.119.40.186 IMSI 78:4f:43:98:d9:274b 1
-
-2 4a
-
+![Alt text](image-27.png)
 **Figure 7.26**  ♦  Indirect routing to a mobile deviceLet’s now turn our attention to the HSS, which is responsible for interacting with visited networks to track the mobile device’s location, and the home network’s gate- way router. One job of this gateway router is to be on the lookout for an arriving data- gram addressed to a device whose home is in that network, but that currently resides in a visited network. The home network gateway intercepts this datagram, consults with the HSS to determine the visited network where the mobile device is resident, and forwards the datagram toward the visited network gateway router—step 2 in Fig- ure 7.26. The visited network gateway router then forwards the datagram toward the mobile device—step 3 in Figure 7.26. If NAT translation is used, as in Figure 7.26, the visited network gateway router performs NAT translation.
 
 It is instructive to consider the rerouting at the home network in bit more detail. Clearly, the home network gateway will need to forward the arriving datagram to the gateway router in the visited network. On the other hand, it is desirable to leave the correspondent’s datagram intact, since the application receiving the datagram should be unaware that the datagram was forwarded via the home network. Both goals can be satisfied by having the home gateway encapsulate the correspondent’s original complete datagram within a new (larger) datagram. This larger datagram is then addressed and delivered to the visited network’s gateway router, which will decapsulate the datagram—that is, remove the correspondent’s original datagram from within the larger encapsulating datagram—and forward (step 3 in Figure 7.26) the original datagram to the mobile device. The sharp reader will note that the encap- sulation/decapsulation described here is precisely the notion of tunneling, discussed in Section 4.3 in the context of IPv6; indeed, we also discussed the use of tunneling in the context of Figure 7.18, when we introduced the 4G LTE data plane.
@@ -1163,31 +576,7 @@ The indirect routing approach illustrated in Figure 7.26 suffers from an ineffic
 • A mobile-user location protocol is needed for the correspondent to query the HSS to obtain the mobile device’s visited network (steps 1 and 2 in Figure 7.27). This is in addition to the protocol needed for the mobile device to register its location with its HSS.
 
 • When the mobile device moves from one visited network to another, how will the correspondent know to now forward datagrams to the new visited network? In the case of indirect routing, this problem was easily solved by updating the HSS in the home network, and changing the tunnel endpoint to terminate at the gateway router of the new visited network. However, with direct routing, this change in vis- ited networks is not so easily handled, as the HSS is queried by the correspondent only at the beginning of the session. Thus, additional protocol mechanisms would be required to proactively update the correspondent each time the mobile device moves. Two problems at the end of this chapter explore solutions to this problem.
-
-Home network gateway
-
-**Visited Network** 79.129/16
-
-**Home Network** 128.119/16
-
-Visited network gateway
-
-Home Subscriber
-
-Service
-
-Correspondent
-
-Mobility manager
-
-NAT IP: 10.0.0.99 IMSI 78:4f:43:98:d9:27
-
-Permanent IP: 128.119.40.186 IMSI 78:4f:43:98:d9:27
-
-3 2
-
-Mobility manager1
-
+![Alt text](image-28.png)
 **Figure 7.27**  ♦  Direct routing to a mobile device# Mobility Management in Practice
 In the previous section, we identified key fundamental challenges and potential solu- tions in developing a network architecture to support device mobility: the notions of home and visited networks; the home network’s role as a central point of informa- tion and control for mobile devices subscribed to that home network; control-plane functions needed by a home network’s mobility management entity to track a mobile device roaming among visited networks; and data-plane approaches of direct and indirect routing to enable a correspondent and a mobile device to exchange data- grams. Let’s now look at how these principles are put into practice! In Section 7.2.1, we’ll study mobility management in 4G/5G networks; in Section 7.2.1, we’ll look at Mobile IP, which has been proposed for the Internet.
 
@@ -1209,25 +598,7 @@ Let’s now consider each of these four steps in more detail.**1\. Base station 
 **2\. Control-plane configuration of LTE network elements for the mobile device.** Once the mobile-device-to-base-station signaling channel has been established, the base station can contact the MME in the visited network. The MME will consult and configure a number of 4G/5G elements in both the home and visited networks to establish state on behalf of the mobile node:
 
 • The MME will use to the IMSI and other information provided by the mobile device to retrieve authentication, encryption, and available network service infor- mation for that subscriber. That information might be in the MME’s local cache, retrieved from another MME that the mobile device had recently contacted, or retrieved from the HSS in the mobile device’s home network. The mutual authen- tication process (which we will cover in more detail in Section 8.8) ensures that
-
-**Visited Network**
-
-PDN gateway (P-GW)
-
-Streaming server
-
-**Home Network Internet**
-
-PDN gateway (P-GW)
-
-Serving gateway (S-GW)
-
-Base station
-
-HSS MME
-
-Base station34
-
+![Alt text](image-29.png)
 **Figure 7.28**  ♦  An example 4G/5G mobility scenariothe visited network is sure about the identity of the mobile device and that the device can authenticate the network to which it is attaching.
 
 • The MME informs the HSS in the mobile device’s home network that the mobile device is now resident in the visited network, and the HSS updates its database.
@@ -1237,25 +608,7 @@ Base station34
 **3\. Data-plane configuration of forwarding tunnels for the mobile device.** The MME next configures the data plane for the mobile device, as shown in Figure 7.29. Two tunnels are established. One tunnel is between the base station and a Serving Gateway in the visited network. The second tunnel is between that Serving Gateway and the PDN Gateway router _in the mobile device’s home network._ 4G LTE implements this form of symmetric indirect routing—all traffic to/from the mobile device will be tunneled through the device’s home network. 4G/5G tunnels use the GPRS Tunneling Protocol (GTP), specified in \[3GPP GTPv1-U 2019\]. The Tunnel Endpoint ID (TEID) in the GTP header indicates which tunnel a datagram belongs, allowing multiple flows to be multiplexed and de-multiplexed by GTP between tunnel endpoints.
 
 It is instructive to compare the configuration of tunnels in Figure 7.29 (the case of mobile roaming in a visited network) with that of Figure 7.18 (the case of mobility
-
-**Visited Network**
-
-PDN gateway (P-GW)
-
-Streaming server
-
-**Home Network Internet**
-
-PDN gateway (P-GW)
-
-Serving gateway (S-GW)
-
-Base station
-
-MME
-
-Base station
-
+![Alt text](image-30.png)
 **Figure 7.29**  ♦   Tunneling in 4G/5G networks between the Serving Gateway in the visited network and the PDN gateway in the home networkonly within the mobile device’s home network). We see that in both cases, the Serv- ing Gateway is co-resident in the same network as the mobile device, but PDN Gate- way (which is always the PDN Gateway in the mobile device’s home network) may be in a different network than the mobile device. This is precisely indirect routing. An alternative to indirect routing, known as **local breakout** \[GSMA 2019a\] has been specified in which the Serving Gateway establishes a tunnel to the PDN Gateway in the local, visited network. In practice, however, local breakout is not widely used \[Sauter 2014\].
 
 Once the tunnels have been configured and activated, the mobile device can now forward packets to/from the Internet via the PDN gateway in its home network!
@@ -1264,15 +617,8 @@ Once the tunnels have been configured and activated, the mobile device can now f
 
 As shown in Figure 7.30, datagrams to/from the device are initially (before handover) forwarded to the mobile through one base station (which we’ll refer to as the _source_ base station), and after handover are routed to the mobile device through another base station (which we’ll refer to as the _target_ base station). As we will see, a handover between base stations results not only in the mobile device transmitting/ receiving to/from a new base station but also in a change of the base-station side of the Serving-Gateway-to-base-station tunnel in Figure 7.29. In the simplest case of
 
-PDN gateway (P-GW)
-
-Serving gateway (S-GW)
-
-MME
-
-Source base station
-
-Target base station53 14**Figure 7.30**  ♦   Steps in handing over a mobile device from the source base station to the target base stationhandover, when the two base stations are near each other and in the same network, all changes occurring as a result of handover are thus relatively local. In particular, the PDN gateway being used by the Serving Gateway remains blissfully unaware of device mobility. Of course, more complicated handoff scenarios will require the use of more complex mechanisms \[Sauter 2014; GSMA 2019a\].
+![Alt text](image-31.png)
+**Figure 7.30**  ♦   Steps in handing over a mobile device from the source base station to the target base stationhandover, when the two base stations are near each other and in the same network, all changes occurring as a result of handover are thus relatively local. In particular, the PDN gateway being used by the Serving Gateway remains blissfully unaware of device mobility. Of course, more complicated handoff scenarios will require the use of more complex mechanisms \[Sauter 2014; GSMA 2019a\].
 
 There may be several reasons for handover to occur. For example, the signal between the current base station and the mobile may have deteriorated to such an extent that communication is severely impaired. Or a cell may have become over- loaded, handling a large amount of traffic; handing over mobile devices to less congested nearby cells may alleviate this congestion. A mobile device periodically measures characteristics of a beacon signal from its current base station as well as signals from nearby base stations that it can “hear.” These measurements are reported once or twice a second to the mobile device’s current (source) base station. Based on these measurements, the current loads of mobiles in nearby cells, and other factors, the source base station may choose to initiate a handover. The 4G/5G standards do not specify a specific algorithm to be used by a base station to determine whether or not to perform handover, or which target base station to choose; this is an active area of research \[Zheng 2008; Alexandris 2016\].
 
@@ -1302,27 +648,7 @@ Instead, it has perhaps been the lack of motivating business and use cases \[Ark
 It will nonetheless be instructive to briefly overview the Mobile IP standard here, as it provides many of the same services as cellular networks and implements many of the same basic mobility principles. Earlier editions of this textbook have provided a more in-depth study of Mobile IP than we will provide here; the inter- ested reader can find this retired material on this textbook’s website. The Internet architecture and protocols for supporting mobility, collectively known as Mobile IP, are defined primarily in RFC 5944 for IPv4. Mobile IP, like 4G/5G, is a complex standard, and would require an entire book to describe in detail; indeed one such book is \[Perkins 1998b\]. Our modest goal here is to provide an overview of the most important aspects of Mobile IP.
 
 The overall architecture and elements of Mobile IP are strikingly similar to that of cellular provider networks. There is a strong notion of a home network, in which a mobile device has a permanent IP address, and visited networks (known as “foreign” networks in Mobile IP), where the mobile device will be allocated a care-of-address. The home agent in Mobile IP has a similar function to the LTE HSS: it tracks the location of a mobile device by receiving updates from foreign agents in foreign net- works visited by that mobile device, just as the HSS receives updates from Mobil- ity Management Entities (MMEs) in visited networks in which a 4G mobile device resides. And both 4G/5G and Mobile IP use indirect routing to a mobile node, using tunnels to connect the gateway routers in the home and visited/foreign networks. Table 7.3 summarizes the elements of the Mobile IP architecture, along with a com- parison with similar elements in 4G/5G networks
-
-4G/5G element Mobile IP element Discussion
-
-Home network Home network
-
-Visited network Foreign network
-
-IMSI identifier Permanent IP address Globally unique routable address information
-
-Home Subscriber Service (HSS) Home agent
-
-Mobility Management Entity (MME) Foreign agent
-
-Data plane: indirect forwarding via the home network, with tunneling between the home and visited network, and tunneling within the network in which the mobile device resides
-
-Data plane: indirect forwarding via the home network, with tunneling between the home and visited network
-
-Base station (eNode-B) Access Point (AP) No specific AP technology is specified in Mobile IP
-
-Radio Access Network WLAN No specific WLAN technology is specified in Mobile IP
-
+![Alt text](image-32.png)
 **Table 7.3**  ♦  Commonalities between 4G/5G and Mobile IP architecturesThe mobile IP standard consists of three main pieces:
 
 • _Agent discovery._ Mobile IP defines the protocols used by a foreign agent to adver- tise its mobility services to a mobile device that wishes to attach to its network. Those services will include providing a care-of-address to the mobile device for use in the foreign network, registration of the mobile device with the home agent in the mobile device’s home network, and forwarding of datagrams to/from the mobile device, among other services.
@@ -1450,10 +776,9 @@ P8. Consider the scenario shown in Figure 7.31, in which there are four wireless
 Suppose now that each node has an infinite supply of messages that it wants to send to each of the other nodes. If a message’s destination is not an immediate neighbor, then the message must be relayed. For example, if A wants to send to D, a message from A must first be sent to B, which then sends the mes- sage to C, which then sends the message to D. Time is slotted, with a message transmission time taking exactly one time slot, e.g., as in slotted Aloha. During a slot, a node can do one of the following: (_i_) send a message, (_ii_) receive a mes- sage (if exactly one message is being sent to it), (_iii_) remain silent. As always, if a node hears two or more simultaneous transmissions, a collision occurs and none of the transmitted messages are received successfully. You can assume here that there are no bit-level errors, and thus if exactly one message is sent, it will be received correctly by those within the transmission radius of the sender.
 
 a. Suppose now that an omniscient controller (i.e., a controller that knows the state of every node in the network) can command each node to do whatever it (the omniscient controller) wishes, that is, to send a message, to receive a
-
+![Alt text](image-33.png)
 **Figure 7.31**  ♦  Scenario for problem P8
 
-**A B C D**
 PROBLEMS 
 
 message, or to remain silent. Given this omniscient controller, what is the maximum rate at which a data message can be transferred from C to A, given that there are no other messages between any other source/destination pairs?
@@ -1498,18 +823,7 @@ At the Web site for this textbook, www.pearsonglobaleditions.com, also mirrored 
 
 Deborah Estrin
 
-C ou
-
-rte sy
-
-o f D
-
-eb or
-
-ah E
-
-str in
-
+![Alt text](image-34.png)
 Deborah Estrin is a Professor of Computer Science and Associate Dean for Impact at Cornell Tech in New York City and a Professor of Public Health at Weill Cornell Medical College. She received her Ph.D. (1985) in Computer Science from M.I.T. and her B.S. (1980) from UC Berkeley. Estrin’s early research focused on the design of network protocols, including multicast and inter-domain routing. In 2002 Estrin founded the NSF-funded Science and Technology Center at UCLA, Center for Embedded Networked Sensing (CENS http://cens.ucla.edu.). CENS launched new areas of multi-disciplinary computer systems research from sensor networks for environmental monitoring, to participatory sensing and mobile health. As described in her 2013 TEDMED talk, she explores how individuals can benefit from the pervasive data byproducts of digi- tal and IoT interactions for health and life management. Professor Estrin is an elected member of the American Academy of Arts and Sciences (2007), the National Academy of Engineering (2009), and the National Academy of Medicine (2019). She is a Fellow of the IEEE, ACM, and AAAS. She was selected as the first ACM-W Athena Lecturer (2006), awarded the Anita Borg Institute’s Women of Vision Award for Innovation (2007), inducted into the WITI hall of fame (2008), received honorary doctorates from EPFL (2008) and Uppsala University (2011), and was selected as a MacArthur Fellow (2018).mobile health are as diverse as the problem domains, but what they have in common is the need to keep our eyes open to whether we have the problem definition right as we iterate between design and deployment, prototype and pilot. None of these are problems that could be solved solely analytically, or with simulation or even in constructed laboratory experi- ments. They challenged our ability to retain clean architectures in the presence of messy problems and contexts, and they required extensive collaboration.
 
 What changes and innovations do you see happening in wireless networks and mobility in the future? In a prior edition of this interview I said that I have never put much faith into predicting the future, but I did go on to speculate that we might see the end of feature phones (i.e., those that are not programmable and are used only for voice and text messaging) as smart phones become more and more powerful and the primary point of Internet access for many—and now not so many years later that is clearly the case. I also predicted that we would see the continued proliferation of embedded SIMs by which all sorts of devices have the ability to communicate via the cellular network at low data rates. While that has occurred, we see many devices and “Internet of Things” that use embedded WiFi and other lower power, shorter range, forms of connectivity to local hubs. I did not anticipate at that time the emer- gence of a large consumer wearables market or interactive voice agents like Siri and Alexa. By the time the next edition is published I expect broad proliferation of personal applica- tions that leverage data from IoT and other digital traces.
