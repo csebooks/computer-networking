@@ -2,6 +2,7 @@
 title: 'Computer Networks and the Internet'
 weight: 1
 ---
+#Computer Networks and the Internet
 
 Today’s Internet is arguably the largest engineered system ever created by mankind, with hundreds of millions of connected computers, communication links, and switches; with billions of users who connect via laptops, tablets, and smartphones; and with an array of new Internet-connected “things” including game consoles, sur- veillance systems, watches, eye glasses, thermostats, and cars. Given that the Inter- net is so large and has so many diverse components and uses, is there any hope of understanding how it works? Are there guiding principles and structure that can provide a foundation for understanding such an amazingly large and complex sys- tem? And if so, is it possible that it actually could be both interesting _and_ fun to learn about computer networks? Fortunately, the answer to all of these questions is a resounding YES! Indeed, it’s our aim in this book to provide you with a modern introduction to the dynamic field of computer networking, giving you the princi- ples and practical insights you’ll need to understand not only today’s networks, but tomorrow’s as well.
 
@@ -13,7 +14,7 @@ and the switches that transport data, as well as the access networks and physica
 
 After having completed this overview of the edge and core of a computer net- work, we’ll take the broader and more abstract view in the second half of this chap- ter. We’ll examine delay, loss, and throughput of data in a computer network and provide simple quantitative models for end-to-end throughput and delay: models that take into account transmission, propagation, and queuing delays. We’ll then introduce some of the key architectural principles in computer networking, namely, protocol layering and service models. We’ll also learn that computer networks are vulnerable to many different types of attacks; we’ll survey some of these attacks and consider how computer networks can be made more secure. Finally, we’ll close this chapter with a brief history of computer networking.
 
-# What Is the Internet?
+## What Is the Internet?
 In this book, we’ll use the public Internet, a specific computer network, as our prin- cipal vehicle for discussing computer networks and their protocols. But what _is_ the Internet? There are a couple of ways to answer this question. First, we can describe the nuts and bolts of the Internet, that is, the basic hardware and software components that make up the Internet. Second, we can describe the Internet in terms of a network- ing infrastructure that provides services to distributed applications. Let’s begin with the nuts-and-bolts description, using 
 ![](1.png)
 
@@ -132,23 +133,13 @@ Recall from the previous section that in computer networking jargon, the com- pu
 
 **Figure 1.3**  ♦  End-system interaction
 
-**Content Provider Network**
-
-**National or Global ISP**
-
-**Datacenter Network**
-
-**Datacenter Network**
-
-**Mobile Network**
-
-**Enterprise Network**
-
-**Home Network Local or Regional ISP**
-
 (e.g., desktop PCs, Macs, and Linux boxes), servers (e.g., Web and e-mail servers), and mobile devices (e.g., laptops, smartphones, and tablets). Furthermore, an increasing number of non-traditional “things” are being attached to the Internet as end systems (see the Case History feature).
 
-End systems are also referred to as _hosts_ because they host (that is, run) appli- cation programs such as a Web browser program, a Web server program, an e-mailclient program, or an e-mail server program. Throughout this book we will use the terms hosts and end systems interchangeably; that is, _host = end system_. Hosts are sometimes further divided into two categories: **clients** and **servers**. Infor- mally, clients tend to be desktops, laptops, smartphones, and so on, whereas servers tend to be more powerful machines that store and distribute Web pages, stream video, relay e-mail, and so on. Today, most of the servers from which we receive search results, e-mail, Web pages, videos and mobile app content reside in large **data centers**. For example, as of 2020, Google has 19 data centers on four continents, collectively containing several million servers. Figure 1.3 includes two such data centers, and the Case History sidebar describes data centers in more detail.
+End systems are also referred to as _hosts_ because they host (that is, run) appli- cation programs such as a Web browser program, a Web server program, an e-mail
+
+![Alt text](image.png)
+
+client program, or an e-mail server program. Throughout this book we will use the terms hosts and end systems interchangeably; that is, _host = end system_. Hosts are sometimes further divided into two categories: **clients** and **servers**. Infor- mally, clients tend to be desktops, laptops, smartphones, and so on, whereas servers tend to be more powerful machines that store and distribute Web pages, stream video, relay e-mail, and so on. Today, most of the servers from which we receive search results, e-mail, Web pages, videos and mobile app content reside in large **data centers**. For example, as of 2020, Google has 19 data centers on four continents, collectively containing several million servers. Figure 1.3 includes two such data centers, and the Case History sidebar describes data centers in more detail.
 
 DATA CENTERS AND CLOUD COMPUTING
 
@@ -158,26 +149,14 @@ Broadly speaking, data centers serve three purposes, which we describe here in t
 
 The worker bees in a data center are the hosts. They serve content (e.g., Web pages and videos), store e-mails and documents, and collectively perform massively distributed computations. The hosts in data centers, called blades and resembling pizza boxes, are generally commodity hosts that include CPU, memory, and disk storage. The hosts are stacked in racks, with each rack typically having 20 to 40 blades. The racks are then interconnected using sophisticated and evolving data center network designs. Data center networks are discussed in greater detail in Chapter 6.
 
-**CASE HISTORY**## Access Networks
+## Access Networks
 
 Having considered the applications and end systems at the “edge of the network,” let’s next consider the access network—the network that physically connects an end system to the first router (also known as the “edge router”) on a path from the end system to any other distant end system. Figure 1.4 shows several types of access
 ![](4.png)
 
 **Figure 1.4**  ♦  Access networks
 
-**Content Provider Network**
-
-**National or Global ISP**
-
-**Datacenter Network**
-
-**Datacenter Network**
-
-**Mobile Network**
-
-**Enterprise Network**
-
-**Home Network Local or Regional ISP**networks with thick, shaded lines and the settings (home, enterprise, and wide-area mobile wireless) in which they are used.
+networks with thick, shaded lines and the settings (home, enterprise, and wide-area mobile wireless) in which they are used.
 
 **Home Access: DSL, Cable, FTTH, and 5G Fixed Wireless**
 
@@ -198,23 +177,8 @@ This approach makes the single DSL link appear as if there were three separate l
 
 **Figure 1.5**  ♦  DSL Internet access
 
-Home PC
 
-Home phone
-
-DSL modem
-
-Internet
-
-Telephone network
-
-Splitter
-
-Existing phone line: 0-4KHz phone; 4-50KHz upstream data; 50KHz– 1MHz downstream data
-
-Central office
-
-DSLAMthe same time. (We’ll describe this technique of frequency-division multiplexing in Section 1.3.1.) On the customer side, a splitter separates the data and telephone signals arriving to the home and forwards the data signal to the DSL modem. On the telco side, in the CO, the DSLAM separates the data and phone signals and sends the data into the Internet. Hundreds or even thousands of households connect to a single DSLAM.
+same time. (We’ll describe this technique of frequency-division multiplexing in Section 1.3.1.) On the customer side, a splitter separates the data and telephone signals arriving to the home and forwards the data signal to the DSL modem. On the telco side, in the CO, the DSLAM separates the data and phone signals and sends the data into the Internet. Hundreds or even thousands of households connect to a single DSLAM.
 
 The DSL standards define multiple transmission rates, including downstream transmission rates of 24 Mbs and 52 Mbs, and upstream rates of 3.5 Mbps and 16 Mbps; the newest standard provides for aggregate upstream plus downstream rates of 1 Gbps [ITU 2014]. Because the downstream and upstream rates are dif- ferent, the access is said to be asymmetric. The actual downstream and upstream transmission rates achieved may be less than the rates noted above, as the DSL provider may purposefully limit a residential rate when tiered service (different rates, available at different prices) are offered. The maximum rate is also limited by the distance between the home and the CO, the gauge of the twisted-pair line and the degree of electrical interference. Engineers have expressly designed DSL for short distances between the home and the CO; generally, if the residence is not located within 5 to 10 miles of the CO, the residence must resort to an alternative form of Internet access.
 
@@ -223,21 +187,7 @@ While DSL makes use of the telco’s existing local telephone infrastructure, **
 
 **Figure 1.6**  ♦  A hybrid fiber-coaxial access network
 
-Fiber cable
-
-Coaxial cable
-
-Hundreds of homes
-
-Cable head end Hundreds of homes
-
-Fiber node
-
-Fiber node
-
-Internet
-
-CMTSconnect the cable head end to neighborhood-level junctions, from which tradi- tional coaxial cable is then used to reach individual houses and apartments. Each neighborhood junction typically supports 500 to 5,000 homes. Because both fiber and coaxial cable are employed in this system, it is often referred to as hybrid fiber coax (HFC).
+connect the cable head end to neighborhood-level junctions, from which tradi- tional coaxial cable is then used to reach individual houses and apartments. Each neighborhood junction typically supports 500 to 5,000 homes. Because both fiber and coaxial cable are employed in this system, it is often referred to as hybrid fiber coax (HFC).
 
 Cable internet access requires special modems, called cable modems. As with a DSL modem, the cable modem is typically an external device and con- nects to the home PC through an Ethernet port. (We will discuss Ethernet in great detail in Chapter 6.) At the cable head end, the cable modem termination system (CMTS) serves a similar function as the DSL network’s DSLAM— turning the analog signal sent from the cable modems in many downstream homes back into digital format. Cable modems divide the HFC network into two channels, a downstream and an upstream channel. As with DSL, access is typi- cally asymmetric, with the downstream channel typically allocated a higher transmission rate than the upstream channel. The DOCSIS 2.0 and 3.0 standards define downstream bitrates of 40 Mbps and 1.2 Gbps, and upstream rates of 30 Mbps and 100 Mbps, respectively. As in the case of DSL networks, the maximum achievable rate may not be realized due to lower contracted data rates or media impairments.
 
@@ -245,7 +195,13 @@ One important characteristic of cable Internet access is that it is a shared bro
 
 Although DSL and cable networks currently represent the majority of residential broadband access in the United States, an up-and-coming technology that provides even higher speeds is **fiber to the home (FTTH)** [Fiber Broadband 2020]. As the name suggests, the FTTH concept is simple—provide an optical fiber path from the CO directly to the home. FTTH can potentially provide Internet access rates in the gigabits per second range.
 
-There are several competing technologies for optical distribution from the CO to the homes. The simplest optical distribution network is called direct fiber, with one fiber leaving the CO for each home. More commonly, each fiber leaving the central office is actually shared by many homes; it is not until the fiber gets rela- tively close to the homes that it is split into individual customer-specific fibers. There are two competing optical-distribution network architectures that performthis splitting: active optical networks (AONs) and passive optical networks (PONs). AON is essentially switched Ethernet, which is discussed in Chapter 6.
+
+There are several competing technologies for optical distribution from the CO to the homes. The simplest optical distribution network is called direct fiber, with one fiber leaving the CO for each home. More commonly, each fiber leaving the central office is actually shared by many homes; it is not until the fiber gets rela- tively close to the homes that it is split into individual customer-specific fibers. There are two competing optical-distribution network architectures that perform 
+![Alt text](image-1.png)
+
+Figure 1.7 ♦ FTTH Internet access
+
+this splitting: active optical networks (AONs) and passive optical networks (PONs). AON is essentially switched Ethernet, which is discussed in Chapter 6.
 
 Here, we briefly discuss PON, which is used in Verizon’s FiOS service. Figure 1.7 shows FTTH using the PON distribution architecture. Each home has an optical network terminator (ONT), which is connected by dedicated optical fiber to a neighborhood splitter. The splitter combines a number of homes (typi- cally less than 100) onto a single, shared optical fiber, which connects to an optical line terminator (OLT) in the telco’s CO. The OLT, providing conversion between optical and electrical signals, connects to the Internet via a telco router. At home, users connect a home router (typically a wireless router) to the ONT and access the Internet via this home router. In the PON architecture, all packets sent from OLT to the splitter are replicated at the splitter (similar to a cable head end).
 
@@ -254,42 +210,20 @@ In addition to DSL, Cable, and FTTH, **5G fixed wireless** is beginning to be de
 **Access in the Enterprise (and the Home): Ethernet and WiFi**
 
 On corporate and university campuses, and increasingly in home settings, a local area network (LAN) is used to connect an end system to the edge router. Although there are many types of LAN technologies, Ethernet is by far the most preva- lent access technology in corporate, university, and home networks. As shown in
-![](7.png)
 
-**Figure 1.7**  ♦  FTTH Internet access
+![Alt text](image-2.png)
 
-Internet Central office
-
-Optical splitter
-
-ONT
-
-ONT
-
-ONT
-
-OLT Optical fibersFigure 1.8, Ethernet users use twisted-pair copper wire to connect to an Ethernet switch, a technology discussed in detail in Chapter 6. The Ethernet switch, or a network of such interconnected switches, is then in turn connected into the larger Internet. With Ethernet access, users typically have 100 Mbps to tens of Gbps access to the Ethernet switch, whereas servers may have 1 Gbps 10 Gbps access.
+**Figure 1.8** ♦ Ethernet Internet acces
+Figure 1.8, Ethernet users use twisted-pair copper wire to connect to an Ethernet switch, a technology discussed in detail in Chapter 6. The Ethernet switch, or a network of such interconnected switches, is then in turn connected into the larger Internet. With Ethernet access, users typically have 100 Mbps to tens of Gbps access to the Ethernet switch, whereas servers may have 1 Gbps 10 Gbps access.
 
 Increasingly, however, people are accessing the Internet wirelessly from lap- tops, smartphones, tablets, and other “things”. In a wireless LAN setting, wireless users transmit/receive packets to/from an access point that is connected into the enterprise’s network (most likely using wired Ethernet), which in turn is connected to the wired Internet. A wireless LAN user must typically be within a few tens of meters of the access point. Wireless LAN access based on IEEE 802.11 technol- ogy, more colloquially known as WiFi, is now just about everywhere—universities, business offices, cafes, airports, homes, and even in airplanes. As discussed in detail in Chapter 7, 802.11 today provides a shared transmission rate of up to more than 100 Mbps.
 
 Even though Ethernet and WiFi access networks were initially deployed in enterprise (corporate, university) settings, they are also common components of home networks. Many homes combine broadband residential access (that is, cable modems or DSL) with these inexpensive wireless LAN technologies to create pow- erful home networks Figure 1.9 shows a typical home network. This home network consists of a roaming laptop, multiple Internet-connected home appliances, as well as a wired PC; a base station (the wireless access point), which communicates with the wireless PC and other wireless devices in the home; and a home router that con- nects the wireless access point, and any other wired home devices, to the Internet. This network allows household members to have broadband access to the Internet with one member roaming from the kitchen to the backyard to the bedrooms.
-![](8.png)
 
-**Figure 1.8**  ♦  Ethernet Internet access
+![Alt text](image-4.png)
+**Figure 1.9** ♦ A typical home network
 
-Ethernet switch
-
-Institutional router
-
-1 Gbps
-
-1 Gbps
-
-1 Gbps
-
-Server
-
-To Institution’s ISP**Wide-Area Wireless Access: 3G and LTE 4G and 5G**
+**Wide-Area Wireless Access: 3G and LTE 4G and 5G**
 
 Mobile devices such as iPhones and Android devices are being used to message, share photos in social networks, make mobile payments, watch movies, stream music, and much more while on the run. These devices employ the same wireless infrastructure used for cellular telephony to send/receive packets through a base station that is oper- ated by the cellular network provider. Unlike WiFi, a user need only be within a few tens of kilometers (as opposed to a few tens of meters) of the base station.
 
@@ -299,16 +233,7 @@ Telecommunications companies have made enormous investments in so-called fourth-
 
 In the previous subsection, we gave an overview of some of the most important network access technologies in the Internet. As we described these technologies, we also indicated the physical media used. For example, we said that HFC uses a combination of fiber cable and coaxial cable. We said that DSL and Ethernet use copper wire. And we said that mobile access networks use the radio spectrum. In this subsection, we provide a brief overview of these and other transmission media that are commonly used in the Internet.
 
-In order to define what is meant by a physical medium, let us reflect on the brief life of a bit. Consider a bit traveling from one end system, through a series of links and routers, to another end system. This poor bit gets kicked around and transmitted many, many times! The source end system first transmits the
-![](9.png)
-
-**Figure 1.9**  ♦  A typical home network
-
-Cable head end
-
-Internet
-
-**Home Network**bit, and shortly thereafter the first router in the series receives the bit; the first router then transmits the bit, and shortly thereafter the second router receives the bit; and so on. Thus our bit, when traveling from source to destination, passes through a series of transmitter-receiver pairs. For each transmitter-receiver pair, the bit is sent by propagating electromagnetic waves or optical pulses across a **physical medium**. The physical medium can take many shapes and forms and does not have to be of the same type for each transmitter-receiver pair along the path. Examples of physical media include twisted-pair copper wire, coaxial cable, multimode fiber-optic cable, terrestrial radio spectrum, and satellite radio spectrum. Physical media fall into two categories: **guided media** and **unguided media**. With guided media, the waves are guided along a solid medium, such as a fiber-optic cable, a twisted-pair copper wire, or a coaxial cable. With unguided media, the waves propagate in the atmosphere and in outer space, such as in a wireless LAN or a digital satellite channel.
+In order to define what is meant by a physical medium, let us reflect on the brief life of a bit. Consider a bit traveling from one end system, through a series of links and routers, to another end system. This poor bit gets kicked around and transmitted many, many times! The source end system first transmits the bit, and shortly thereafter the first router in the series receives the bit; the first router then transmits the bit, and shortly thereafter the second router receives the bit; and so on. Thus our bit, when traveling from source to destination, passes through a series of transmitter-receiver pairs. For each transmitter-receiver pair, the bit is sent by propagating electromagnetic waves or optical pulses across a **physical medium**. The physical medium can take many shapes and forms and does not have to be of the same type for each transmitter-receiver pair along the path. Examples of physical media include twisted-pair copper wire, coaxial cable, multimode fiber-optic cable, terrestrial radio spectrum, and satellite radio spectrum. Physical media fall into two categories: **guided media** and **unguided media**. With guided media, the waves are guided along a solid medium, such as a fiber-optic cable, a twisted-pair copper wire, or a coaxial cable. With unguided media, the waves propagate in the atmosphere and in outer space, such as in a wireless LAN or a digital satellite channel.
 
 But before we get into the characteristics of the various media types, let us say a few words about their costs. The actual cost of the physical link (copper wire, fiber- optic cable, and so on) is often relatively minor compared with other networking costs. In particular, the labor cost associated with the installation of the physical link can be orders of magnitude higher than the cost of the material. For this reason, many builders install twisted pair, optical fiber, and coaxial cable in every room in a build- ing. Even if only one medium is initially used, there is a good chance that another medium could be used in the near future, and so money is saved by not having to lay additional wires in the future.
 
@@ -326,7 +251,9 @@ Like twisted pair, coaxial cable consists of two copper conductors, but the two 
 
 **Fiber Optics**
 
-An optical fiber is a thin, flexible medium that conducts pulses of light, with each pulse representing a bit. A single optical fiber can support tremendous bit rates, up to tens or even hundreds of gigabits per second. They are immune to electromagnetic interference, have very low signal attenuation up to 100 kilometers, and are very hard to tap. These characteristics have made fiber optics the preferred long-haul guided transmission media, particularly for overseas links. Many of the long-distance tele- phone networks in the United States and elsewhere now use fiber optics exclusively. Fiber optics is also prevalent in the backbone of the Internet. However, the high cost of optical devices—such as transmitters, receivers, and switches—has hindered their deployment for short-haul transport, such as in a LAN or into the home in a resi- dential access network. The Optical Carrier (OC) standard link speeds range from 51.8 Mbps to 39.8 Gbps; these specifications are often referred to as OC-_n_, where the link speed equals _n_ × 51.8 Mbps. Standards in use today include OC-1, OC-3, OC-12, OC-24, OC-48, OC-96, OC-192, OC-768.**Terrestrial Radio Channels**
+An optical fiber is a thin, flexible medium that conducts pulses of light, with each pulse representing a bit. A single optical fiber can support tremendous bit rates, up to tens or even hundreds of gigabits per second. They are immune to electromagnetic interference, have very low signal attenuation up to 100 kilometers, and are very hard to tap. These characteristics have made fiber optics the preferred long-haul guided transmission media, particularly for overseas links. Many of the long-distance tele- phone networks in the United States and elsewhere now use fiber optics exclusively. Fiber optics is also prevalent in the backbone of the Internet. However, the high cost of optical devices—such as transmitters, receivers, and switches—has hindered their deployment for short-haul transport, such as in a LAN or into the home in a resi- dential access network. The Optical Carrier (OC) standard link speeds range from 51.8 Mbps to 39.8 Gbps; these specifications are often referred to as OC-_n_, where the link speed equals _n_ × 51.8 Mbps. Standards in use today include OC-1, OC-3, OC-12, OC-24, OC-48, OC-96, OC-192, OC-768.
+
+**Terrestrial Radio Channels**
 
 Radio channels carry signals in the electromagnetic spectrum. They are an attrac- tive medium because they require no physical wire to be installed, can penetrate walls, provide connectivity to a mobile user, and can potentially carry a signal for long distances. The characteristics of a radio channel depend significantly on the propagation environment and the distance over which a signal is to be carried. Environmental considerations determine path loss and shadow fad- ing (which decrease the signal strength as the signal travels over a distance and around/through obstructing objects), multipath fading (due to signal reflection off of interfering objects), and interference (due to other transmissions and electro- magnetic signals).
 
@@ -339,26 +266,12 @@ A communication satellite links two or more Earth-based microwave transmitter/ r
 Geostationary satellites permanently remain above the same spot on Earth. This stationary presence is achieved by placing the satellite in orbit at 36,000 kilo- meters above Earth’s surface. This huge distance from ground station through satellite back to ground station introduces a substantial signal propagation delay of 280 milliseconds. Nevertheless, satellite links, which can operate at speeds of hundreds of Mbps, are often used in areas without access to DSL or cable-based Internet access.
 
 LEO satellites are placed much closer to Earth and do not remain permanently above one spot on Earth. They rotate around Earth (just as the Moon does) and may communicate with each other, as well as with ground stations. To provide continuous coverage to an area, many satellites need to be placed in orbit. There are currently many low-altitude communication systems in development. LEO satellite technology may be used for Internet access sometime in the future.
-![](10.png)
 
-**Figure 1.10**  ♦  The network core
-
-**Content Provider Network**
-
-**National or Global ISP**
-
-**Datacenter Network**
-
-**Datacenter Network**
-
-**Mobile Network**
-
-**Enterprise Network**
-
-**Home Network Local or Regional ISP**
-
-# The Network Core
-Having examined the Internet’s edge, let us now delve more deeply inside the network core—the mesh of packet switches and links that interconnects the Internet’s end systems. Figure 1.10 highlights the network core with thick, shaded lines.## Packet Switching** 
+## The Network Core
+Having examined the Internet’s edge, let us now delve more deeply inside the network core—the mesh of packet switches and links that interconnects the Internet’s end systems.Figure 1.10 highlights the network core with thick, shaded lines.
+![](10.png) 
+Figure 1.10 ♦ The network core
+### Packet Switching** 
 
 In a network application, end systems exchange **messages** with each other. Mes- sages can contain anything the application designer wants. Messages may perform a control function (for example, the “Hi” messages in our handshaking example in Figure 1.2) or can contain data, such as an e-mail message, a JPEG image, or an MP3 audio file. To send a message from a source end system to a destination end system, the source breaks long messages into smaller chunks of data known as **pack- ets**. Between source and destination, each packet travels through communication links and **packet switches(for which there are two predominant types, **routers
 
@@ -366,7 +279,12 @@ and **link-layer switches**). Packets are transmitted over each communication li
 
 **Store-and-Forward Transmission**
 
-Most packet switches use **store-and-forward transmission** at the inputs to the links. Store-and-forward transmission means that the packet switch must receive the entire packet before it can begin to transmit the first bit of the packet onto the outbound link. To explore store-and-forward transmission in more detail, consider a simple network consisting of two end systems connected by a single router, as shown in Figure 1.11. A router will typically have many incident links, since its job is to switch an incoming packet onto an outgoing link; in this simple example, the router has the rather simple task of transferring a packet from one (input) link to the only other attached link. In this example, the source has three packets, each consisting of _L_ bits, to send to the destination. At the snapshot of time shown in Figure 1.11, the source has transmitted some of packet 1, and the front of packet 1 has already arrived at the router. Because the router employs store-and-forwarding, at this instant of time, the router cannot transmit the bits it has received; instead it must first buffer (i.e., “store”) the packet’s bits. Only after the router has received _all_ of the packet’s bits can it begin to transmit (i.e., “forward”) the packet onto the outbound link. To gain some insight into store-and-forward transmission, let’s now calculate the amount of time that elapses from when the source begins to send the packet until the destination has received the entire packet. (Here we will ignore propagation delay—the time it takes for the bits to travel across the wire at near the speed of light—which will be discussed in Section 1.4.) The source begins to transmit at time 0; at time _L_/_R_ seconds, the source has transmitted the entire packet, and the entire packet has been received and stored at the router (since there is no propagation delay). At time _L_/_R_ seconds, since the router has just received the entire packet, it can begin to transmit the packet onto the outbound link towards the des- tination; at time 2_L_/_R_, the router has transmitted the entire packet, and the entire packet has been received by the destination. Thus, the total delay is 2_L_/_R_. If theswitch instead forwarded bits as soon as they arrive (without first receiving the entire packet), then the total delay would be _L_/_R_ since bits are not held up at the router. But, as we will discuss in Section 1.4, routers need to receive, store, and _process_ the entire packet before forwarding.
+Most packet switches use **store-and-forward transmission** at the inputs to the links. Store-and-forward transmission means that the packet switch must receive the entire packet before it can begin to transmit the first bit of the packet onto the outbound link. To explore store-and-forward transmission in more detail, consider a simple network consisting of two end systems connected by a single router, as shown in Figure 1.11. A router will typically have many incident links, since its job is to switch an incoming packet onto an outgoing link; in this simple example, the router has the rather simple task of transferring a packet from one (input) link to the only other attached link. In this example, the source has three packets, each consisting of _L_ bits, to send to the destination. At the snapshot of time shown in Figure 1.11, the source has transmitted some of packet 1, and the front of packet 1 has already arrived at the router. Because the router employs store-and-forwarding, at this instant of time, the router cannot transmit the bits it has received; instead it must first buffer (i.e., “store”) the packet’s bits. Only after the router has received _all_ of the packet’s bits can it begin to transmit (i.e., “forward”) the packet onto the outbound link. To gain some insight into store-and-forward transmission, let’s now calculate the amount of time that elapses from when the source begins to send the packet until the destination has received the entire packet. (Here we will ignore propagation delay—the time it takes for the bits to travel across the wire at near the speed of light—which will be discussed in Section 1.4.) The source begins to transmit at time 0; at time _L_/_R_ seconds, the source has transmitted the entire packet, and the entire packet has been received and stored at the router (since there is no propagation delay). At time _L_/_R_ seconds, since the router has just received the entire packet, it can begin to transmit the packet onto the outbound link towards the des- tination; at time 2_L_/_R_, the router has transmitted the entire packet, and the entire packet has been received by the destination. Thus, the total delay is 2_L_/_R_. 
+![](11.png)
+
+**Figure 1.11**  ♦  Store-and-forward packet switching
+
+If the switch instead forwarded bits as soon as they arrive (without first receiving the entire packet), then the total delay would be _L_/_R_ since bits are not held up at the router. But, as we will discuss in Section 1.4, routers need to receive, store, and _process_ the entire packet before forwarding.
 
 Now let’s calculate the amount of time that elapses from when the source begins to send the first packet until the destination has received all three packets. As before, at time _L_/_R_, the router begins to forward the first packet. But also at time _L_/_R_ the source will begin to send the second packet, since it has just finished sending the entire first packet. Thus, at time 2_L_/_R_, the destination has received the first packet and the router has received the second packet. Similarly, at time 3_L_/_R_, the destina- tion has received the first two packets and the router has received the third packet. Finally, at time 4_L_/_R_ the destination has received all three packets!
 
@@ -374,18 +292,14 @@ Let’s now consider the general case of sending one packet from source to des- 
 
 _d_end@to@end = _N_ _L R_
 
-(1.1)
-
 You may now want to try to determine what the delay would be for _P_ packets sent over a series of _N_ links.
 
 **Queuing Delays and Packet Loss**
 
-Each packet switch has multiple links attached to it. For each attached link, the packet switch has an **output buffer** (also called an **output queue**), which stores packets that the router is about to send into that link. The output buffers play a key role in packet switching. If an arriving packet needs to be transmitted onto a link but finds the link busy with the transmission of another packet, the arriving packet must wait in the output buffer. Thus, in addition to the store-and-forward delays, packets suffer output buffer **queuing delays**. These delays are variable and depend on the
-![](11.png)
+Each packet switch has multiple links attached to it. For each attached link, the packet switch has an **output buffer** (also called an **output queue**), which stores packets that the router is about to send into that link. The output buffers play a key role in packet switching. If an arriving packet needs to be transmitted onto a link but finds the link busy with the transmission of another packet, the arriving packet must wait in the output buffer. Thus, in addition to the store-and-forward delays, packets suffer output buffer **queuing delays**. These delays are variable and depend on the Source _R_ bpsDestinationFront of packet 1 stored in router, awaiting remaining bits before forwarding
+![Alt text](image-5.png)
+**Figure 1.12**  ♦  Packet switching
 
-**Figure 1.11**  ♦  Store-and-forward packet switching
-
-Source _R_ bpsDestinationFront of packet 1 stored in router, awaiting remaining bits before forwarding
 level of congestion in the network. Since the amount of buffer space is finite, an arriving packet may find that the buffer is completely full with other packets waiting for transmission. In this case, **packet loss** will occur—either the arriving packet or one of the already-queued packets will be dropped.
 
 Figure 1.12 illustrates a simple packet-switched network. As in Figure 1.11, packets are represented by three-dimensional slabs. The width of a slab represents the number of bits in the packet. In this figure, all packets have the same width and hence the same length. Suppose Hosts A and B are sending packets to Host E. Hosts A and B first send their packets along 100 Mbps Ethernet links to the first router. The router then directs these packets to the 15 Mbps link. If, during a short interval of time, the arrival rate of packets to the router (when converted to bits per second) exceeds 15 Mbps, congestion will occur at the router as packets queue in the link’s output buffer before being transmitted onto the link. For example, if Host A and B each send a burst of five packets back-to-back at the same time, then most of these packets will spend some time waiting in the queue. The situation is, in fact, entirely analogous to many common-day situations—for example, when we wait in line for a bank teller or wait in front of a tollbooth. We’ll examine this queuing delay in more detail in Section 1.4.
@@ -396,22 +310,9 @@ Earlier, we said that a router takes a packet arriving on one of its attached co
 ![](12.png)
 
 **Figure 1.12**  ♦  Packet switching
-
-100 Mbps Ethernet
-
-Key:
-
-Packets
-
-A
-
-B
-
-C
-
-D E
-
-15 Mbps
+forward the packet onto? Packet forwarding is actually done in different ways in 
+different types of computer networks. Here, we briefly describe how it is done 
+in the Internet
 
 Queue of packets waiting for output linkforward the packet onto? Packet forwarding is actually done in different ways in different types of computer networks. Here, we briefly describe how it is done in the Internet.
 
@@ -441,34 +342,17 @@ In contrast, consider what happens when one host wants to send a packet to anoth
 
 A circuit in a link is implemented with either **frequency-division multiplexing (FDM)** or **time-division multiplexing (TDM)**. With FDM, the frequency spectrum of a link is divided up among the connections established across the link. Specifi- cally, the link dedicates a frequency band to each connection for the duration of the connection. In telephone networks, this frequency band typically has a width of 4 kHz (that is, 4,000 hertz or 4,000 cycles per second). The width of the band is called, not surprisingly, the **bandwidth**. FM radio stations also use FDM to share the frequency spectrum between 88 MHz and 108 MHz, with each station being allocated a specific frequency band.
 
-For a TDM link, time is divided into frames of fixed duration, and each frame is divided into a fixed number of time slots. When the network establishes a connection across a link, the network dedicates one time slot in every frame to this connection. These slots are dedicated for the sole use of that connection, with one time slot avail- able for use (in every frame) to transmit the connection’s data.Figure 1.14 illustrates FDM and TDM for a specific network link supporting up to four circuits. For FDM, the frequency domain is segmented into four bands, each of bandwidth 4 kHz. For TDM, the time domain is segmented into frames, with four time slots in each frame; each circuit is assigned the same dedicated slot in the revolving TDM frames. For TDM, the transmission rate of a circuit is equal to the frame rate multiplied by the number of bits in a slot. For example, if the link trans- mits 8,000 frames per second and each slot consists of 8 bits, then the transmission rate of each circuit is 64 kbps.
+For a TDM link, time is divided into frames of fixed duration, and each frame is divided into a fixed number of time slots. When the network establishes a connection across a link, the network dedicates one time slot in every frame to this connection. These slots are dedicated for the sole use of that connection, with one time slot avail- able for use (in every frame) to transmit the connection’s data.
+![Alt text](image-6.png)
+**Figure 1.14**  ♦ With FDM, each circuit continuously gets a fraction of the 
+bandwidth. With TDM, each circuit gets all of the bandwidth 
+periodically during brief intervals of time (that is, during slots)
+
+Figure 1.14 illustrates FDM and TDM for a specific network link supporting up to four circuits. For FDM, the frequency domain is segmented into four bands, each of bandwidth 4 kHz. For TDM, the time domain is segmented into frames, with four time slots in each frame; each circuit is assigned the same dedicated slot in the revolving TDM frames. For TDM, the transmission rate of a circuit is equal to the frame rate multiplied by the number of bits in a slot. For example, if the link trans- mits 8,000 frames per second and each slot consists of 8 bits, then the transmission rate of each circuit is 64 kbps.
 
 Proponents of packet switching have always argued that circuit switching is waste- ful because the dedicated circuits are idle during **silent periods**. For example, when one person in a telephone call stops talking, the idle network resources (frequency bands or time slots in the links along the connection’s route) cannot be used by other ongoing connections. As another example of how these resources can be underutilized, consider a radiologist who uses a circuit-switched network to remotely access a series of x-rays. The radiologist sets up a connection, requests an image, contemplates the image, and then requests a new image. Network resources are allocated to the connection but are not used (i.e., are wasted) during the radiologist’s contemplation periods. Proponents of packet switching also enjoy pointing out that establishing end-to-end circuits and reserving end-to-end transmission capacity is complicated and requires complex sign- aling software to coordinate the operation of the switches along the end-to-end path.
-![](14.png)
 
-**Figure 1.14**  ♦   With FDM, each circuit continuously gets a fraction of the bandwidth. With TDM, each circuit gets all of the bandwidth periodically during brief intervals of time (that is, during slots)
-
-4KHz
-
-**TDM**
-
-**FDM**
-
-Link Frequency
-
-4KHz
-
-Slot
-
-Key:
-
-All slots labeled “2” are dedicated to a specific sender-receiver pair.
-
-Frame2
-
-2 3 4 1 2 3 4 1 2 3 4 1 2 3 4
-
-TimeBefore we finish our discussion of circuit switching, let’s work through a numer- ical example that should shed further insight on the topic. Let us consider how long it takes to send a file of 640,000 bits from Host A to Host B over a circuit-switched network. Suppose that all links in the network use TDM with 24 slots and have a bit rate of 1.536 Mbps. Also suppose that it takes 500 msec to establish an end-to-end circuit before Host A can begin to transmit the file. How long does it take to send the file? Each circuit has a transmission rate of (1.536 Mbps)/24 = 64 kbps, so it takes (640,000 bits)/(64 kbps) = 10 seconds to transmit the file. To this 10 seconds we add the circuit establishment time, giving 10.5 seconds to send the file. Note that the transmission time is independent of the number of links: The transmission time would be 10 seconds if the end-to-end circuit passed through one link or a hundred links. (The actual end-to-end delay also includes a propagation delay; see Section 1.4.)
+Before we finish our discussion of circuit switching, let’s work through a numer- ical example that should shed further insight on the topic. Let us consider how long it takes to send a file of 640,000 bits from Host A to Host B over a circuit-switched network. Suppose that all links in the network use TDM with 24 slots and have a bit rate of 1.536 Mbps. Also suppose that it takes 500 msec to establish an end-to-end circuit before Host A can begin to transmit the file. How long does it take to send the file? Each circuit has a transmission rate of (1.536 Mbps)/24 = 64 kbps, so it takes (640,000 bits)/(64 kbps) = 10 seconds to transmit the file. To this 10 seconds we add the circuit establishment time, giving 10.5 seconds to send the file. Note that the transmission time is independent of the number of links: The transmission time would be 10 seconds if the end-to-end circuit passed through one link or a hundred links. (The actual end-to-end delay also includes a propagation delay; see Section 1.4.)
 
 **Packet Switching Versus Circuit Switching**
 
@@ -505,79 +389,45 @@ As we just learned, customer ISPs pay their provider ISPs to obtain global Inter
 In summary, today’s Internet—a network of networks—is complex, consisting of a dozen or so tier-1 ISPs and hundreds of thousands of lower-tier ISPs. The ISPs are diverse in their coverage, with some spanning multiple continents and oceans, and others limited to narrow geographic regions. The lower-tier ISPs connect to the higher-tier ISPs, and the higher-tier ISPs interconnect with one another. Users and content providers are customers of lower-tier ISPs, and lower-tier ISPs are customers of higher-tier ISPs. In recent years, major content providers have also created their own networks and connect directly into lower-tier ISPs where possible.
 ![](15.png)
 
-**Figure 1.15**  ♦  Interconnection of ISPs
+**Figure 1.15**  
+♦ Interconnection of ISPs
+1.4 • Delay, Loss, and Throughput in Packet-Switched Networks 
 
-access ISP
+## Delay, Loss, and Throughput in Packet-Switched Networks
 
-access ISP
-
-access ISP
-
-access ISP
-
-access ISP
-
-access ISP
-
-access ISP
-
-access ISP
-
-Regional ISP
-
-Tier 1 ISP
-
-Content provider (e.g., Google)
-
-Tier 1 ISP
-
-IXP
-
-Regional ISP
-
-IXP IXP# Delay, Loss, and Throughput in Packet-Switched Networks
 Back in Section 1.1 we said that the Internet can be viewed as an infrastructure that provides services to distributed applications running on end systems. Ideally, we would like Internet services to be able to move as much data as we want between any two end systems, instantaneously, without any loss of data. Alas, this is a lofty goal, one that is unachievable in reality. Instead, computer networks necessarily constrain throughput (the amount of data per second that can be transferred) between end sys- tems, introduce delays between end systems, and can actually lose packets. On one hand, it is unfortunate that the physical laws of reality introduce delay and loss as well as constrain throughput. On the other hand, because computer networks have these problems, there are many fascinating issues surrounding how to deal with the problems—more than enough issues to fill a course on computer networking and to motivate thousands of PhD theses! In this section, we’ll begin to examine and quan- tify delay, loss, and throughput in computer networks.
 
-## Overview of Delay in Packet-Switched Networks
+### Overview of Delay in Packet-Switched Networks
 
 Recall that a packet starts in a host (the source), passes through a series of routers, and ends its journey in another host (the destination). As a packet travels from one node (host or router) to the subsequent node (host or router) along this path, the packet suffers from several types of delays at _each_ node along the path. The most important of these delays are the **nodal processing delay**, **queuing delay**, **transmis- sion delay**, and **propagation delay**; together, these delays accumulate to give a **total nodal delay**. The performance of many Internet applications—such as search, Web browsing, e-mail, maps, instant messaging, and voice-over-IP—are greatly affected by network delays. In order to acquire a deep understanding of packet switching and computer networks, we must understand the nature and importance of these delays.
 
 **Types of Delay**
 
-Let’s explore these delays in the context of Figure 1.16. As part of its end-to-end route between source and destination, a packet is sent from the upstream node through router A to router B. Our goal is to characterize the nodal delay at router A. Note that router A has an outbound link leading to router B. This link is preceded by a queue (also known as a buffer). When the packet arrives at router A from the upstream node, router A examines the packet’s header to determine the appropriate outbound link for the packet and then directs the packet to this link. In this exam- ple, the outbound link for the packet is the one that leads to router B. A packet can be transmitted on a link only if there is no other packet currently being transmitted on the link and if there are no other packets preceding it in the queue; if the link iscurrently busy or if there are other packets already queued for the link, the newly arriving packet will then join the queue.
+Let’s explore these delays in the context of Figure 1.16. As part of its end-to-end route between source and destination, a packet is sent from the upstream node through router A to router B. Our goal is to characterize the nodal delay at router A. Note that router A has an outbound link leading to router B. This link is preceded by a queue (also known as a buffer). When the packet arrives at router A from the upstream node, router A examines the packet’s header to determine the appropriate outbound link for the packet and then directs the packet to this link. In this exam- ple, the outbound link for the packet is the one that leads to router B. A packet can be transmitted on a link only if there is no other packet currently being transmitted on the link and if there are no other packets preceding it in the queue; if the link is
+![Alt text](image-7.png)
+Figure 1.16  ♦  The nodal delay at router A currently busy or if there are other packets already queued for the link, the newly arriving packet will then join the queue.
 
-**_Processing Delay_**
+**Processing Delay**
 
 The time required to examine the packet’s header and determine where to direct the packet is part of the **processing delay**. The processing delay can also include other factors, such as the time needed to check for bit-level errors in the packet that occurred in transmitting the packet’s bits from the upstream node to router A. Processing delays in high-speed routers are typically on the order of microseconds or less. After this nodal processing, the router directs the packet to the queue that precedes the link to router B. (In Chapter 4 we’ll study the details of how a router operates.)
 
-**_Queuing Delay_**
+**Queuing Delay**
 
 At the queue, the packet experiences a **queuing delay** as it waits to be transmitted onto the link. The length of the queuing delay of a specific packet will depend on the number of earlier-arriving packets that are queued and waiting for transmission onto the link. If the queue is empty and no other packet is currently being transmitted, then our packet’s queuing delay will be zero. On the other hand, if the traffic is heavy and many other packets are also waiting to be transmitted, the queuing delay will be long. We will see shortly that the number of packets that an arriving packet might expect to find is a function of the intensity and nature of the traffic arriving at the queue. Queuing delays can be on the order of microseconds to milliseconds in practice.
 
-**_Transmission Delay_**
+**Transmission Delay**
 
 Assuming that packets are transmitted in a first-come-first-served manner, as is com- mon in packet-switched networks, our packet can be transmitted only after all the packets that have arrived before it have been transmitted. Denote the length of the
-![](16.png)
 
-**Figure 1.16**  ♦  The nodal delay at router A
+1.4 • Delay, Loss, and Throughput in Packet-Switched Networks 
 
-A
+packet by _L_ bits, and denote the transmission rate of the link from router A to router B by _R_ bits/sec. For example, for a 10 Mbps Ethernet link, the rate is _R_ = 10 Mbps; for a 100 Mbps Ethernet link, the rate is _R_ = 100 Mbps. The **transmission delay** is _L/R._ This is the amount of time required to push (that is, transmit) all of the packet’s bits into the link. Transmission delays are typically on the order of microseconds to milliseconds in practice.
 
-B
-
-Nodal processing
-
-Queuing (waiting for transmission)
-
-Transmission
-
-Propagationpacket by _L_ bits, and denote the transmission rate of the link from router A to router B by _R_ bits/sec. For example, for a 10 Mbps Ethernet link, the rate is _R_ = 10 Mbps; for a 100 Mbps Ethernet link, the rate is _R_ = 100 Mbps. The **transmission delay** is _L/R._ This is the amount of time required to push (that is, transmit) all of the packet’s bits into the link. Transmission delays are typically on the order of microseconds to milliseconds in practice.
-
-**_Propagation Delay_**
+**Propagation Delay**
 
 Once a bit is pushed into the link, it needs to propagate to router B. The time required to propagate from the beginning of the link to router B is the **propagation delay**. The bit propagates at the propagation speed of the link. The propagation speed depends on the physical medium of the link (that is, fiber optics, twisted-pair copper wire, and so on) and is in the range of
 
-2 # 108 meters/sec to 3 # 108 meters/sec
+       2-108 meters/sec to 3-10^8 meters/sec
 
 which is equal to, or a little less than, the speed of light. The propagation delay is the distance between two routers divided by the propagation speed. That is, the propaga- tion delay is _d/s,_ where _d_ is the distance between router A and router B and _s_ is the propagation speed of the link. Once the last bit of the packet propagates to node B, it and all the preceding bits of the packet are stored in router B. The whole process then continues with router B now performing the forwarding. In wide-area networks, propagation delays are on the order of milliseconds.
 
@@ -587,7 +437,10 @@ Newcomers to the field of computer networking sometimes have difficulty under- s
 
 An analogy might clarify the notions of transmission and propagation delay. Consider a highway that has a tollbooth every 100 kilometers, as shown in Fig- ure 1.17. You can think of the highway segments between tollbooths as links and the tollbooths as routers. Suppose that cars travel (that is, propagate) on the highway at a rate of 100 km/hour (that is, when a car leaves a tollbooth, it instantaneously accelerates to 100 km/hour and maintains that speed between tollbooths). Suppose next that 10 cars, traveling together as a caravan, follow each other in a fixed order. You can think of each car as a bit and the caravan as a packet. Also suppose that each
 
-**VideoNote Exploring propagation delay and transmission delay**tollbooth services (that is, transmits) a car at a rate of one car per 12 seconds, and that it is late at night so that the caravan’s cars are the only cars on the highway. Finally, suppose that whenever the first car of the caravan arrives at a tollbooth, it waits at the entrance until the other nine cars have arrived and lined up behind it. (Thus, the entire caravan must be stored at the tollbooth before it can begin to be forwarded.) The time required for the tollbooth to push the entire caravan onto the highway is (10 cars)/(5 cars/minute) = 2 minutes. This time is analogous to the transmission delay in a router. The time required for a car to travel from the exit of one tollbooth to the next tollbooth is 100 km/(100 km/hour) = 1 hour. This time is analogous to propagation delay. Therefore, the time from when the caravan is stored in front of a tollbooth until the caravan is stored in front of the next tollbooth is the sum of trans- mission delay and propagation delay—in this example, 62 minutes.
+![](17.png)
+**Figure 1.17**  ♦  Caravan analogy
+
+tollbooth services (that is, transmits) a car at a rate of one car per 12 seconds, and that it is late at night so that the caravan’s cars are the only cars on the highway. Finally, suppose that whenever the first car of the caravan arrives at a tollbooth, it waits at the entrance until the other nine cars have arrived and lined up behind it. (Thus, the entire caravan must be stored at the tollbooth before it can begin to be forwarded.) The time required for the tollbooth to push the entire caravan onto the highway is (10 cars)/(5 cars/minute) = 2 minutes. This time is analogous to the transmission delay in a router. The time required for a car to travel from the exit of one tollbooth to the next tollbooth is 100 km/(100 km/hour) = 1 hour. This time is analogous to propagation delay. Therefore, the time from when the caravan is stored in front of a tollbooth until the caravan is stored in front of the next tollbooth is the sum of trans- mission delay and propagation delay—in this example, 62 minutes.
 
 Let’s explore this analogy a bit more. What would happen if the tollbooth ser- vice time for a caravan were greater than the time for a car to travel between toll- booths? For example, suppose now that the cars travel at the rate of 1,000 km/hour and the tollbooth services cars at the rate of one car per minute. Then the traveling delay between two tollbooths is 6 minutes and the time to serve a caravan is 10 min- utes. In this case, the first few cars in the caravan will arrive at the second tollbooth before the last cars in the caravan leave the first tollbooth. This situation also arises in packet-switched networks—the first bits in a packet can arrive at a router while many of the remaining bits in the packet are still waiting to be transmitted by the preceding router.
 
@@ -595,19 +448,18 @@ If a picture speaks a thousand words, then an animation must speak a million wor
 
 If we let _d_proc, _d_queue, _d_trans, and _d_prop denote the processing, queuing, transmis- sion, and propagation delays, then the total nodal delay is given by
 
-_d_nodal = _d_proc + _d_queue + _d_trans + _d_prop
+dnodal = dproc + dqueue + dtrans + dprop
 
 The contribution of these delay components can vary significantly. For example, _d_prop can be negligible (for example, a couple of microseconds) for a link connecting two routers on the same university campus; however, _d_prop is hundreds of millisec- onds for two routers interconnected by a geostationary satellite link, and can be the
-![](17.png)
-**Figure 1.17**  ♦  Caravan analogy
 
-Ten-car caravan
+1.4 • Delay, Loss, and Throughput in Packet-Switched Networks 
 
-Toll booth
-
-Toll booth
-
-100 km 100 kmdominant term in _d_nodal. Similarly, _d_trans can range from negligible to significant. Its contribution is typically negligible for transmission rates of 10 Mbps and higher (for example, for LANs); however, it can be hundreds of milliseconds for large Internet packets sent over low-speed dial-up modem links. The processing delay, _d_proc, is often negligible; however, it strongly influences a router’s maximum throughput, which is the maximum rate at which a router can forward packets.
+dominant term in dnodal. Similarly, dtrans can range from negligible to significant. Its 
+contribution is typically negligible for transmission rates of 10 Mbps and higher (for 
+example, for LANs); however, it can be hundreds of milliseconds for large Internet 
+packets sent over low-speed dial-up modem links. The processing delay, dproc, is 
+often negligible; however, it strongly influences a router’s maximum throughput, 
+which is the maximum rate at which a router can forward packets
 
 ## Queuing Delay and Packet Loss
 
@@ -625,21 +477,7 @@ To really get a good feel for what queuing delays are about, you are encouraged 
 ![](18.png)
 **Figure 1.18**  ♦  Dependence of average queuing delay on traffic intensity
 
-A ve
-
-ra g
-
-e q
-
-u eu
-
-in g
-
-d el
-
-ay
-
-_La_/_R_ 1**Packet Loss**
+**Packet Loss**
 
 In our discussions above, we have assumed that the queue is capable of holding an infinite number of packets. In reality a queue preceding a link has finite capacity, although the queuing capacity greatly depends on the router design and cost. Because the queue capacity is finite, packet delays do not really approach infinity as the traf- fic intensity approaches 1. Instead, a packet can arrive to find a full queue. With no place to store such a packet, a router will **drop** that packet; that is, the packet will be **lost**. This overflow at a queue can again be seen in the interactive animation when the traffic intensity is greater than 1.
 
@@ -649,7 +487,7 @@ From an end-system viewpoint, a packet loss will look like a packet having been 
 
 Our discussion up to this point has focused on the nodal delay, that is, the delay at a single router. Let’s now consider the total delay from source to destination. To get a handle on this concept, suppose there are _N_ \- 1 routers between the source host and the destination host. Let’s also suppose for the moment that the network is uncon- gested (so that queuing delays are negligible), the processing delay at each router and at the source host is _d_proc, the transmission rate out of each router and out of the source host is _R_ bits/sec, and the propagation on each link is _d_prop. The nodal delays accumulate and give an end-to-end delay,
 
-_d_end-end = _N_ (_d_proc + _d_trans + _d_prop) (1.2)
+      dend-end = N (dproc + dtrans + dprop) 
 
 where, once again, _d_trans = _L/R,_ where _L_ is the packet size. Note that Equation 1.2 is a generalization of Equation 1.1, which did not take into account processing and propaga- tion delays. We leave it to you to generalize Equation 1.2 to the case of heterogeneous delays at the nodes and to the presence of an average queuing delay at each node.
 
@@ -657,7 +495,7 @@ where, once again, _d_trans = _L/R,_ where _L_ is the packet size. Note that Equ
 
 To get a hands-on feel for end-to-end delay in a computer network, we can make use of the Traceroute program. Traceroute is a simple program that can run in any Inter- net host. When the user specifies a destination hostname, the program in the source host sends multiple, special packets toward that destination. As these packets work their way toward the destination, they pass through a series of routers. When a router receives one of these special packets, it sends back to the source a short message that contains the name and address of the router.
 
-**VideoNote Using Traceroute to discover network paths and measure network delay**More specifically, suppose there are _N_ \- 1 routers between the source and the destination. Then the source will send _N_ special packets into the network, with each packet addressed to the ultimate destination. These _N_ special packets are marked _1_ through _N,_ with the first packet marked _1_ and the last packet marked _N_. When the _n_th router receives the _n_th packet marked _n,_ the router does not forward the packet toward its destination, but instead sends a message back to the source. When the destination host receives the _N_th packet, it too returns a message back to the source. The source records the time that elapses between when it sends a packet and when it receives the corresponding return message; it also records the name and address of the router (or the destination host) that returns the message. In this manner, the source can reconstruct the route taken by packets flowing from source to destination, and the source can determine the round-trip delays to all the intervening routers. Traceroute actually repeats the experiment just described three times, so the source actually sends _3_ • _N_ packets to the destination. RFC 1393 describes Traceroute in detail.
+More specifically, suppose there are _N_ \- 1 routers between the source and the destination. Then the source will send _N_ special packets into the network, with each packet addressed to the ultimate destination. These _N_ special packets are marked _1_ through _N,_ with the first packet marked _1_ and the last packet marked _N_. When the _n_th router receives the _n_th packet marked _n,_ the router does not forward the packet toward its destination, but instead sends a message back to the source. When the destination host receives the _N_th packet, it too returns a message back to the source. The source records the time that elapses between when it sends a packet and when it receives the corresponding return message; it also records the name and address of the router (or the destination host) that returns the message. In this manner, the source can reconstruct the route taken by packets flowing from source to destination, and the source can determine the round-trip delays to all the intervening routers. Traceroute actually repeats the experiment just described three times, so the source actually sends _3_ • _N_ packets to the destination. RFC 1393 describes Traceroute in detail.
 
 Here is an example of the output of the Traceroute program, where the route was being traced from the source host gaia.cs.umass.edu (at the University of Massachusetts) to a host in the computer science department at the University of Sorbonne in Paris (formerly the university was known as UPMC). The output has six columns: the first column is the _n_ value described above, that is, the number of the router along the route; the second column is the name of the router; the third column is the address of the router (of the form xxx.xxx.xxx.xxx); the last three columns are the round-trip delays for three experiments. If the source receives fewer than three messages from any given router (due to packet loss in the network), Traceroute places an asterisk just after the router number and reports fewer than three round-trip times for that router.
 
@@ -669,7 +507,9 @@ Here is an example of the output of the Traceroute program, where the route was 
 
 0.344 ms 6 nox300gw1-umass-re.nox.org (192.5.89.101) 3.260 ms 0.416 ms 3.127 ms 7 nox300gw1-umass-re.nox.org (192.5.89.101) 3.165 ms 7.326 ms 7.311 ms 8 198.71.45.237 (198.71.45.237) 77.826 ms 77.246 ms 77.744 ms 9 renater-lb1-gw.mx1.par.fr.geant.net (62.40.124.70) 79.357 ms 77.729
 
-79.152 ms 10 193.51.180.109 (193.51.180.109) 78.379 ms 79.936 80.042 ms 11 \* 193.51.180.109 (193.51.180.109) 80.640 ms \* 12 \* 195.221.127.182 (195.221.127.182) 78.408 ms \* 13 195.221.127.182 (195.221.127.182) 80.686 ms 80.796 ms 78.434 ms 14 r-upmc1.reseau.jussieu.fr (134.157.254.10) 78.399 ms \* 81.353 msIn the trace above, there are 14 routers between the source and the destination. Most of these routers have a name, and all of them have addresses. For example, the name of Router 4 is core1-rt-et-5-2-0.gw.umass.edu and its address is 128.119.0.9. Looking at the data provided for this same router, we see that in the first of the three trials the round-trip delay between the source and the router was 0.351 msec. The round-trip delays for the subsequent two trials were 0.392 and 0.380 msec. These round-trip delays include all of the delays just discussed, including transmission delays, propagation delays, router processing delays, and queuing delay.
+79.152 ms 10 193.51.180.109 (193.51.180.109) 78.379 ms 79.936 80.042 ms 11 \* 193.51.180.109 (193.51.180.109) 80.640 ms \* 12 \* 195.221.127.182 (195.221.127.182) 78.408 ms \* 13 195.221.127.182 (195.221.127.182) 80.686 ms 80.796 ms 78.434 ms 14 r-upmc1.reseau.jussieu.fr (134.157.254.10) 78.399 ms \* 81.353 msIn 
+
+the trace above, there are 14 routers between the source and the destination. Most of these routers have a name, and all of them have addresses. For example, the name of Router 4 is core1-rt-et-5-2-0.gw.umass.edu and its address is 128.119.0.9. Looking at the data provided for this same router, we see that in the first of the three trials the round-trip delay between the source and the router was 0.351 msec. The round-trip delays for the subsequent two trials were 0.392 and 0.380 msec. These round-trip delays include all of the delays just discussed, including transmission delays, propagation delays, router processing delays, and queuing delay.
 
 Because the queuing delay is varying with time, the round-trip delay of packet _n_ sent to a router _n_ can sometimes be longer than the round-trip delay of packet _n+_1 sent to router _n+_1. Indeed, we observe this phenomenon in the above example: the delay to Router 12 is smaller than the delay to Router 11! Also note the big increase in the round-trip delay when going from router 7 to router 8. This is due to a transatlantic fiber-optic link between routers 7 and 8, giving rise to a relatively large propagation delay. There are a number of free software programs that provide a graphical interface to Traceroute; one of our favorites is PingPlotter [PingPlotter 2020].
 
@@ -683,121 +523,50 @@ In addition to delay and packet loss, another critical performance measure in co
 
 at any instant of time is the rate (in bits/sec) at which Host B is receiving the file. (Many applications display the instantaneous throughput during downloads in the user interface—perhaps you have observed this before! You might like to trymeasuring the end-to-end delay and download throughput between your and servers around the Internet using the speedtest application [Speedtest 2020].) If the file con- sists of _F_ bits and the transfer takes _T_ seconds for Host B to receive all _F_ bits, then the **average throughput** of the file transfer is _F/T_ bits/sec. For some applications, such as Internet telephony, it is desirable to have a low delay and an instantaneous throughput consistently above some threshold (for example, over 24 kbps for some Internet telephony applications and over 256 kbps for some real-time video applica- tions). For other applications, including those involving file transfers, delay is not critical, but it is desirable to have the highest possible throughput.
 
-To gain further insight into the important concept of throughput, let’s consider a few examples. Figure 1.19(a) shows two end systems, a server and a client, con- nected by two communication links and a router. Consider the throughput for a file transfer from the server to the client. Let _Rs_ denote the rate of the link between the server and the router; and _Rc_ denote the rate of the link between the router and the client. Suppose that the only bits being sent in the entire network are those from the server to the client. We now ask, in this ideal scenario, what is the server- to-client throughput? To answer this question, we may think of bits as _fluid_ and com- munication links as _pipes_. Clearly, the server cannot pump bits through its link at a rate faster than _Rs_ bps; and the router cannot forward bits at a rate faster than _Rc_ bps. If _Rs_ 6 _Rc_, then the bits pumped by the server will “flow” right through the router and arrive at the client at a rate of _Rs_ bps, giving a throughput of _Rs_ bps. If, on the other hand, _Rc_ 6 _Rs_, then the router will not be able to forward bits as quickly as it receives them. In this case, bits will only leave the router at rate _Rc_, giving an end- to-end throughput of _Rc_. (Note also that if bits continue to arrive at the router at rate _Rs_, and continue to leave the router at _Rc_, the backlog of bits at the router waiting for transmission to the client will grow and grow—a most undesirable situation!)
+To gain further insight into the important concept of throughput, let’s consider a few examples. Figure 1.19(a) shows two end systems, a server and a client, con- nected by two communication links and a router. Consider the throughput for a file transfer from the server to the client. Let _Rs_ denote the rate of the link between the server and the router; and _Rc_ denote the rate of the link between the router and the client. Suppose that the only bits being sent in the entire network are those from the server to the client. We now ask, in this ideal scenario, what is the server- to-client throughput? To answer this question, we may think of bits as _fluid_ and com- munication links as _pipes_. Clearly, the server cannot pump bits through its link at a rate faster than _Rs_ bps; and the router cannot forward bits at a rate faster than _Rc_ bps. If _Rs_ 6 _Rc_, then the bits pumped by the server will “flow” right through the router and arrive at the client at a rate of _Rs_ bps, giving a throughput of _Rs_ bps. If, on the other hand, _Rc_ 6 _Rs_, then the router will not be able to forward bits as quickly as it receives them. In this case, bits will only leave the router at rate _Rc_, giving an end- to-end throughput of _Rc_. (Note also that if bits continue to arrive at the router at rate _Rs_, and continue to leave the router at _Rc_, the backlog of bits at the router waiting for transmission to the client will growand grow—a most undesirable situation!)
 ![](19.png)
 **Figure 1.19**  ♦ Throughput for a file transfer from server to client
+1.4 • Delay, Loss, and Throughput in Packet-Switched Networks 
 
-Server
-
-_Rs_
-
-_R_1 _R_2 _RN_
-
-_Rc_
-
-Client
-
-Server
-
-**a.**
-
-**b.**
-
-ClientThus, for this simple two-link network, the throughput is min{_Rc_, _Rs_}, that is, it is the transmission rate of the **bottleneck link**. Having determined the throughput, we can now approximate the time it takes to transfer a large file of _F_ bits from server to cli- ent as _F_/min{_Rs_, _Rc_}. For a specific example, suppose that you are downloading an MP3 file of _F_ = 32 million bits, the server has a transmission rate of _Rs_ = 2 Mbps, and you have an access link of _Rc_ = 1 Mbps. The time needed to transfer the file is then 32 seconds. Of course, these expressions for throughput and transfer time are only approximations, as they do not account for store-and-forward and processing delays as well as protocol issues.
+Thus, for this simple two-link network, the throughput is min{_Rc_, _Rs_}, that is, it is the transmission rate of the **bottleneck link**. Having determined the throughput, we can now approximate the time it takes to transfer a large file of _F_ bits from server to cli- ent as _F_/min{_Rs_, _Rc_}. For a specific example, suppose that you are downloading an MP3 file of _F_ = 32 million bits, the server has a transmission rate of _Rs_ = 2 Mbps, and you have an access link of _Rc_ = 1 Mbps. The time needed to transfer the file is then 32 seconds. Of course, these expressions for throughput and transfer time are only approximations, as they do not account for store-and-forward and processing delays as well as protocol issues.
 
 Figure 1.19(b) now shows a network with _N_ links between the server and the client, with the transmission rates of the _N_ links being _R_1, _R_2, c, _RN_. Applying the same analysis as for the two-link network, we find that the throughput for a file transfer from server to client is min{_R_1, _R_2, c, _RN_}, which is once again the trans- mission rate of the bottleneck link along the path between server and client.
 
 Now consider another example motivated by today’s Internet. Figure 1.20(a) shows two end systems, a server and a client, connected to a computer network. Consider the throughput for a file transfer from the server to the client. The server is connected to the network with an access link of rate _Rs_ and the client is connected to the network with an access link of rate _Rc_. Now suppose that all the links in the core of the communication network have very high transmission rates, much higher than _Rs_ and _Rc_. Indeed, today, the core of the Internet is over-provisioned with high speed links that experience little congestion. Also suppose that the only bits being sent in the entire network are those from the server to the client. Because the core of the computer network is like a wide pipe in this example, the rate at which bits can flow from source to destination is again the minimum of _Rs_ and _Rc_, that is, throughput = min{_Rs_, _Rc_}. Therefore, the constraining factor for throughput in today’s Internet is typically the access network.
 
-For a final example, consider Figure 1.20(b) in which there are 10 servers and 10 clients connected to the core of the computer network. In this example, there are 10 simultaneous downloads taking place, involving 10 client-server pairs. Suppose that these 10 downloads are the only traffic in the network at the current time. As shown in the figure, there is a link in the core that is traversed by all 10 downloads. Denote _R_ for the transmission rate of this link _R_. Let’s suppose that all server access links have the same rate _Rs_, all client access links have the same rate _Rc_, and the transmission rates of all the links in the core—except the one common link of rate _R—_are much larger than _Rs_, _Rc_, and _R_. Now we ask, what are the throughputs of the downloads? Clearly, if the rate of the common link, _R_, is large—say a hundred times larger than both _Rs_ and _Rc_—then the throughput for each download will once again be min{_Rs_, _Rc_}. But what if the rate of the common link is of the same order as _Rs_ and _Rc_? What will the throughput be in this case? Let’s take a look at a spe- cific example. Suppose _Rs_ = 2 Mbps, _Rc_ = 1 Mbps, _R_ = 5 Mbps, and the com- mon link divides its transmission rate equally among the 10 downloads. Then thebottleneck for each download is no longer in the access network, but is now instead the shared link in the core, which only provides each download with 500 kbps of throughput. Thus, the end-to-end throughput for each download is now reduced to 500 kbps.
-
-The examples in Figure 1.19 and Figure 1.20(a) show that throughput depends on the transmission rates of the links over which the data flows. We saw that when there is no other intervening traffic, the throughput can simply be approximated as the minimum transmission rate along the path between source and destination. The example in Figure 1.20(b) shows that more generally the throughput depends not only on the transmission rates of the links along the path, but also on the interven- ing traffic. In particular, a link with a high transmission rate may nonetheless be the bottleneck link for a file transfer if many other data flows are also passing through that link. We will examine throughput in computer networks more closely in the homework problems and in the subsequent chapters.
+For a final example, consider Figure 1.20(b) in which there are 10 servers and 10 clients connected to the core of the computer network. In this example, there are 10 simultaneous downloads taking place, involving 10 client-server pairs. Suppose that these 10 downloads are the only traffic in the network at the current time. As shown in the figure, there is a link in the core that is traversed by all 10 downloads. Denote _R_ for the transmission rate of this link _R_. Let’s suppose that all server access links have the same rate _Rs_, all client access links have the same rate _Rc_, and the transmission rates of all the links in the core—except the one common link of rate _R—_are much larger than _Rs_, _Rc_, and _R_. Now we ask, what are the throughputs of the downloads? Clearly, if the rate of the common link, _R_, is large—say a hundred times larger than both _Rs_ and _Rc_—then the throughput for each download will once again be min{_Rs_, _Rc_}. But what if the rate of the common link is of the same order as _Rs_ and _Rc_? What will the throughput be in this case? Let’s take a look at a spe- cific example. Suppose _Rs_ = 2 Mbps, _Rc_ = 1 Mbps, _R_ = 5 Mbps, and the com- mon link divides its transmission rate equally among the 10 downloads. Then the
 ![](20.png)
 
 **Figure 1.20**  ♦  End-to-end throughput: (a) Client downloads a file from server; (b) 10 clients downloading with 10 servers
 
-Server
+bottleneck for each download is no longer in the access network, but is now instead the shared link in the core, which only provides each download with 500 kbps of throughput. Thus, the end-to-end throughput for each download is now reduced to 500 kbps.
 
-_Rs_
+The examples in Figure 1.19 and Figure 1.20(a) show that throughput depends on the transmission rates of the links over which the data flows. We saw that when there is no other intervening traffic, the throughput can simply be approximated as the minimum transmission rate along the path between source and destination. The example in Figure 1.20(b) shows that more generally the throughput depends not only on the transmission rates of the links along the path, but also on the interven- ing traffic. In particular, a link with a high transmission rate may nonetheless be the bottleneck link for a file transfer if many other data flows are also passing through that link. We will examine throughput in computer networks more closely in the homework problems and in the subsequent chapters.
 
-_Rc_
 
-**a. b.**
+##1.5 Protocol Layers and Their Service Models
 
-Client 10 Clients
+From our discussion thus far, it is apparent that the Internet is an extremely complicated system. We have seen that there are many pieces to the Internet: numerous 
+applications and protocols, various types of end systems, packet switches, and various types of link-level media. Given this enormous complexity, is there any hope of 
+organizing a network architecture, or at least our discussion of network architecture? 
+Fortunately, the answer to both questions is yes
 
-10 Servers
+### Layered Architecture
 
-Bottleneck link of capacity _R_# Protocol Layers and Their Service Models
-From our discussion thus far, it is apparent that the Internet is an _extremely_ com- plicated system. We have seen that there are many pieces to the Internet: numerous applications and protocols, various types of end systems, packet switches, and vari- ous types of link-level media. Given this enormous complexity, is there any hope of organizing a network architecture, or at least our discussion of network architecture? Fortunately, the answer to both questions is yes.
-
-## Layered Architecture
 
 Before attempting to organize our thoughts on Internet architecture, let’s look for a human analogy. Actually, we deal with complex systems all the time in our everyday life. Imagine if someone asked you to describe, for example, the air- line system. How would you find the structure to describe this complex system that has ticketing agents, baggage checkers, gate personnel, pilots, airplanes, air traffic control, and a worldwide system for routing airplanes? One way to describe this system might be to describe the series of actions you take (or oth- ers take for you) when you fly on an airline. You purchase your ticket, check your bags, go to the gate, and eventually get loaded onto the plane. The plane takes off and is routed to its destination. After your plane lands, you deplane at the gate and claim your bags. If the trip was bad, you complain about the flight to the ticket agent (getting nothing for your effort). This scenario is shown in Figure 1.21.
 ![Taking an airplane trip: actions](21.png)
 
 **Figure 1.21**  ♦  Taking an airplane trip: actions
-
-Ticket (purchase)
-
-Baggage (check)
-
-Gates (load)
-
-Runway takeoff
-
-Airplane routing
-
-Ticket (complain)
-
-Baggage (claim)
-
-Gates (unload)
-
-Runway landing
-
-Airplane routing
-
-Airplane routingAlready, we can see some analogies here with computer networking: You are being shipped from source to destination by the airline; a packet is shipped from source host to destination host in the Internet. But this is not quite the analogy we are after. We are looking for some _structure_ in Figure 1.21. Looking at Figure 1.21, we note that there is a ticketing function at each end; there is also a baggage func- tion for already-ticketed passengers, and a gate function for already-ticketed and already-baggage-checked passengers. For passengers who have made it through the gate (that is, passengers who are already ticketed, baggage-checked, and through the gate), there is a takeoff and landing function, and while in flight, there is an airplane- routing function. This suggests that we can look at the functionality in Figure 1.21 in a _horizontal_ manner, as shown in Figure 1.22.
-
-Figure 1.22 has divided the airline functionality into layers, providing a frame- work in which we can discuss airline travel. Note that each layer, combined with the layers below it, implements some functionality, some _service._ At the ticketing layer and below, airline-counter-to-airline-counter transfer of a person is accomplished. At the baggage layer and below, baggage-check-to-baggage-claim transfer of a person and bags is accomplished. Note that the baggage layer provides this service only to an already-ticketed person. At the gate layer, departure-gate-to-arrival-gate transfer of a person and bags is accomplished. At the takeoff/landing layer, runway-to-runway transfer of people and their bags is accomplished. Each layer provides its service by (1) performing certain actions within that layer (for example, at the gate layer, loading and unloading people from an airplane) and by (2) using the services of the layer directly below it (for example, in the gate layer, using the runway-to-runway passenger transfer service of the takeoff/landing layer).
-
-A layered architecture allows us to discuss a well-defined, specific part of a large and complex system. This simplification itself is of considerable value by providing modularity, making it much easier to change the implementation of the service provided by the layer. As long as the layer provides the same service to the layer above it, and uses the same services from the layer below it, the remainder of the system remains unchanged when a layer’s implementation is changed. (Note
 ![Horizontal layering of airline functionality](22.png)
 
 **Figure 1.22**  ♦  Horizontal layering of airline functionality
 
-Ticket (purchase)
+we can see some analogies here with computer networking: You are being shipped from source to destination by the airline; a packet is shipped from source host to destination host in the Internet. But this is not quite the analogy we are after. We are looking for some _structure_ in Figure 1.21. Looking at Figure 1.21, we note that there is a ticketing function at each end; there is also a baggage func- tion for already-ticketed passengers, and a gate function for already-ticketed and already-baggage-checked passengers. For passengers who have made it through the gate (that is, passengers who are already ticketed, baggage-checked, and through the gate), there is a takeoff and landing function, and while in flight, there is an airplane- routing function. This suggests that we can look at the functionality in Figure 1.21 in a _horizontal_ manner, as shown in Figure 1.22.
 
-Baggage (check)
+Figure 1.22 has divided the airline functionality into layers, providing a frame- work in which we can discuss airline travel. Note that each layer, combined with the layers below it, implements some functionality, some _service._ At the ticketing layer and below, airline-counter-to-airline-counter transfer of a person is accomplished. At the baggage layer and below, baggage-check-to-baggage-claim transfer of a person and bags is accomplished. Note that the baggage layer provides this service only to an already-ticketed person. At the gate layer, departure-gate-to-arrival-gate transfer of a person and bags is accomplished. At the takeoff/landing layer, runway-to-runway transfer of people and their bags is accomplished. Each layer provides its service by (1) performing certain actions within that layer (for example, at the gate layer, loading and unloading people from an airplane) and by (2) using the services of the layer directly below it (for example, in the gate layer, using the runway-to-runway passenger transfer service of the takeoff/landing layer).
 
-Gates (load)
-
-Runway takeoff
-
-Airplane routing Airplane routing Airplane routing
-
-Ticket (complain)
-
-Baggage (claim)
-
-Gates (unload)
-
-Runway landing
-
-Airplane routing
-
-**Ticket**
-
-**Baggage**
-
-**Gate**
-
-**Takeoff/Landing**
-
-**Airplane routing**
-
-**Arrival airportDeparture airport Intermediate air-traffic control centers**that changing the implementation of a service is very different from changing the service itself!) For example, if the gate functions were changed (for instance, to have people board and disembark by height), the remainder of the airline system would remain unchanged since the gate layer still provides the same function (loading and unloading people); it simply implements that function in a different manner after the change. For large and complex systems that are constantly being updated, the ability to change the implementation of a service without affecting other components of the system is another important advantage of layering.
+A layered architecture allows us to discuss a well-defined, specific part of a large and complex system. This simplification itself is of considerable value by providing modularity, making it much easier to change the implementation of the service provided by the layer. As long as the layer provides the same service to the layer above it, and uses the same services from the layer below it, the remainder of the system remains unchanged when a layer’s implementation is changed. that changing the implementation of a service is very different from changing the service itself!) For example, if the gate functions were changed (for instance, to have people board and disembark by height), the remainder of the airline system would remain unchanged since the gate layer still provides the same function (loading and unloading people); it simply implements that function in a different manner after the change. For large and complex systems that are constantly being updated, the ability to change the implementation of a service without affecting other components of the system is another important advantage of layering.
 
 **Protocol Layering**
 
@@ -805,7 +574,11 @@ But enough about airlines. Let’s now turn our attention to network protocols. 
 
 A protocol layer can be implemented in software, in hardware, or in a combina- tion of the two. Application-layer protocols—such as HTTP and SMTP—are almost always implemented in software in the end systems; so are transport-layer protocols. Because the physical layer and data link layers are responsible for handling commu- nication over a specific link, they are typically implemented in a network interface card (for example, Ethernet or WiFi interface cards) associated with a given link. The network layer is often a mixed implementation of hardware and software. Also note that just as the functions in the layered airline architecture were distributed among the various airports and flight control centers that make up the system, so too is a layer _n_ protocol _distributed_ among the end systems, packet switches, and other com- ponents that make up the network. That is, there’s often a piece of a layer _n_ protocol in each of these network components.
 
-Protocol layering has conceptual and structural advantages [RFC 3439]. As we have seen, layering provides a structured way to discuss system components. Modularity makes it easier to update system components. We mention, however, that some researchers and networking engineers are vehemently opposed to layering [Wakeman 1992]. One potential drawback of layering is that one layer may duplicate lower-layer functionality. For example, many protocol stacks provide error recovery on both a per-link basis and an end-to-end basis. A second potential drawback is that functionality at one layer may need information (for example, a timestamp value) that is present only in another layer; this violates the goal of separation of layers.When taken together, the protocols of the various layers are called the **protocol stack**. The Internet protocol stack consists of five layers: the physical, link, network, transport, and application layers, as shown in Figure 1.23. If you examine the Table of Contents, you will see that we have roughly organized this book using the lay- ers of the Internet protocol stack. We take a **top-down approach**, first covering the application layer and then proceeding downward.
+Protocol layering has conceptual and structural advantages [RFC 3439]. As we have seen, layering provides a structured way to discuss system components. Modularity makes it easier to update system components. We mention, however, that some researchers and networking engineers are vehemently opposed to layering [Wakeman 1992]. One potential drawback of layering is that one layer may duplicate lower-layer functionality. For example, many protocol stacks provide error recovery on both a per-link basis and an end-to-end basis. A second potential drawback is that functionality at one layer may need information (for example, a timestamp value) that is present only in another layer; this violates the goal of separation of layers.
+![Alt text](image-9.png)
+Figure 1.23  ♦ The Internet protocol stack
+
+When taken together, the protocols of the various layers are called the **protocol stack**. The Internet protocol stack consists of five layers: the physical, link, network, transport, and application layers, as shown in Figure 1.23. If you examine the Table of Contents, you will see that we have roughly organized this book using the lay- ers of the Internet protocol stack. We take a **top-down approach**, first covering the application layer and then proceeding downward.
 
 **Application Layer**
 
@@ -818,21 +591,6 @@ An application-layer protocol is distributed over multiple end systems, with the
 The Internet’s transport layer transports application-layer messages between application endpoints. In the Internet, there are two transport protocols, TCP and UDP, either of which can transport application-layer messages. TCP provides a connection-oriented service to its applications. This service includes guaranteed delivery of application-layer
 ![The Internet protocol stack](23.png)
 **Figure 1.23**  ♦ The Internet protocol stack
-
-Transport
-
-Application
-
-Network
-
-Link
-
-Physical
-
-**Five-layer Internet**
-
-**protocol stack**
-
 messages to the destination and flow control (that is, sender/receiver speed matching). TCP also breaks long messages into shorter segments and provides a congestion-control mechanism, so that a source throttles its transmission rate when the network is con- gested. The UDP protocol provides a connectionless service to its applications. This is a no-frills service that provides no reliability, no flow control, and no congestion control. In this book, we’ll refer to a transport-layer packet as a **segment**.
 
 **Network Layer**
@@ -851,15 +609,13 @@ The services provided by the link layer depend on the specific link-layer protoc
 
 While the job of the link layer is to move entire frames from one network element to an adjacent network element, the job of the physical layer is to move the _individual bits_ within the frame from one node to the next. The protocols in this layer are again link dependent and further depend on the actual transmission medium of the link (for example, twisted-pair copper wire, single-mode fiber optics). For example, Ether- net has many physical-layer protocols: one for twisted-pair copper wire, another for coaxial cable, another for fiber, and so on. In each case, a bit is moved across the link in a different way.
 
-## Encapsulation
+### Encapsulation
 
 Figure 1.24 shows the physical path that data takes down a sending end system’s protocol stack, up and down the protocol stacks of an intervening link-layer switch
 ![Hosts, routers, and link-layer switches;](24.png)
 **Figure 1.24**  ♦   Hosts, routers, and link-layer switches; each contains a different set of layers, reflecting their differences in functionality
 
-
-
-HtHnHl M HtHnHl Mand router, and then up the protocol stack at the receiving end system. As we dis- cuss later in this book, routers and link-layer switches are both packet switches. Similar to end systems, routers and link-layer switches organize their network- ing hardware and software into layers. But routers and link-layer switches do not implement _all_ of the layers in the protocol stack; they typically implement only the bottom layers. As shown in Figure 1.24, link-layer switches implement lay- ers 1 and 2; routers implement layers 1 through 3. This means, for example, that Internet routers are capable of implementing the IP protocol (a layer 3 protocol), while link-layer switches are not. We’ll see later that while link-layer switches do not recognize IP addresses, they are capable of recognizing layer 2 addresses, such as Ethernet addresses. Note that hosts implement all five layers; this is consistent with the view that the Internet architecture puts much of its complexity at the edges of the network.
+router, and then up the protocol stack at the receiving end system. As we dis- cuss later in this book, routers and link-layer switches are both packet switches. Similar to end systems, routers and link-layer switches organize their network- ing hardware and software into layers. But routers and link-layer switches do not implement _all_ of the layers in the protocol stack; they typically implement only the bottom layers. As shown in Figure 1.24, link-layer switches implement lay- ers 1 and 2; routers implement layers 1 through 3. This means, for example, that Internet routers are capable of implementing the IP protocol (a layer 3 protocol), while link-layer switches are not. We’ll see later that while link-layer switches do not recognize IP addresses, they are capable of recognizing layer 2 addresses, such as Ethernet addresses. Note that hosts implement all five layers; this is consistent with the view that the Internet architecture puts much of its complexity at the edges of the network.
 
 Figure 1.24 also illustrates the important concept of **encapsulation**. At the sending host, an **application-layer message** (M in Figure 1.24) is passed to the transport layer. In the simplest case, the transport layer takes the message and appends additional information (so-called transport-layer header information, H_t_ in Figure 1.24) that will be used by the receiver-side transport layer. The appli- cation-layer message and the transport-layer header information together consti- tute the **transport-layer segment**. The transport-layer segment thus encapsulates the application-layer message. The added information might include information allowing the receiver-side transport layer to deliver the message up to the appro- priate application, and error-detection bits that allow the receiver to determine whether bits in the message have been changed in route. The transport layer then passes the segment to the network layer, which adds network-layer header infor- mation (H_n_ in Figure 1.24) such as source and destination end system addresses, creating a **network-layer datagram**. The datagram is then passed to the link layer, which (of course!) will add its own link-layer header information and cre- ate a **link-layer frame**. Thus, we see that at each layer, a packet has two types of fields: header fields and a **payload field**. The payload is typically a packet from the layer above.
 
@@ -867,7 +623,7 @@ A useful analogy here is the sending of an interoffice memo from one corpo- rate
 
 The process of encapsulation can be more complex than that described above. For example, a large message may be divided into multiple transport-layer segments (which might themselves each be divided into multiple network-layer datagrams). At the receiving end, such a segment must then be reconstructed from its constituent datagrams.
 
-# Networks Under Attack
+## Networks Under Attack
 The Internet has become mission critical for many institutions today, including large and small companies, universities, and government agencies. Many individuals also rely on the Internet for many of their professional, social, and personal activities. Billions of “things,” including wearables and home devices, are currently being con- nected to the Internet. But behind all this utility and excitement, there is a dark side, a side where “bad guys” attempt to wreak havoc in our daily lives by damaging our Internet-connected computers, violating our privacy, and rendering inoperable the Internet services on which we depend.
 
 The field of network security is about how the bad guys can attack computer networks and about how we, soon-to-be experts in computer networking, can defend networks against those attacks, or better yet, design new architectures that are immune to such attacks in the first place. Given the frequency and vari- ety of existing attacks as well as the threat of new and more destructive future attacks, network security has become a central topic in the field of computer networking. One of the features of this textbook is that it brings network security issues to the forefront.
@@ -890,32 +646,20 @@ Another broad class of security threats are known as **denial-of-service (DoS) a
 
 • _Connection flooding._ The attacker establishes a large number of half-open or fully open TCP connections (TCP connections are discussed in Chapter 3) at the target host. The host can become so bogged down with these bogus connections that it stops accepting legitimate connections.
 
-Let’s now explore the bandwidth-flooding attack in more detail. Recalling our delay and loss analysis discussion in Section 1.4.2, it’s evident that if the server has an access rate of _R_ bps, then the attacker will need to send traffic at a rate of approximately _R_ bps to cause damage. If _R_ is very large, a single attack source may not be able to generate enough traffic to harm the server. Furthermore, if allthe traffic emanates from a single source, an upstream router may be able to detect the attack and block all traffic from that source before the traffic gets near the server. In a **distributed DoS (DDoS)** attack, illustrated in Figure 1.25, the attacker controls multiple sources and has each source blast traffic at the target. With this approach, the aggregate traffic rate across all the controlled sources needs to be approximately _R_ to cripple the service. DDoS attacks leveraging botnets with thou- sands of comprised hosts are a common occurrence today [DAM 2020]. DDos attacks are much harder to detect and defend against than a DoS attack from a single host.
+Let’s now explore the bandwidth-flooding attack in more detail. Recalling our delay and loss analysis discussion in Section 1.4.2, it’s evident that if the server has an access rate of _R_ bps, then the attacker will need to send traffic at a rate of approximately _R_ bps to cause damage. If _R_ is very large, a single attack source may not be able to generate enough traffic to harm the server. Furthermore, if all
+
+![A distributed denial-of-service attack](25.png)
+**Figure 1.25**  ♦  A distributed denial-of-service attack
+
+the traffic emanates from a single source, an upstream router may be able to detect the attack and block all traffic from that source before the traffic gets near the server. In a **distributed DoS (DDoS)** attack, illustrated in Figure 1.25, the attacker controls multiple sources and has each source blast traffic at the target. With this approach, the aggregate traffic rate across all the controlled sources needs to be approximately _R_ to cripple the service. DDoS attacks leveraging botnets with thou- sands of comprised hosts are a common occurrence today [DAM 2020]. DDos attacks are much harder to detect and defend against than a DoS attack from a single host.
 
 We encourage you to consider the following question as you work your way through this book: What can computer network designers do to defend against DoS attacks? We will see that different defenses are needed for the three types of DoS attacks.
 
 **The Bad Guys Can Sniff Packets**
 
 Many users today access the Internet via wireless devices, such as WiFi-connected laptops or handheld devices with cellular Internet connections (covered in Chapter 7). While ubiquitous Internet access is extremely convenient and enables marvelous new applications for mobile users, it also creates a major security vulnerability—by placing a passive receiver in the vicinity of the wireless transmitter, that receiver
-
-![A distributed denial-of-service attack](25.png)
-**Figure 1.25**  ♦  A distributed denial-of-service attack
-
-Attacker
-
-“start attack”
-
-zombie
-
-zombie
-
-zombie
-
-Victim
-
-zombie
-
-zombiecan obtain a copy of every packet that is transmitted! These packets can contain all kinds of sensitive information, including passwords, social security numbers, trade secrets, and private personal messages. A passive receiver that records a copy of every packet that flies by is called a **packet sniffer**.
+can obtain a copy of every packet that is transmitted!.
+These packets can contain all kinds of sensitive information, including passwords, social security numbers, trade secrets, and private personal messages. A passive receiver that records a copy of every packet that flies by is called a **packet sniffer**.
 
 Sniffers can be deployed in wired environments as well. In wired broadcast environments, as in many Ethernet LANs, a packet sniffer can obtain copies of broadcast packets sent over the LAN. As described in Section 1.2, cable access technologies also broadcast packets and are thus vulnerable to sniffing. Further- more, a bad guy who gains access to an institution’s access router or access link to the Internet may be able to plant a sniffer that makes a copy of every packet going to/from the organization. Sniffed packets can then be analyzed offline for sensitive information.
 
@@ -931,10 +675,10 @@ To solve this problem, we will need _end-point authentication,_ that is, a mech-
 
 But today’s Internet certainly does not involve “mutually trusting users.” None- theless, today’s users still need to communicate when they don’t necessarily trust each other, may wish to communicate anonymously, may communicate indirectly through third parties (e.g., Web caches, which we’ll study in Chapter 2, or mobility- assisting agents, which we’ll study in Chapter 7), and may distrust the hardware, software, and even the air through which they communicate. We now have many security-related challenges before us as we progress through this book: We should seek defenses against sniffing, end-point masquerading, man-in-the-middle attacks, DDoS attacks, malware, and more. We should keep in mind that communication among mutually trusted users is the exception rather than the rule. Welcome to the world of modern computer networking!
 
-# History of Computer Networking and the Internet
+## History of Computer Networking and the Internet
 Sections 1.1 through 1.6 presented an overview of the technology of computer net- working and the Internet. You should know enough now to impress your family and friends! However, if you really want to be a big hit at the next cocktail party, you should sprinkle your discourse with tidbits about the fascinating history of the Inter- net [Segaller 1998].
 
-## The Development of Packet Switching: 1961–1972
+### The Development of Packet Switching: 1961–1972
 
 The field of computer networking and today’s Internet trace their beginnings back to the early 1960s, when the telephone network was the world’s dominant communication network. Recall from Section 1.3 that the telephone network uses circuit switching to transmit information from a sender to a receiver—an appro- priate choice given that voice is transmitted at a constant rate between sender and receiver. Given the increasing importance of computers in the early 1960s and the advent of timeshared computers, it was perhaps natural to consider how to hook computers together so that they could be shared among geographicallydistributed users. The traffic generated by such users was likely to be _bursty_— intervals of activity, such as the sending of a command to a remote computer, followed by periods of inactivity while waiting for a reply or while contemplat- ing the received response.
 
@@ -944,31 +688,22 @@ The work at MIT, Rand, and the NPL laid the foundations for today’s Inter- net
 
 By 1972, ARPAnet had grown to approximately 15 nodes and was given its first public demonstration by Robert Kahn. The first host-to-host protocol between ARPAnet end systems, known as the network-control protocol (NCP), was com- pleted [RFC 001]. With an end-to-end protocol available, applications could now be written. Ray Tomlinson wrote the first e-mail program in 1972.
 
-1.# Proprietary Networks and Internetworking: 1972–1980
-The initial ARPAnet was a single, closed network. In order to communicate with an ARPAnet host, one had to be actually attached to another ARPAnet IMP. In the early to mid-1970s, additional stand-alone packet-switching networks besides ARPAnet came into being: ALOHANet, a microwave network linking universities on the Hawaiian islands [Abramson 1970], as well as DARPA’s packet-satellite [RFC 829] and packet-radio networks [Kahn 1978]; Telenet, a BBN commercial packet- switchingnetwork based on ARPAnet technology; Cyclades, a French packet-switching net- work pioneered by Louis Pouzin [Think 2012]; Time-sharing networks such as Tymnet and the GE Information Services network, among others, in the late 1960s and early 1970s [Schwartz 1977]; IBM’s SNA (1969–1974), which paralleled the ARPAnet work [Schwartz 1977].
+### Proprietary Networks and Internetworking: 1972–1980
+The initial ARPAnet was a single, closed network. In order to communicate with an ARPAnet host, one had to be actually attached to another ARPAnet IMP. In the early to mid-1970s, additional stand-alone packet-switching networks besides ARPAnet came into being: ALOHANet, a microwave network linking universities on the Hawaiian islands [Abramson 1970], as well as DARPA’s packet-satellite [RFC 829] and packet-radio networks [Kahn 1978]; Telenet, a BBN commercial packet- switching
+![Alt text](image-10.png)
+Figure 1.26 ♦ An early packet switch
+
+network based on ARPAnet technologyCyclades, a French packet-switching net- work pioneered by Louis Pouzin [Think 2012]; Time-sharing networks such as Tymnet and the GE Information Services network, among others, in the late 1960s and early 1970s [Schwartz 1977]; IBM’s SNA (1969–1974), which paralleled the ARPAnet work [Schwartz 1977].
 
 The number of networks was growing. With perfect hindsight we can see that the time was ripe for developing an encompassing architecture for connecting networks together. Pioneering work on interconnecting networks (under the sponsorship of the Defense Advanced Research Projects Agency (DARPA)), in essence creating
 
-![An early packet switch](26.png)
-**Figure 1.26**  ♦  An early packet switch
-
-M ar
-
-k J.
-
-Te rri
-
-ll/ A
-
-P Ph
-
-ot oa _network of networks,_ was done by Vinton Cerf and Robert Kahn [Cerf 1974]; the term _internetting_ was coined to describe this work.
+network of networks,was done by Vinton Cerf and Robert Kahn [Cerf 1974]; the term _internetting_ was coined to describe this work.
 
 These architectural principles were embodied in TCP. The early versions of TCP, however, were quite different from today’s TCP. The early versions of TCP combined a reliable in-sequence delivery of data via end-system retransmission (still part of today’s TCP) with forwarding functions (which today are performed by IP). Early experimentation with TCP, combined with the recognition of the importance of an unreliable, non-flow-controlled, end-to-end transport service for applications such as packetized voice, led to the separation of IP out of TCP and the development of the UDP protocol. The three key Internet protocols that we see today—TCP, UDP, and IP—were conceptually in place by the end of the 1970s.
 
 In addition to the DARPA Internet-related research, many other important net- working activities were underway. In Hawaii, Norman Abramson was developing ALOHAnet, a packet-based radio network that allowed multiple remote sites on the Hawaiian Islands to communicate with each other. The ALOHA protocol [Abramson 1970] was the first multiple-access protocol, allowing geographically distributed users to share a single broadcast communication medium (a radio frequency). Metcalfe and Boggs built on Abramson’s multiple-access protocol work when they developed the Ethernet protocol [Metcalfe 1976] for wire-based shared broadcast networks. Interestingly, Metcalfe and Boggs’ Ethernet protocol was moti- vated by the need to connect multiple PCs, printers, and shared disks [Perkins 1994]. Twenty-five years ago, well before the PC revolution and the explosion of networks, Metcalfe and Boggs were laying the foundation for today’s PC LANs.
 
-## A Proliferation of Networks: 1980–1990
+### A Proliferation of Networks: 1980–1990
 
 By the end of the 1970s, approximately two hundred hosts were connected to the ARPAnet. By the end of the 1980s the number of hosts connected to the public Internet, a confederation of networks looking much like today’s Internet, would reach a hundred thousand. The 1980s would be a time of tremendous growth.
 
@@ -978,7 +713,7 @@ In the ARPAnet community, many of the final pieces of today’s Internet archi- 
 
 Paralleling this development of the ARPAnet (which was for the most part a US effort), in the early 1980s the French launched the Minitel project, an ambitious plan to bring data networking into everyone’s home. Sponsored by the French gov- ernment, the Minitel system consisted of a public packet-switched network (based on the X.25 protocol suite), Minitel servers, and inexpensive terminals with built-in low-speed modems. The Minitel became a huge success in 1984 when the French government gave away a free Minitel terminal to each French household that wanted one. Minitel sites included free sites—such as a telephone directory site—as well as private sites, which collected a usage-based fee from each user. At its peak in the mid 1990s, it offered more than 20,000 services, ranging from home banking to spe- cialized research databases. The Minitel was in a large proportion of French homes 10 years before most Americans had ever heard of the Internet.
 
-## The Internet Explosion: The 1990s
+### The Internet Explosion: The 1990s
 
 The 1990s were ushered in with a number of events that symbolized the continued evolution and the soon-to-arrive commercialization of the Internet. ARPAnet, the progenitor of the Internet, ceased to exist. In 1991, NSFNET lifted its restrictions on the use of NSFNET for commercial purposes. NSFNET itself would be decommis- sioned in 1995, with Internet backbone traffic being carried by commercial Internet Service Providers.
 
@@ -998,7 +733,7 @@ Interestingly, the first two killer applications came from the research communit
 
 The period from 1995 to 2001 was a roller-coaster ride for the Internet in the financial markets. Before they were even profitable, hundreds of Internet startups made initial public offerings and started to be traded in a stock market. Many com- panies were valued in the billions of dollars without having any significant revenue streams. The Internet stocks collapsed in 2000–2001, and many startups shut down. Nevertheless, a number of companies emerged as big winners in the Internet space, including Microsoft, Cisco, Yahoo, eBay, Google, and Amazon.
 
-## The New Millennium
+### The New Millennium
 
 In the first two decades of the 21st century, perhaps no other technology has trans- formed society more than the Internet along with Internet-connected smartphones. And innovation in computer networking continues at a rapid pace. Advances are being made on all fronts, including deployments of faster routers and higher trans- mission speeds in both access networks and in network backbones. But the following developments merit special attention:
 
@@ -1012,12 +747,13 @@ In the first two decades of the 21st century, perhaps no other technology has tr
 
 • Many Internet commerce companies are now running their applications in the “cloud”—such as in Amazon’s EC2, in Microsoft’s Azure, or in the Alibaba Cloud. Many companies and universities have also migrated their Internet applications (e.g., e-mail and Web hosting) to the cloud. Cloud companies not only provide applications scalable computing and storage environments, but also provide the applications implicit access to their high-performance private networks.
 
-# Summary
+## Summary
 In this chapter, we’ve covered a tremendous amount of material! We’ve looked at the various pieces of hardware and software that make up the Internet in particular and computer networks in general. We started at the edge of the network, look- ing at end systems and applications, and at the transport service provided to the applications running on the end systems. We also looked at the link-layer tech- nologies and physical media typically found in the access network. We then dove deeper inside the network, into the network core, identifying packet switching and circuit switching as the two basic approaches for transporting data through a tel- ecommunication network, and we examined the strengths and weaknesses of each approach. We also examined the structure of the global Internet, learning that the Internet is a network of networks. We saw that the Internet’s hierarchical structure, consisting of higher- and lower-tier ISPs, has allowed it to scale to include thou- sands of networks.In the second part of this introductory chapter, we examined several topics cen- tral to the field of computer networking. We first examined the causes of delay, throughput and packet loss in a packet-switched network. We developed simple quantitative models for transmission, propagation, and queuing delays as well as for throughput; we’ll make extensive use of these delay models in the homework problems throughout this book. Next we examined protocol layering and service models, key architectural principles in networking that we will also refer back to throughout this book. We also surveyed some of the more prevalent security attacks in the Internet day. We finished our introduction to networking with a brief history of computer networking. The first chapter in itself constitutes a mini-course in com- puter networking.
 
 So, we have indeed covered a tremendous amount of ground in this first chapter! If you’re a bit overwhelmed, don’t worry. In the following chapters, we’ll revisit all of these ideas, covering them in much more detail (that’s a promise, not a threat!). At this point, we hope you leave this chapter with a still-developing intuition for the pieces that make up a network, a still-developing command of the vocabulary of networking (don’t be shy about referring back to this chapter), and an ever-growing desire to learn more about networking. That’s the task ahead of us for the rest of this book.
 
-Road-Mapping This Book Before starting any trip, you should always glance at a road map in order to become familiar with the major roads and junctures that lie ahead. For the trip we are about to embark on, the ultimate destination is a deep understanding of the how, what, and why of computer networks. Our road map is the sequence of chapters of this book:
+**Road-Mapping This Book Before**
+ starting any trip, you should always glance at a road map in order to become familiar with the major roads and junctures that lie ahead. For the trip we are about to embark on, the ultimate destination is a deep understanding of the how, what, and why of computer networks. Our road map is the sequence of chapters of this book:
 
 1. Computer Networks and the Internet 2. Application Layer 3. Transport Layer 4. Network Layer: Data Plane 5. Network Layer: Control Plane 6. The Link Layer and LANs 7. Wireless and Mobile Networks 8. Security in Computer Networks
 
@@ -1294,8 +1030,10 @@ _“Tell me and I forget. Show me and I remember. Involve me and I understand.�
 
 One’s understanding of network protocols can often be greatly deepened by seeing them in action and by playing around with them—observing the sequence of mes- sages exchanged between two protocol entities, delving into the details of protocol operation, causing protocols to perform certain actions, and observing these actions and their consequences. This can be done in simulated scenarios or in a real network environment such as the Internet. The interactive animations at the textbook Web site take the first approach. In the Wireshark labs, we’ll take the latter approach. You’ll run network applications in various scenarios using a computer on your desk, at home, or in a lab. You’ll observe the network protocols in your computer, interacting and exchanging messages with protocol entities executing elsewhere in the Inter- net. Thus, you and your computer will be an integral part of these live labs. You’ll observe—and you’ll learn—by doing.
 
-The basic tool for observing the messages exchanged between executing pro- tocol entities is called a **packet sniffer**. As the name suggests, a packet sniffer pas- sively copies (sniffs) messages being sent from and received by your computer; it also displays the contents of the various protocol fields of these captured messages. A screenshot of the Wireshark packet sniffer is shown in Figure 1.28. Wireshark is a
-WIRESHARK lAb 
+The basic tool for observing the messages exchanged between executing pro- tocol entities is called a **packet sniffer**. As the name suggests, a packet sniffer pas- sively copies (sniffs) messages being sent from and received by your computer; it also displays the contents of the various protocol fields of these captured messages. A screenshot of the Wireshark packet sniffer is shown in Figure 1.28. Wireshark is a 
+
+![Wireshark](28.png)
+**Figure 1.28**  ♦   A Wireshark screenshot (Wireshark screenshot reprinted by permission of the Wireshark Foundation.)
 
 free packet sniffer that runs on Windows, Linux/Unix, and Mac computers. Through- out the textbook, you will find Wireshark labs that allow you to explore a number of the protocols studied in the chapter. In this first Wireshark lab, you’ll obtain and install a copy of Wireshark, access a Web site, and capture and examine the protocol messages being exchanged between your Web browser and the Web server.
 
