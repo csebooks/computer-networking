@@ -19,7 +19,7 @@ In this book, we’ll use the public Internet, a specific computer network, as o
 
 Figure 1.1 to illustrate our discussion.
 
-## A Nuts-and-Bolts Description
+### A Nuts-and-Bolts Description
 
 The Internet is a computer network that interconnects billions of computing devices throughout the world. Not too long ago, these computing devices were primarily traditional desktop computers, Linux workstations, and so-called servers that store and transmit information such as Web pages and e-mail messages. Increasingly, however, users connect to the Internet with smartphones and tablets—today, close to half of the world’s population are active mobile Internet users with the percentage expected to increase to 75% by 2025 [Statista 2019]. Furthermore, nontraditional Internet “things” such as TVs, gaming consoles, thermostats, home security systems, home appliances, watches, eye glasses, cars, traffic control systems, and more are being connected to the Internet. Indeed, the term _computer network_ is beginning to sound a bit dated, given the many nontraditional devices that are being hooked up to the Internet. In Internet jargon, all of these devices are called **hosts** or **end systems**. By some estimates, there were about 18 billion devices connected to the Internet in 2017, and the number will reach 28.5 billion by 2022 [Cisco VNI 2020].
 
@@ -78,7 +78,7 @@ _A **protocol** defines the format and the order of messages exchanged between t
 
 The Internet, and computer networks in general, make extensive use of pro- tocols. Different protocols are used to accomplish different communication tasks. As you read through this book, you will learn that some protocols are simple and straightforward, while others are complex and intellectually deep. Mastering the field of computer networking is equivalent to understanding the what, why, and how of networking protocols.
 
-# The Network Edge
+## The Network Edge
 In the previous section, we presented a high-level overview of the Internet and networking protocols. We are now going to delve a bit more deeply into the com- ponents of the Internet. We begin in this section at the edge of the network and look at the components with which we are most familiar—namely, the computers, smartphones and other devices that we use on a daily basis. In the next section, we’ll move from the network edge to the network core and examine switching and routing in computer networks.
 
 Recall from the previous section that in computer networking jargon, the com- puters and other devices connected to the Internet are often referred to as end sys- tems. They are referred to as end systems because they sit at the edge of the Internet, as shown in Figure 1.3. The Internet’s end systems include desktop computers
@@ -181,7 +181,7 @@ Mobile devices such as iPhones and Android devices are being used to message, sh
 
 Telecommunications companies have made enormous investments in so-called fourth-generation (4G) wireless, which provides real-world download speeds of up to 60 Mbps. But even higher-speed wide-area access technologies—a fifth-generation (5G) of wide-area wireless networks—are already being deployed. We’ll cover the basic principles of wireless networks and mobility, as well as WiFi, 4G and 5G tech- nologies (and more!) in Chapter 7.
 
-## Physical Media
+### Physical Media
 
 In the previous subsection, we gave an overview of some of the most important network access technologies in the Internet. As we described these technologies, we also indicated the physical media used. For example, we said that HFC uses a combination of fiber cable and coaxial cable. We said that DSL and Ethernet use copper wire. And we said that mobile access networks use the radio spectrum. In this subsection, we provide a brief overview of these and other transmission media that are commonly used in the Internet.
 
@@ -226,7 +226,7 @@ Having examined the Internet’s edge, let us now delve more deeply inside the n
 
 Figure 1.10 ♦ The network core
 
-## Packet Switching** 
+### Packet Switching
 
 In a network application, end systems exchange **messages** with each other. Mes- sages can contain anything the application designer wants. Messages may perform a control function (for example, the “Hi” messages in our handshaking example in Figure 1.2) or can contain data, such as an e-mail message, a JPEG image, or an MP3 audio file. To send a message from a source end system to a destination end system, the source breaks long messages into smaller chunks of data known as **pack- ets**. Between source and destination, each packet travels through communication links and **packet switches(for which there are two predominant types, **routers
 and **link-layer switches**). Packets are transmitted over each communication link at a rate equal to the _full_ transmission rate of the link. So, if a source end system or a packet switch is sending a packet of _L_ bits over a link with transmission rate _R_ bits/sec, then the time to transmit the packet is _L / R_ seconds.
@@ -273,7 +273,7 @@ The end-to-end routing process is analogous to a car driver who does not use map
 
 We just learned that a router uses a packet’s destination address to index a for- warding table and determine the appropriate outbound link. But this statement begs yet another question: How do forwarding tables get set? Are they configured by hand in each and every router, or does the Internet use a more automated procedure? This issue will be studied in depth in Chapter 5. But to whet your appetite here, we’ll note now that the Internet has a number of special **routing protocols** that are used to auto- matically set the forwarding tables. A routing protocol may, for example, determine the shortest path from each router to each destination and use the shortest path results to configure the forwarding tables in the routers.
 
-## Circuit Switching
+### Circuit Switching
 
 There are two fundamental approaches to moving data through a network of links and switches: **circuit switching** and **packet switching**. Having covered packet- switched networks in the previous subsection, we now turn our attention to circuit- switched networks.
 
@@ -346,6 +346,7 @@ In summary, today’s Internet—a network of networks—is complex, consisting 
 ![](15.png)
 
 **Figure 1.15**  ♦ Interconnection of ISPs
+
 1.4 • Delay, Loss, and Throughput in Packet-Switched Networks 
 
 ## Delay, Loss, and Throughput in Packet-Switched Networks
@@ -385,9 +386,9 @@ packet by _L_ bits, and denote the transmission rate of the link from router A t
 **Propagation Delay**
 
 Once a bit is pushed into the link, it needs to propagate to router B. The time required to propagate from the beginning of the link to router B is the **propagation delay**. The bit propagates at the propagation speed of the link. The propagation speed depends on the physical medium of the link (that is, fiber optics, twisted-pair copper wire, and so on) and is in the range of
-
-       2-108 meters/sec to 3-10^8 meters/sec
-
+```
+       2-10^8 meters/sec to 3-10^8 meters/sec
+```
 which is equal to, or a little less than, the speed of light. The propagation delay is the distance between two routers divided by the propagation speed. That is, the propaga- tion delay is _d/s,_ where _d_ is the distance between router A and router B and _s_ is the propagation speed of the link. Once the last bit of the packet propagates to node B, it and all the preceding bits of the packet are stored in router B. The whole process then continues with router B now performing the forwarding. In wide-area networks, propagation delays are on the order of milliseconds.
 
 **Comparing Transmission and Propagation Delay**
@@ -448,9 +449,9 @@ From an end-system viewpoint, a packet loss will look like a packet having been 
 ### End-to-End Delay
 
 Our discussion up to this point has focused on the nodal delay, that is, the delay at a single router. Let’s now consider the total delay from source to destination. To get a handle on this concept, suppose there are _N_ \- 1 routers between the source host and the destination host. Let’s also suppose for the moment that the network is uncon- gested (so that queuing delays are negligible), the processing delay at each router and at the source host is _d_proc, the transmission rate out of each router and out of the source host is _R_ bits/sec, and the propagation on each link is _d_prop. The nodal delays accumulate and give an end-to-end delay,
-
+```
       dend-end = N (dproc + dtrans + dprop) 
-
+```
 where, once again, _d_trans = _L/R,_ where _L_ is the packet size. Note that Equation 1.2 is a generalization of Equation 1.1, which did not take into account processing and propaga- tion delays. We leave it to you to generalize Equation 1.2 to the case of heterogeneous delays at the nodes and to the presence of an average queuing delay at each node.
 
 **Traceroute**
@@ -460,7 +461,7 @@ To get a hands-on feel for end-to-end delay in a computer network, we can make u
 More specifically, suppose there are _N_ \- 1 routers between the source and the destination. Then the source will send _N_ special packets into the network, with each packet addressed to the ultimate destination. These _N_ special packets are marked _1_ through _N,_ with the first packet marked _1_ and the last packet marked _N_. When the _n_th router receives the _n_th packet marked _n,_ the router does not forward the packet toward its destination, but instead sends a message back to the source. When the destination host receives the _N_th packet, it too returns a message back to the source. The source records the time that elapses between when it sends a packet and when it receives the corresponding return message; it also records the name and address of the router (or the destination host) that returns the message. In this manner, the source can reconstruct the route taken by packets flowing from source to destination, and the source can determine the round-trip delays to all the intervening routers. Traceroute actually repeats the experiment just described three times, so the source actually sends _3_ • _N_ packets to the destination. RFC 1393 describes Traceroute in detail.
 
 Here is an example of the output of the Traceroute program, where the route was being traced from the source host gaia.cs.umass.edu (at the University of Massachusetts) to a host in the computer science department at the University of Sorbonne in Paris (formerly the university was known as UPMC). The output has six columns: the first column is the _n_ value described above, that is, the number of the router along the route; the second column is the name of the router; the third column is the address of the router (of the form xxx.xxx.xxx.xxx); the last three columns are the round-trip delays for three experiments. If the source receives fewer than three messages from any given router (due to packet loss in the network), Traceroute places an asterisk just after the router number and reports fewer than three round-trip times for that router.
-
+```
 1 gw-vlan-2451.cs.umass.edu (128.119.245.1) 1.899 ms 3.266 ms 3.280 ms 2 j-cs-gw-int-10-240.cs.umass.edu (10.119.240.254) 1.296 ms 1.276 ms
 
 1.245 ms 3 n5-rt-1-1-xe-2-1-0.gw.umass.edu (128.119.3.33) 2.237 ms 2.217 ms
@@ -470,7 +471,7 @@ Here is an example of the output of the Traceroute program, where the route was 
 0.344 ms 6 nox300gw1-umass-re.nox.org (192.5.89.101) 3.260 ms 0.416 ms 3.127 ms 7 nox300gw1-umass-re.nox.org (192.5.89.101) 3.165 ms 7.326 ms 7.311 ms 8 198.71.45.237 (198.71.45.237) 77.826 ms 77.246 ms 77.744 ms 9 renater-lb1-gw.mx1.par.fr.geant.net (62.40.124.70) 79.357 ms 77.729
 
 79.152 ms 10 193.51.180.109 (193.51.180.109) 78.379 ms 79.936 80.042 ms 11 \* 193.51.180.109 (193.51.180.109) 80.640 ms \* 12 \* 195.221.127.182 (195.221.127.182) 78.408 ms \* 13 195.221.127.182 (195.221.127.182) 80.686 ms 80.796 ms 78.434 ms 14 r-upmc1.reseau.jussieu.fr (134.157.254.10) 78.399 ms \* 81.353 ms 
-
+```
 In the trace above, there are 14 routers between the source and the destination. Most of these routers have a name, and all of them have addresses. For example, the name of Router 4 is core1-rt-et-5-2-0.gw.umass.edu and its address is 128.119.0.9. Looking at the data provided for this same router, we see that in the first of the three trials the round-trip delay between the source and the router was 0.351 msec. The round-trip delays for the subsequent two trials were 0.392 and 0.380 msec. These round-trip delays include all of the delays just discussed, including transmission delays, propagation delays, router processing delays, and queuing delay.
 
 Because the queuing delay is varying with time, the round-trip delay of packet _n_ sent to a router _n_ can sometimes be longer than the round-trip delay of packet _n+_1 sent to router _n+_1. Indeed, we observe this phenomenon in the above example: the delay to Router 12 is smaller than the delay to Router 11! Also note the big increase in the round-trip delay when going from router 7 to router 8. This is due to a transatlantic fiber-optic link between routers 7 and 8, giving rise to a relatively large propagation delay. There are a number of free software programs that provide a graphical interface to Traceroute; one of our favorites is PingPlotter [PingPlotter 2020].
@@ -510,7 +511,7 @@ bottleneck for each download is no longer in the access network, but is now inst
 The examples in Figure 1.19 and Figure 1.20(a) show that throughput depends on the transmission rates of the links over which the data flows. We saw that when there is no other intervening traffic, the throughput can simply be approximated as the minimum transmission rate along the path between source and destination. The example in Figure 1.20(b) shows that more generally the throughput depends not only on the transmission rates of the links along the path, but also on the interven- ing traffic. In particular, a link with a high transmission rate may nonetheless be the bottleneck link for a file transfer if many other data flows are also passing through that link. We will examine throughput in computer networks more closely in the homework problems and in the subsequent chapters.
 
 
-##1.5 Protocol Layers and Their Service Models
+## 1.5 Protocol Layers and Their Service Models
 
 From our discussion thus far, it is apparent that the Internet is an extremely complicated system. We have seen that there are many pieces to the Internet: numerous 
 applications and protocols, various types of end systems, packet switches, and various types of link-level media. Given this enormous complexity, is there any hope of 
@@ -596,6 +597,7 @@ A useful analogy here is the sending of an interoffice memo from one corpo- rate
 The process of encapsulation can be more complex than that described above. For example, a large message may be divided into multiple transport-layer segments (which might themselves each be divided into multiple network-layer datagrams). At the receiving end, such a segment must then be reconstructed from its constituent datagrams.
 
 ## Networks Under Attack
+
 The Internet has become mission critical for many institutions today, including large and small companies, universities, and government agencies. Many individuals also rely on the Internet for many of their professional, social, and personal activities. Billions of “things,” including wearables and home devices, are currently being con- nected to the Internet. But behind all this utility and excitement, there is a dark side, a side where “bad guys” attempt to wreak havoc in our daily lives by damaging our Internet-connected computers, violating our privacy, and rendering inoperable the Internet services on which we depend.
 
 The field of network security is about how the bad guys can attack computer networks and about how we, soon-to-be experts in computer networking, can defend networks against those attacks, or better yet, design new architectures that are immune to such attacks in the first place. Given the frequency and vari- ety of existing attacks as well as the threat of new and more destructive future attacks, network security has become a central topic in the field of computer networking. One of the features of this textbook is that it brings network security issues to the forefront.
@@ -744,7 +746,7 @@ Chapters 2 through 6 are the five core chapters of this book. You should notice 
 The second half of the book—Chapters 7 and 8—zooms in on two enormously important (and somewhat independent) topics in modern computer networking. In Chapter 7, we examine wireless and mobile networks, including wireless LANs (including WiFi and Bluetooth), Cellular networks (including 4G and 5G), and mobility. Chapter 8, which addresses security in computer networks, first looks at the underpinnings of encryption and network security, and then we examine how the basic theory is being applied in a broad range of Internet contexts.
 
 **Homework Problems and Questions**
-
+************************************************8
 **Chapter 1 Review Questions** 
 SECTION 1.1 
 R1. What is the difference between a host and an end system? List several differ-ent types of end systems. Is a Web server an end system?
@@ -832,7 +834,7 @@ R28. Suppose Alice and Bob are sending packets to each other over a computer net
 PROblEMS 
 
 **Problems**
-
+*****************************************************
 P1. Design and describe an application-level protocol to be used between an automatic teller machine and a bank’s centralized computer. Your protocol should allow a user’s card and password to be verified, the account bal- ance (which is maintained at the centralized computer) to be queried, and an account withdrawal to be made (that is, money disbursed to the user). Your protocol entities should be able to handle the all-too-common case in which there is not enough money in the account to cover the withdrawal. Specify your protocol by listing the messages exchanged and the action taken by the automatic teller machine or the bank’s centralized computer on transmission and receipt of messages. Sketch the operation of your protocol for the case of a simple withdrawal with no errors, using a diagram similar to that in Figure 1.2. Explicitly state the assumptions made by your protocol about the underlying end-to-end transport service.
 
 P2. Equation 1.1 gives a formula for the end-to-end delay of sending one packet of length _L_ over _N_ links of transmission rate _R_. Generalize this formula for sending _P_ such packets back-to-back over the _N_ links.
@@ -1008,4 +1010,70 @@ free packet sniffer that runs on Windows, Linux/Unix, and Mac computers. Through
 
 You can find full details about this first Wireshark lab (including instructions about how to obtain and install Wireshark) at the Web site www.pearsonglobaleditions .com.
 
+**AN INTERVIEW WITH**
 
+**Leonard Kleinrock**
+
+![Alt text](image-11.png)
+Leonard Kleinrock is a professor of computer science at the University 
+of California, Los Angeles. In 1969, his computer at UCLA became 
+the first node of the Internet. His creation of the mathematical theory 
+of packet-switching principles in 1961 became the technology behind 
+the Internet. He received his B.E.E. from the City College of New York 
+(CCNY) and his masters and PhD in electrical engineering from MIT.
+
+
+
+**What made you decide to specialize in networking/Internet technology?**
+
+As a PhD student at MIT in 1959, I looked around and found that most of my classmates were doing research in the area of information theory and coding theory that had been established by the great researcher, Claude Shannon. I judged that he had solved most of 
+the important problems already. The research problems that were left were hard and seemed to me to be of lesser consequence. So I decided to launch out in a new area that no one 
+else had yet conceived of. Happily, at MIT I was surrounded by many computers, and it was clear to me that, sooner or later, these machines would need to communicate with each 
+other. At the time, there was no effective way for them to do so and that the solution to this 
+important problem would have impact. I had an approach to this problem and so, for my PhD research, I decided to create a mathematical theory to model, evaluate, design and 
+optimize efficient and reliable data networks.
+**What was your first job in the computer industry?What did it entail?**
+I went to the evening session at CCNY from 1951 to 1957 for my bachelor’s degree 
+in electrical engineering. During the day, I worked first as a technician and then as an 
+electrical engineer at a small, industrial electronics firm called Photobell. While there, I 
+introduced digital technology to their product line. Essentially, we were using photoelectric devices to detect the presence of certain items (boxes, people, etc.) and the use of a circuit known then as a bistable multivibrator was just what we needed to bring digital processing into this field of detection. These circuits happen to be the building blocks for 
+computers, and have come to be known as flip-flops or switches in today’s vernacular.
+
+**What was going through your mind when you sent the first host-to-host message (from UCLA to the Stanford Research Institute)?**
+
+Frankly, we had no idea of the importance of that event. We had not prepared a special 
+message of historic significance, as did so many inventors of the past (Samuel Morse with 
+“What hath God wrought.” or Alexander Graham Bell with “Watson, come here! I want you.” or Neal Armstrong with “That’s one small step for a man, one giant leap for mankind.”) Those guys were smart! They understood media and public relations. All we wanted to do 
+was to demonstrate our ability to remotely login to the SRI computer. So we typed the “L”, Courtesy of Leonard Kleinrock M01_KURO5469_08_GE_C01.indd 108 08/05/2021 13:50
+109which was correctly received, we typed the “o” which was correctly received, and then we typed the “g” which caused the SRI host computer to crash! So, it turned out that our message was the shortest and perhaps the most prophetic message ever, namely “Lo!” as in “Lo and behold!”
+Earlier that year, I was quoted in a UCLA press release saying that once the network was up and running, it would be possible to gain access to computer utilities from our 
+homes and offices as easily as we gain access to electricity and telephone connectivity. So my vision at that time was that the Internet would be ubiquitous, always on, always available, anyone with any device could connect from any location, and it would be invisible. 
+However, I never anticipated that my 99-year-old mother would use the Internet at the same time that my 5 year-old granddaughter was—and indeed she did!
+**What is your vision for the future of networking?**
+
+The easy part of the vision is to predict the infrastructure itself. I anticipate that we will see 
+considerable deployment of wireless and mobile devices in smart spaces to produce what I like to refer to as the Invisible Internet. This step will enable us to move out from the 
+netherworld of cyberspace to the physical world of smart spaces. Our environments (desks, walls, vehicles, watches, belts, fingernails, bodies and so on) will come alive with technology, through actuators, sensors, logic, processing, storage, cameras, microphones, speakers, displays, and communication. This embedded technology will allow our environment 
+to provide the IP services wherever and whenever we want. When I walk into a room, the 
+room will know I entered. I will be able to communicate with my environment naturally, 
+as in spoken English, haptics, gestures, and eventually through brain-Internet interfaces; 
+my requests will generate replies that present Web pages to me from wall displays, through 
+my eyeglasses, as speech, holograms, and so forth. Looking a bit further out, I see a networking future that includes the following additional key components. I see customized 
+intelligent software agents deployed across the network whose function it is to mine data, 
+act on that data, observe trends, and carry out tasks dynamically and adaptively. I see the 
+deployment of blockchain technology that provides irrefutable, immutable distributed ledgers coupled with reputation systems that provide credibility to the contents and functionality. I see considerably more network traffic generated not so much by humans, but by the embedded devices, the intelligent software agents and the distributed ledgers. I see large collections of self-organizing systems controlling this vast, fast network. I see huge 
+amounts of information flashing across this network instantaneously with this information undergoing enormous processing and filtering. The Invisible Internet will essentially be a pervasive global nervous system . I see all these things and more as we move headlong 
+through the twenty-first century.
+The harder part of the vision is to predict the applications and services, which have consistently surprised us in dramatic ways (e-mail, search technologies, the World Wide Web, blogs, peer-to-peer networks, social networks, user generated content, sharing of 
+M01_KURO5469_08_GE_C01.indd 109 08/05/2021 13:50110music, photos, and videos, etc.). These applications have “come of the blue”, sudden, unanticipated and explosive. What a wonderful world for the next generation to explore!
+
+**What people have inspired you professionally?**
+
+By far, it was Claude Shannon from MIT, a brilliant researcher who had the ability to relate his mathematical ideas to the physical world in highly intuitive ways. He was a superb 
+member of my PhD thesis committee.
+
+**Do you have any advice for students entering the networking/Internet field?**
+
+The Internet and all that it enables is a vast new frontier, continuously full of amazing 
+challenges. There is room for great innovation. Don’t be constrained by today’s technology. 
+Reach out and imagine what could be and then make it happen.
