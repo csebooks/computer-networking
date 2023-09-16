@@ -16,6 +16,7 @@ communicating, they are indeed communicating with each other, and that if their 
 In the second part of this chapter, we’ll examine how the fundamental cryptography principles can be used to create secure networking protocols. Once again taking a top-down approach, we’ll examine secure protocols in each of the (top four) layers, beginning with the application layer. We’ll examine how to secure e-mail, how to secure a TCP connection, how to provide blanket security at the net- work layer, and how to secure a wireless LAN. In the third part of this chapter we’ll consider operational security, which is about protecting organizational networks from attacks. In particular, we’ll take a careful look at how firewalls and intrusion detection systems can enhance the security of an organizational network.
 
 ## What Is Network Security?
+
 Let’s begin our study of network security by returning to our lovers, Alice and Bob, who want to communicate “securely.” What precisely does this mean? Certainly, Alice wants only Bob to be able to understand a message that she has sent, even though they _are_ communicating over an insecure medium where an intruder (Trudy, the intruder) may intercept whatever is transmitted from Alice to Bob. Bob also wants to be sure that the message he receives from Alice was indeed sent by Alice, and Alice wants to make sure that the person with whom she is communicating is indeed Bob. Alice and Bob also want to make sure that the contents of their messages have not been altered in transit. They also want to be assured that they can communi- cate in the first place (i.e., that no one denies them access to the resources needed to communicate). Given these considerations, we can identify the following desirable properties of **secure communication**.
 
 • Confidentiality. Only the sender and intended receiver should be able to under- stand the contents of the transmitted message. Because eavesdroppers may intercept the message, this necessarily requires that the message be somehow **encrypted** so that an intercepted message cannot be understood by an interceptor. This aspect of confidentiality is probably the most commonly perceived mean- ing of the term _secure communication_. We’ll study cryptographic techniques for encrypting and decrypting data in Section 8.2.
@@ -38,19 +39,19 @@ All or some of these messages will typically be encrypted. As discussed in Secti
 
 • _modification, insertion_, or _deletion_ of messages or message content.
 
-As we’ll see, unless appropriate countermeasures are taken, these capabilities allow an intruder to mount a wide variety of security attacks: snooping on communi- cation (possibly stealing passwords and data), impersonating another entity, hijack- ing an ongoing session, denying service to legitimate network users by overloading system resources, and so on. A summary of reported attacks is maintained at the CERT Coordination Center \[CERT 2020\].
+As we’ll see, unless appropriate countermeasures are taken, these capabilities allow an intruder to mount a wide variety of security attacks: snooping on communi- cation (possibly stealing passwords and data), impersonating another entity, hijack- ing an ongoing session, denying service to legitimate network users by overloading system resources, and so on. A summary of reported attacks is maintained at the CERT Coordination Center [CERT 2020].
 
 Having established that there are indeed real threats loose in the Internet, what are the Internet equivalents of Alice and Bob, our friends who need to communicate securely? Certainly, Bob and Alice might be human users at two end systems, for example, a real Alice and a real Bob who really do want to exchange secure e-mail. They might also be participants in an electronic commerce transaction. For example, a real Bob might want to transfer his credit card number securely to a Web server to purchase an item online. Similarly, a real Alice might want to interact with her bank online. The parties needing secure communication might themselves also be part of the network infrastructure. Recall that the domain name system (DNS, see Section 2.4) or routing daemons that exchange routing information (see Chapter 5) require secure communication between two parties. The same is true for network management applications, a topic we examined in Chapter 5). An intruder that could actively interfere with DNS lookups (as discussed in Section 2.4), routing computa- tions (Sections 5.3 and 5.4), or network management functions (Sections 5.5 and 5.7) could wreak havoc in the Internet.
 
 Having now established the framework, a few of the most important definitions, and the need for network security, let us next delve into cryptography. While the use of cryptography in providing confidentiality is self-evident, we’ll see shortly that it is also central to providing end-point authentication and message integrity—making cryptography a cornerstone of network security.
 
 ## Principles of Cryptography
-Although cryptography has a long history dating back at least as far as Julius Caesar, modern cryptographic techniques, including many of those used in the Internet, are based on advances made in the past 30 years. Kahn’s book, _The Codebreakers_ \[Kahn 1967\], and Singh’s book, _The Code Book: The Science of Secrecy from Ancient Egypt to Quantum Cryptography_ \[Singh 1999\], provide a fascinating look at  
+Although cryptography has a long history dating back at least as far as Julius Caesar, modern cryptographic techniques, including many of those used in the Internet, are based on advances made in the past 30 years. Kahn’s book, _The Codebreakers_ [Kahn 1967], and Singh’s book, _The Code Book: The Science of Secrecy from Ancient Egypt to Quantum Cryptography_ [Singh 1999], provide a fascinating look at  
 
 ![Alt text](image-46.png)
 **Figure 8.2** ♦ Cryptographic components
 
- thelong history of cryptography. A complete discussion of cryptography itself requires a complete book \[Bishop 2003; Kaufman 2002; Schneier 2015\] and so we only touch on the essential aspects of cryptography, particularly as they are practiced on the Internet. We also note that while our focus in this section will be on the use of cryptography for confidentiality, we’ll see shortly that cryptographic techniques are inextricably woven into authentication, message integrity, nonrepudiation, and more.
+the long history of cryptography. A complete discussion of cryptography itself requires a complete book [Bishop 2003; Kaufman 2002; Schneier 2015] and so we only touch on the essential aspects of cryptography, particularly as they are practiced on the Internet. We also note that while our focus in this section will be on the use of cryptography for confidentiality, we’ll see shortly that cryptographic techniques are inextricably woven into authentication, message integrity, nonrepudiation, and more.
 
 Cryptographic techniques allow a sender to disguise data so that an intruder can gain no information from the intercepted data. The receiver, of course, must be able to recover the original data from the disguised data. Figure 8.2 illustrates some of the important terminology.
 
@@ -59,8 +60,9 @@ Suppose now that Alice wants to send a message to Bob. Alice’s message in its 
 In Figure 8.2, Alice provides a **key**, _KA_, a string of numbers or characters, as input to the encryption algorithm. The encryption algorithm takes the key and the plaintext message, _m_, as input and produces ciphertext as output. The notation _KA_(_m_) refers to the ciphertext form (encrypted using the key _KA_) of the plaintext message, _m_. The actual encryption algorithm that uses key _KA_ will be evident from the context. Similarly, Bob will provide a key, _KB_, to the **decryption algorithm** that takes the ciphertext and Bob’s key as input and produces the original plain- text as output. That is, if Bob receives an encrypted message _KA_(_m_), he decrypts it by computing _KB_(_KA_(_m_)) = _m_. In **symmetric key systems**, Alice’s and Bob’s keys are identical and are secret. In **public key systems**, a pair of keys is used. One of the keys is known to both Bob and Alice (indeed, it is known to the whole world). The other key is known only by either Bob or Alice (but not both). In the following two subsections, we consider symmetric key and public key systems in more detail.
 
 ### Symmetric Key Cryptography
+
 All cryptographic algorithms involve substituting one thing for another, for exam- ple, taking a piece of plaintext and then computing and substituting the appropriate ciphertext to create the encrypted message. Before studying a modern key-based cryptographic system, let us first get our feet wet by studying a very old, very simple symmetric key algorithm attributed to Julius Caesar, known as the **Caesar cipher
- (a cipher is a method for encrypting data).
+(a cipher is a method for encrypting data).
 
 For English text, the Caesar cipher would work by taking each letter in the plain- text message and substituting the letter that is _k_ letters later (allowing wraparound; that is, having the letter _z_ followed by the letter _a_) in the alphabet. For example, if _k_ \= 3, then the letter _a_ in plaintext becomes _d_ in ciphertext; _b_ in plaintext becomes _e_ in ciphertext, and so on. Here, the value of _k_ serves as the key. As an example, the plaintext message “bob, i love you. Alice” becomes “ere, l oryh brx. dolfh” in ciphertext. While the ciphertext does indeed look like gibberish, it wouldn’t take long to break the code if you knew that the Caesar cipher was being used, as there are only 25 possible key values.
 
@@ -101,24 +103,25 @@ Continuing with this 3-bit block example, note that the mapping in Table 8.1 is 
 the 
 ![Alt text](image-4.png)
 **Table 8.1**  ♦  A specific 3-bit block cipher
+
 input columns). These eight inputs can be permuted in 8! = 40,320 different ways. Since each of these permutations specifies a mapping, there are 40,320 possible map- pings. We can view each of these mappings as a key—if Alice and Bob both know the mapping (the key), they can encrypt and decrypt the messages sent between them.
 
 The brute-force attack for this cipher is to try to decrypt ciphtertext by using all mappings. With only 40,320 mappings (when _k_ \= 3), this can quickly be accom- plished on a desktop PC. To thwart brute-force attacks, block ciphers typically use much larger blocks, consisting of _k_ \= 64 bits or even larger. Note that the number of possible mappings for a general _k_\-block cipher is 2_k_!, which is astronomical for even moderate values of _k_ (such as _k_ \= 64).
 
 Although full-table block ciphers, as just described, with moderate values of _k_ can produce robust symmetric key encryption schemes, they are unfortunately dif- ficult to implement. For _k_ \= 64 and for a given mapping, Alice and Bob would need to maintain a table with 264 input values, which is an infeasible task. Moreover, if Alice and Bob were to change keys, they would have to each regenerate the table. Thus, a full-table block cipher, providing predetermined mappings between all inputs and outputs (as in the example above), is simply out of the question.
 
-Instead, block ciphers typically use functions that simulate randomly permuted tables. An example (adapted from \[Kaufman 2002\]) of such a function for _k_ \= 64 bits is shown in Figure 8.5. The function first breaks a 64-bit block into 8 chunks, with each chunk consisting of 8 bits. Each 8-bit chunk is processed by an 8-bit to 8-bit table, which is of manageable size. For example, the first chunk is processed by the table denoted by T1. Next, the 8 output chunks are reassembled into a 64-bit block. The positions of the 64 bits in the block are then scrambled (permuted) to produce a 64-bit output. This output is fed back to the 64-bit input, where another cycle begins. After _n_ such cycles, the function provides a 64-bit block of ciphertext. The purpose of the rounds is to make each input bit affect most (if not all) of the final output bits. (If only one round were used, a given input bit would affect only 8 of the 64 output bits.) The key for this block cipher algorithm would be the eight permutation tables (assuming the scramble function is publicly known).
+Instead, block ciphers typically use functions that simulate randomly permuted tables. An example (adapted from Kaufman 2002) of such a function for _k_ \= 64 bits is shown in Figure 8.5. The function first breaks a 64-bit block into 8 chunks, with each chunk consisting of 8 bits. Each 8-bit chunk is processed by an 8-bit to 8-bit table, which is of manageable size. For example, the first chunk is processed by the table denoted by T1. Next, the 8 output chunks are reassembled into a 64-bit block. The positions of the 64 bits in the block are then scrambled (permuted) to produce a 64-bit output. This output is fed back to the 64-bit input, where another cycle begins. After _n_ such cycles, the function provides a 64-bit block of ciphertext. The purpose of the rounds is to make each input bit affect most (if not all) of the final output bits. (If only one round were used, a given input bit would affect only 8 of the 64 output bits.) The key for this block cipher algorithm would be the eight permutation tables (assuming the scramble function is publicly known).
 
 Today there are a number of popular block ciphers, including DES (standing for Data Encryption Standard), 3DES, and AES (standing for Advanced Encryption
 
 ![Alt text](image-5.png)
 **Figure 8.5**  ♦  An example of a block cipher
 
-Standard). Each of these standards uses functions, rather than predetermined tables, along the lines of Figure 8.5 (albeit more complicated and specific to each cipher). Each of these algorithms also uses a string of bits for a key. For example, DES uses 64-bit blocks with a 56-bit key. AES uses 128-bit blocks and can operate with keys that are 128, 192, and 256 bits long. An algorithm’s key determines the specific “mini-table” mappings and permutations within the algorithm’s internals. The brute- force attack for each of these ciphers is to cycle through all the keys, applying the decryption algorithm with each key. Observe that with a key length of _n_, there are 2_n_ possible keys. NIST \[NIST 2001\] estimates that a machine that could crack 56-bit DES in one second (that is, try all 256 keys in one second) would take approximately 149 trillion years to crack a 128-bit AES key.
+Standard). Each of these standards uses functions, rather than predetermined tables, along the lines of Figure 8.5 (albeit more complicated and specific to each cipher). Each of these algorithms also uses a string of bits for a key. For example, DES uses 64-bit blocks with a 56-bit key. AES uses 128-bit blocks and can operate with keys that are 128, 192, and 256 bits long. An algorithm’s key determines the specific “mini-table” mappings and permutations within the algorithm’s internals. The brute- force attack for each of these ciphers is to cycle through all the keys, applying the decryption algorithm with each key. Observe that with a key length of _n_, there are 2_n_ possible keys. NIST NIST 2001 estimates that a machine that could crack 56-bit DES in one second (that is, try all 256 keys in one second) would take approximately 149 trillion years to crack a 128-bit AES key.
 
 **Cipher-Block Chaining**
 
-In computer networking applications, we typically need to encrypt long messages or long streams of data. If we apply a block cipher as described by simply chopping up the message into _k_\-bit blocks and independently encrypting each block, a subtle but important problem occurs. To see this, observe that two or more of the cleartext blocks can be identical. For example, the cleartext in two or more blocks could be “HTTP/1.1”. For these identical blocks, a block cipher would, of course, produce the same ciphertext. An attacker could potentially guess the cleartext when it sees identical ciphertext blocks and may even be able to decrypt the entire message by identifying identical ciphtertext blocks and using knowledge about the underlying protocol structure \[Kaufman 2002\].
+In computer networking applications, we typically need to encrypt long messages or long streams of data. If we apply a block cipher as described by simply chopping up the message into _k_\-bit blocks and independently encrypting each block, a subtle but important problem occurs. To see this, observe that two or more of the cleartext blocks can be identical. For example, the cleartext in two or more blocks could be “HTTP/1.1”. For these identical blocks, a block cipher would, of course, produce the same ciphertext. An attacker could potentially guess the cleartext when it sees identical ciphertext blocks and may even be able to decrypt the entire message by identifying identical ciphtertext blocks and using knowledge about the underlying protocol structure Kaufman 2002.
 
 To address this problem, we can mix some randomness into the ciphertext so that identical plaintext blocks produce different ciphertext blocks. To explain this idea, let _m_(_i_) denote the _i_th plaintext block, _c_(_i_) denote the _i_th ciphertext block, and _a_ ⊕ _b_ denote the exclusive-or (XOR) of two bit strings, _a_ and _b_. (Recall that the 0 ⊕ 0 = 1 ⊕ 1 = 0 and 0 ⊕ 1 = 1 ⊕ 0 = 1, and the XOR of two bit strings is done on a bit-by-bit basis. So, for example, 10101010 ⊕ 11110000 = 01011010.) Also, denote the block-cipher encryption algorithm with key _S_ as _KS_. The basic idea is as follows. The sender creates a random _k_\-bit number _r_(_i_) for the _i_th block and calculates _c_(_i_) = _KS_(_m_(_i_) ⊕ _r_(_i_ )). Note that a new _k_\-bit random number is chosen for each block. The sender then sends _c_(1), _r_(1), _c_(2), _r_(2), _c_(3), _r_(3), and so on. Since the receiver receives _c(i)_ and _r(i)_, it can recover each block of the plaintext by computing _m_(_i_) = _KS_(_c_(_i_)) ⊕ _r_(_i_ ). It is important to note that, although _r_(_i_) is sent in the clear and thus can be sniffed by Trudy, she cannot obtain the plaintext _m_(_i_), since she does not know the key _KS_. Also note that if two plaintext blocks _m_(_i_) and _m_(_j_) are the same, the corresponding ciphertext blocks _c_(_i_) and _c_(_j_) will be different (as long as the random numbers _r_(_i_) and _r_(_j_) are different, which occurs with very high probability).
 
@@ -139,9 +142,10 @@ As an example, let’s now determine the ciphertext for the 3-bit block cipher i
 CBC has an important consequence when designing secure network proto- cols: we’ll need to provide a mechanism within the protocol to distribute the IV from sender to receiver. We’ll see how this is done for several protocols later in this chapter.
 
 ### Public Key Encryption
- For more than 2,000 years (since the time of the Caesar cipher and up to the 1970s), encrypted communication required that the two communicating parties share a com- mon secret—the symmetric key used for encryption and decryption. One difficulty with this approach is that the two parties must somehow agree on the shared key; but to do so in itself requires secure communication. Perhaps the parties could first meet and agree on the key in person (for example, two of Caesar’s centurions might meet at the Roman baths) and thereafter communicate with encryption. In a networked world, however, communicating parties may never meet and may never converse except over the network.
 
-Is it possible for two parties to communicate with encryption without having a shared secret key that is known in advance? In 1976, Diffie and Hellman \[Diffie 1976\] demonstrated an algorithm (known now as Diffie-Hellman Key Exchange) to do just that—a radically different and marvelously elegant approach toward secure communication that has led to the development of today’s public key cryp- tography systems. We’ll see shortly that public key cryptography systems also have several wonderful properties that make them useful not only for encryption, but for authentication and digital signatures as well. Interestingly, it has come to light that ideas similar to those in \[Diffie 1976\] and \[RSA 1978\] had been independently developed in the early 1970s in a series of secret reports by researchers at the Communications-Electronics Security Group in the United Kingdom \[Ellis 1987\].
+For more than 2,000 years (since the time of the Caesar cipher and up to the 1970s), encrypted communication required that the two communicating parties share a com- mon secret—the symmetric key used for encryption and decryption. One difficulty with this approach is that the two parties must somehow agree on the shared key; but to do so in itself requires secure communication. Perhaps the parties could first meet and agree on the key in person (for example, two of Caesar’s centurions might meet at the Roman baths) and thereafter communicate with encryption. In a networked world, however, communicating parties may never meet and may never converse except over the network.
+
+Is it possible for two parties to communicate with encryption without having a shared secret key that is known in advance? In 1976, Diffie and Hellman \[Diffie 1976\] demonstrated an algorithm (known now as Diffie-Hellman Key Exchange) to do just that—a radically different and marvelously elegant approach toward secure communication that has led to the development of today’s public key cryp- tography systems. We’ll see shortly that public key cryptography systems also have several wonderful properties that make them useful not only for encryption, but for authentication and digital signatures as well. Interestingly, it has come to light that ideas similar to those in Diffie 1976 and RSA 1978 had been independently developed in the early 1970s in a series of secret reports by researchers at the Communications-Electronics Security Group in the United Kingdom Ellis 1987.
 ![Alt text](image-6.png)
 **Figure 8.6**  ♦  Public key cryptography
 
@@ -156,13 +160,13 @@ message to Bob, including Alice or someone _pretending_ to be Alice. In the case
 While there may be many algorithms that address these concerns, the **RSA algorithm** (named after its founders, Ron Rivest, Adi Shamir, and Leonard Adleman) has become almost synonymous with public key cryptography. Let’s first see how RSA works and then examine why it works.
 
 RSA makes extensive use of arithmetic operations using modulo-_n_ arithmetic. So let’s briefly review modular arithmetic. Recall that _x_ mod _n_ simply means the remainder of _x_ when divided by _n_; so, for example, 19 mod 5 = 4. In modular arith- metic, one performs the usual operations of addition, multiplication, and exponen- tiation. However, the result of each operation is replaced by the integer remainder that is left when the result is divided by _n_. Adding and multiplying with modular arithmetic is facilitated with the following handy facts:
-```
-\[(_a_ mod _n_) + (_b_ mod _n_)\] mod _n_ = (_a_ + _b_) mod _n_
 
-\[(_a_ mod _n_) - (_b_ mod _n_)\] mod _n_ = (_a_ - _b_) mod _n_
+[(_a_ mod _n_) + (_b_ mod _n_)] mod _n_ = (_a_ + _b_) mod _n_
 
-\[(_a_ mod _n_) # (_b_ mod _n_)\] mod _n_ = (_a_ # _b_) mod _n_
-```
+[(_a_ mod _n_) - (_b_ mod _n_)] mod _n_ = (_a_ - _b_) mod _n_
+
+[(_a_ mod _n_) + (_b_ mod _n_)] mod _n_ = (_a_ . _b_) mod _n_
+
 It follows from the third fact that (_a_ mod _n_)_d_ mod _n_ \= _ad_ mod _n_, which is an identity that we will soon find very useful.
 
 Now suppose that Alice wants to send to Bob an RSA-encrypted message, as shown in Figure 8.6. In our discussion of RSA, let’s always keep in mind that a mes- sage is nothing but a bit pattern, and every bit pattern can be uniquely represented by an integer number (along with the length of the bit pattern). For example, suppose a message is the bit pattern 1001; this message can be represented by the decimal integer 9. Thus, when encrypting a message with RSA, it is equivalent to encrypting the unique integer number that represents the message.
@@ -177,14 +181,16 @@ To generate the public and private RSA keys, Bob performs the following steps:
 
 1\. Choose two large prime numbers, _p_ and _q_. How large should _p_ and _q_ be? The larger the values, the more difficult it is to break RSA, but the longer it takesto perform the encoding and decoding. RSA Laboratories recommends that the product of _p_ and _q_ be on the order of 1,024 bits. For a discussion of how to find large prime numbers, see \[Caldwell 2020\].
 
-2\. Compute _n_ \= _pq_ and _z_ = (_p_ - 1)(_q_ - 1). 3. Choose a number, _e_, less than _n_, that has no common factors (other than 1)
+2\. Compute _n_ \= _pq_ and _z_ = (_p_ - 1)(_q_ - 1). 
+
+3\. Choose a number, _e_, less than _n_, that has no common factors (other than 1)
 
 with _z._ (In this case, _e_ and _z_ are said to be relatively prime.) The letter _e_ is used since this value will be used in encryption.
 
 4\. Find a number, _d_, such that _ed_ - 1 is exactly divisible (that is, with no remainder) by _z_. The letter _d_ is used because this value will be used in decryption. Put another way, given _e_, we choose _d_ such that
-```
-_ed_ mod _z_ = 1
-```
+
+ed mod z = 1
+
 5\. The public key that Bob makes available to the world, _K_\+ _B_, is the pair of numbers
 
 (_n_, _e_); his private key, _K_\- _B_, is the pair of numbers (_n_, _d_).
@@ -192,15 +198,15 @@ _ed_ mod _z_ = 1
 The encryption by Alice and the decryption by Bob are done as follows:
 
 • Suppose Alice wants to send Bob a bit pattern represented by the integer number _m_ (with _m_ 6 _n_). To encode, Alice performs the exponentiation _me_, and then computes the integer remainder when _me_ is divided by _n_. In other words, the encrypted value, _c_, of Alice’s plaintext message, _m_, is
-```
-_c_ \= _me_ mod _n_
-```
+
+c = m^e mod n
+
 The bit pattern corresponding to this ciphertext _c_ is sent to Bob.
 
 • To decrypt the received ciphertext message, _c_, Bob computes
-```
-_m_ \= _cd_ mod _n_
-```
+
+m = cd mod n
+
 which requires the use of his private key (_n_, _d_).
 
 As a simple example of RSA, suppose Bob chooses _p_ = 5 and _q_ = 7. (Admittedly,
@@ -227,25 +233,25 @@ RSA encryption/decryption appears rather magical. Why should it be that by apply
 
 Recall that, under RSA encryption, a message (uniquely represented by an integer), _m_, is exponentiated to the power _e_ using modulo-_n_ arithmetic, that is,
 
-_c_ = _me_ mod _n_
+c = m^e mod n
 
 Decryption is performed by raising this value to the power _d_, again using modulo-_n_ arithmetic. The result of an encryption step followed by a decryption step is thus (_me_ mod _n_)_d_ mod _n_. Let’s now see what we can say about this quantity. As mentioned earlier, one important property of modulo arithmetic is (_a_ mod _n_)_d_ mod _n_ = _ad_ mod _n_ for any values _a_, _n_, and _d_. Thus, using _a_ = _me_ in this property, we have
 
-(_me_ mod _n_)_d_ mod _n_ \= _med_ mod _n_
+(m^e mod n)^d mod n = m^ed mod n
 
-It therefore remains to show that _med_ mod _n_ = _m_. Although we’re trying to remove some of the magic about why RSA works, to establish this, we’ll need to use a rather magical result from number theory here. Specifically, we’ll need the result that says if _p_ and _q_ are prime, _n_ = _pq_, and _z_ = (_p_ - 1)(_q_ - 1), then _xy_ mod _n_ is the same as _x_(_y_ mod _z_) mod _n_ \[Kaufman 2002\]. Applying this result with _x_ = _m_ and _y_ = _ed_ we have
+It therefore remains to show that _med_ mod _n_ = _m_. Although we’re trying to remove some of the magic about why RSA works, to establish this, we’ll need to use a rather magical result from number theory here. Specifically, we’ll need the result that says if _p_ and _q_ are prime, _n_ = _pq_, and _z_ = (_p_ - 1)(_q_ - 1), then _xy_ mod _n_ is the same as _x_(_y_ mod _z_) mod _n_ [Kaufman 2002]. Applying this result with _x_ = _m_ and _y_ = _ed_ we have
 
-_med_ mod _n_ \= _m_(_ed_ mod z) mod _n_
+m^ed mod n = m^(ed mod z) mod n
 
 But remember that we have chosen _e_ and _d_ such that _ed_ mod z = 1. This gives us
 
-_med_ mod _n_ \= _m_1 mod _n_ \= _m_
+m^ed mod n = m^1 mod n = m
 
 which is exactly the result we are looking for! By first exponentiating to the power of _e_ (that is, encrypting) and then exponentiating to the power of _d_ (that is, decrypting), we obtain the original value, _m._ Even _more_ wonderful is the fact that if we first exponentiate to the power of _d_ and then exponentiate to the power of _e_—that is, we reverse the order of encryption and decryption, performing the decryption operation first and then applying the encryption operation—we also obtain the original value, _m_. This wonderful result follows immediately from the modular arithmetic:
 
-(_md_ mod _n_)_e_ mod _n_ \= _mde_ mod _n_ \= _med_ mod _n_ \= (_me_ mod _n_)_d_ mod _n_
+(m^d mod n)^e mod n = mde mod n = med mod n = (m^e mod n)^d mod n
 
-The security of RSA relies on the fact that there are no known algorithms for quickly factoring a number, in this case the public value _n_, into the primes _p_ and _q_. If one knew _p_ and _q_, then given the public value _e_, one could easily compute the secret key, _d_. On the other hand, it is not known whether or not there _exist_ fast algorithms for factoring a number, and in this sense, the security of RSA is not guaranteed. With recent advances in quantum computing, and published fast factoring algorithms for quantum computers, there are concerns that RSA may not be secure forever \[MIT TR 2019\]. But the practical realization of these algorithms still appears to be far in the future.
+The security of RSA relies on the fact that there are no known algorithms for quickly factoring a number, in this case the public value _n_, into the primes _p_ and _q_. If one knew _p_ and _q_, then given the public value _e_, one could easily compute the secret key, _d_. On the other hand, it is not known whether or not there _exist_ fast algorithms for factoring a number, and in this sense, the security of RSA is not guaranteed. With recent advances in quantum computing, and published fast factoring algorithms for quantum computers, there are concerns that RSA may not be secure forever [MIT TR 2019]. But the practical realization of these algorithms still appears to be far in the future.
 
 Another popular public-key encryption algorithm is the Diffie-Hellman algo- rithm, which we will briefly explore in the homework problems. Diffie-Hellman is not as versatile as RSA in that it cannot be used to encrypt messages of arbitrary length; it can be used, however, to establish a symmetric session key, which is in turn used to encrypt messages.
 
@@ -287,9 +293,10 @@ The MD5 hash algorithm of Ron Rivest \[RFC 1321\] is in wide use today. It compu
 The second major hash algorithm in use today is the Secure Hash Algorithm (SHA-1) \[FIPS 1995\]. This algorithm is based on principles similar to those used in the design of MD4 \[RFC 1320\], the predecessor to MD5. SHA-1, a US federal standard, is required for use whenever a cryptographic hash algorithm is needed for federal applications. It produces a 160-bit message digest. The longer output length makes SHA-1 more secure.
 
 ### Message Authentication Code
- Let’s now return to the problem of message integrity. Now that we understand hash functions, let’s take a first stab at how we might perform message integrity:
- 1\.Alice creates message _m_ and calculates the hash _H_(_m_) (for example, with SHA-1). 
- 2\. Alice then appends _H_(_m_) to the message _m_, creating an extended message(_m_, _H_(_m_)), and sends the extended message to Bob. 3\. Bob receives an extended message (_m_, _h_) and calculates _H_(_m_). If _H_(_m_) = _h_,Bob concludes that everything is fine.
+Let’s now return to the problem of message integrity. Now that we understand hash functions, let’s take a first stab at how we might perform message integrity:
+1\.Alice creates message _m_ and calculates the hash _H_(_m_) (for example, with SHA-1). 
+2\. Alice then appends _H_(_m_) to the message _m_, creating an extended message(_m_, _H_(_m_)), and sends the extended message to Bob. 
+3\. Bob receives an extended message (_m_, _h_) and calculates _H_(_m_). If _H_(_m_) = _h_,Bob concludes that everything is fine.
 
 This approach is obviously flawed. Trudy can create a bogus message _m_´ in which she says she is Alice, calculate _H_(_m_´), and send Bob (_m_´, _H_(_m_´)). When Bob receives the message, everything checks out in step 3, so Bob doesn’t suspect any funny business.
 
@@ -309,7 +316,7 @@ One nice feature of a MAC is that it does not require an encryption algorithm. I
 
 not concerned with message confidentiality. Using a MAC, the entities can authen- ticate the messages they send to each other without having to integrate complex encryption algorithms into the integrity process.
 
-As you might expect, a number of different standards for MACs have been pro- posed over the years. The most popular standard today is **HMAC**, which can be used either with MD5 or SHA-1. HMAC actually runs data and the authentication key through the hash function twice \[Kaufman 2002; RFC 2104\].
+As you might expect, a number of different standards for MACs have been pro- posed over the years. The most popular standard today is **HMAC**, which can be used either with MD5 or SHA-1. HMAC actually runs data and the authentication key through the hash function twice [Kaufman 2002; RFC 2104].
 
 There still remains an important issue. How do we distribute the shared authen- tication key to the communicating entities? For example, in the link-state routing algorithm, we would somehow need to distribute the secret authentication key to each of the routers in the autonomous system. (Note that the routers can all use the same authentication key.) A network administrator could actually accomplish this by physically visiting each of the routers. Or, if the network administrator is a lazy guy, and if each router has its own public key, the network administrator could distribute the authentication key to any one of the routers by encrypting it with the router’s public key and then sending the encrypted key over the network to the router.
 
@@ -334,7 +341,7 @@ _K_\- _B_(_m_). At first, it might seem odd that Bob is using his private key (w
 • The only person who could have known the private key, _K_\- _B_, is Bob. Recall from our discussion of RSA in Section 8.2 that knowing the public key, _K_\+ _B_, is of no help in learning the private key, _K_\- _B_. Therefore, the only person who could know_K_\- _B_ is the person who generated the pair of keys, (_K_+_B_, _K_\- _B_), in the first place, Bob.
 (Note that this assumes, though, that Bob has not given _K_\- _B_ to anyone, nor has anyone stolen _K_\- _B_ from Bob.)
 
-It is also important to note that if the original document, _m_, is ever modified to some alternate form, _m_´, the signature that Bob created for _m_ will not be valid for _m_´,
+It is also important to note that if the original document, m, is ever modified to some alternate form, m´, the signature that Bob created for m will not be valid for m´,
 
 since _K_\+ _B_(_K_\-_B_(_m_)) does not equal _m_´. Thus, we see that digital signatures also provide message integrity, allowing the receiver to verify that the message was unaltered as well as the source of the message.
 
@@ -415,7 +422,7 @@ One classic approach to authentication is to use a secret password. The password
 
 Since passwords are so widely used, we might suspect that protocol _ap3.0_ is fairly secure. If so, we’d be wrong! The security flaw here is clear. If Trudy eaves- drops on Alice’s communication, then she can learn Alice’s password. Lest you think this is unlikely, consider the fact that when you Telnet to another machine and log in, the login password is sent unencrypted to the Telnet server. Someone connected to the Telnet client or server’s LAN can possibly sniff (read and store) all packets transmitted on the LAN and thus steal the login password. In fact, this is a well- known approach for stealing passwords (see, for example, \[Jimenez 1997\]). Such a threat is obviously very real, so _ap3.0_ clearly won’t do.
 
-**Authentication Protocol _ap3.1_**
+**Authentication Protocol ap3.1**
 
 Our next idea for fixing ap3.0 is naturally to encrypt the password. By encrypting the password, we can prevent Trudy from learning Alice’s password. If we assume that Alice and Bob share a symmetric secret key, _KA_\-_B_, then Alice can encrypt the password and send her identification message, “I am Alice,” and her encrypted password to Bob. Bob then decrypts the password and, assuming the password is cor- rect, authenticates Alice. Bob feels comfortable in authenticating Alice since Alice not only knows the password, but also knows the shared secret key value needed to encrypt the password. Let’s call this protocol _ap3.1_.
 
@@ -423,7 +430,7 @@ While it is true that _ap3.1_ prevents Trudy from learning Alice’s password, t
 
 to a **playback attack**: Trudy need only eavesdrop on Alice’s communication, record the encrypted version of the password, and play back the encrypted version of the password to Bob to pretend that she is Alice. The use of an encrypted password in _ap3.1_ doesn’t make the situation manifestly different from that of protocol _ap3.0_ in Figure 8.17.
 
-**Authentication Protocol _ap4.0_**
+**Authentication Protocol ap4.0**
 
 The failure scenario in Figure 8.17 resulted from the fact that Bob could not distin- guish between the original authentication of Alice and the later playback of Alice’s original authentication. That is, Bob could not tell if Alice was live (that is, was currently really on the other end of the connection) or whether the messages he was receiving were a recorded playback of a previous authentication of Alice. The very (_very_) observant reader will recall that the three-way TCP handshake protocol needed to address the same problem—the server side of a TCP connection did not want to accept a connection if the received SYN segment was an old copy (retransmission) of a SYN segment from an earlier connection. How did the TCP server side solve the problem of determining whether the client was really live? It chose an initial sequence number that had not been used in a very long time, sent that number to the client, and then waited for the client to respond with an ACK segment containing that number. We can adopt the same idea here for authentication purposes.
 
@@ -454,7 +461,7 @@ You might be wondering why security functionality is being provided at more than
 Boband by authenticating all the source IP addresses, it can’t provide user-level secu- rity. For example, a commerce site cannot rely on IP-layer security to authenticate a customer who is purchasing goods at the commerce site. Thus, there is a need for security functionality at higher layers as well as blanket coverage at lower lay- ers. Second, it is generally easier to deploy new Internet services, including security services, at the higher layers of the protocol stack. While waiting for security to be broadly deployed at the network layer, which is probably still many years in the future, many application developers “just do it” and introduce security functional- ity into their favorite applications. A classic example is Pretty Good Privacy (PGP), which provides secure e-mail (discussed later in this section). Requiring only client and server application code, PGP was one of the first security technologies to be broadly used in the Internet.
 
 ### Secure E-Mail
- We now use the cryptographic principles of Sections 8.2 through 8.3 to create a secure e-mail system. We create this high-level design in an incremental manner, at each step introducing new security services. When designing a secure e-mail sys- tem, let us keep in mind the racy example introduced in Section 8.1—the love affair between Alice and Bob. Imagine that Alice wants to send an e-mail message to Bob, and Trudy wants to intrude.
+We now use the cryptographic principles of Sections 8.2 through 8.3 to create a secure e-mail system. We create this high-level design in an incremental manner, at each step introducing new security services. When designing a secure e-mail sys- tem, let us keep in mind the racy example introduced in Section 8.1—the love affair between Alice and Bob. Imagine that Alice wants to send an e-mail message to Bob, and Trudy wants to intrude.
 
 Before plowing ahead and designing a secure e-mail system for Alice and Bob, we should consider which security features would be most desirable for them. First and foremost is _confidentiality._ As discussed in Section 8.1, neither Alice nor Bob wants Trudy to read Alice’s e-mail message. The second feature that Alice and Bob would most likely want to see in the secure e-mail system is _sender authentication_. In particular, when Bob receives the message “I don’t love you anymore. I never want to see you again. Formerly yours, Alice,” he would naturally want to be sure that the message came from Alice and not from Trudy. Another feature that the two lovers would appreciate is _message integrity_, that is, assurance that the message Alice sends is not modified while en route to Bob. Finally, the e-mail system should provide _receiver authentication_; that is, Alice wants to make sure that she is indeed sending the letter to Bob and not to someone else (for example, Trudy) who is impersonating Bob.
 
@@ -462,9 +469,7 @@ So let’s begin by addressing the foremost concern, confidentiality. The most s
 
 To overcome the efficiency problem, let’s make use of a session key (discussed in Section 8.2.2). In particular, Alice (1) selects a random symmetric session key, _KS_, (2) encrypts her message, _m_, with the symmetric key, (3) encrypts the symmetric key with Bob’s public key, _KB_ +, (4) concatenates the encrypted message and the encrypted symmetric key to form a “package,” and (5) sends the package to Bob’s e-mail address. The steps are illustrated in Figure 8.19. (In this and the subsequent figures, the circled “+” represents concatenation and the circled “-” represents deconcatenation.) When Bob receives the package, he (1) uses his private key, _K_\-_B_, to obtain the symmetric key, _KS_, and (2) uses the symmetric key _KS_ to decrypt the mes- sage _m_.
 
-Having designed a secure e-mail system that provides confidentiality, let’s now design another system that provides both sender authentication and message integ- rity. We’ll suppose, for the moment, that Alice and Bob are no longer concerned with confidentiality (they want to share their feelings with everyone!), and are concerned only about sender authentication and message integrity. To accomplish this task, we use digital signatures and message digests, as described in Section 8.3. Specifically, Alice (1) applies a hash function, _H_ (e.g., MD5), to her message, _m_, to obtain a message digest, (2) signs the result of the hash function with her private key, _K_\-
-
-_A_, to create a digital signature, (3) concatenates the original (unencrypted) message with the signature to create a package, and (4) sends the package to Bob’s e-mail address. When Bob receives the package, he (1) applies Alice’s public key, _K_+_A_, to the signed
+Having designed a secure e-mail system that provides confidentiality, let’s now design another system that provides both sender authentication and message integ- rity. We’ll suppose, for the moment, that Alice and Bob are no longer concerned with confidentiality (they want to share their feelings with everyone!), and are concerned only about sender authentication and message integrity. To accomplish this task, we use digital signatures and message digests, as described in Section 8.3. Specifically, Alice (1) applies a hash function, _H_ (e.g., MD5), to her message, _m_, to obtain a message digest, (2) signs the result of the hash function with her private key, _K_\-_A_, to create a digital signature, (3) concatenates the original (unencrypted) message with the signature to create a package, and (4) sends the package to Bob’s e-mail address. When Bob receives the package, he (1) applies Alice’s public key, _K_+_A_, to the signed
 ![Alt text](image-22.png)
 **Figure 8.19**  ♦   Alice used a symmetric session key, _KS_, to send a secret e-mail to Bob
 ![Alt text](image-23.png)
@@ -482,8 +487,7 @@ side of Figure 8.20. It should be clear that this design achieves the goal of pr
 The secure e-mail design outlined in Figure 8.21 probably provides satisfactory security for most e-mail users for most occasions. However, there is still one important issue that remains to be addressed. The design in Figure 8.21 requires Alice to obtain Bob’s public key, and requires Bob to obtain Alice’s public key. The distribution of these public keys is a nontrivial problem. For example, Trudy might masquerade as Bob and give Alice her own public key while saying that it is Bob’s public key, enabling her to receive the message meant for Bob. As we learned in Section 8.3, a popular approach for securely distributing public keys is to _certify_ the public keys using a CA.
 
 ### PGP
-Written by Phil Zimmermann in 1991, **Pretty Good Privacy (PGP)**
- is a nice exam- ple of an e-mail encryption scheme \[PGP 2020\]. The PGP design is, in essence, the same as the design shown in Figure 8.21. Depending on the version, the PGP soft- ware uses MD5 or SHA for calculating the message digest; CAST, triple-DES, or IDEA for symmetric key encryption; and RSA for the public key encryption.
+Written by Phil Zimmermann in 1991, **Pretty Good Privacy (PGP)**is a nice exam- ple of an e-mail encryption scheme \[PGP 2020\]. The PGP design is, in essence, the same as the design shown in Figure 8.21. Depending on the version, the PGP soft- ware uses MD5 or SHA for calculating the message digest; CAST, triple-DES, or IDEA for symmetric key encryption; and RSA for the public key encryption.
 
 When PGP is installed, the software creates a public key pair for the user. The public key can be posted on the user’s Web site or placed in a public key server. The private key is protected by the use of a password. The password has to be entered every time the user accesses the private key. PGP gives the user the option of dig- itally signing the message, encrypting the message, or both digitally signing and encrypting. Figure 8.22 shows a PGP signed message. This message appears after the MIME header. The encoded data in the message is _K_\-_A_ (_H_(_m_)), that is, the digi- tally signed message digest. As we discussed above, in order for Bob to verify the integrity of the message, he needs to have access to Alice’s public key.
 ![Alt text](image-25.png)
@@ -565,6 +569,7 @@ The solution to this problem, as you probably guessed, is to use sequence num- b
 The TLS record (as well as the almost-TLS record) is shown in Figure 8.26. The record consists of a type field, version field, length field, data field, and HMAC field. Note that the first three fields are not encrypted. The type field indicates whether the record is a handshake message or a message that contains application data. It is also used to close the TLS connection, as discussed below. TLS at the receiving end uses the length field to extract the TLS records out of the incoming TCP byte stream. The version field is self-explanatory.
 ![Alt text](image-29.png)
 **Figure 8.26**  ♦  Record format for TLS
+
 ### A More Complete Picture
 The previous subsection covered the almost-TLS protocol; it served to give us a basic understanding of the why and how of TLS. Now that we have a basic under- standing, we can dig a little deeper and examine the essentials of the actual TLS pro- tocol. In parallel to reading this description of the TLS protocol, you are encouraged to complete the Wireshark TLS lab, available at the textbook’s Web site.
 
@@ -652,7 +657,7 @@ An IPsec entity (router or host) often maintains state information for many SAs.
 
 ### The IPsec Datagram
 
- Having now described SAs, we can now describe the actual IPsec datagram. IPsec has two different packet forms, one for the so-called **tunnel modeand the other for the so-called **transport mode
+Having now described SAs, we can now describe the actual IPsec datagram. IPsec has two different packet forms, one for the so-called **tunnel modeand the other for the so-called **transport mode
 . The tunnel mode, being more appropriate for VPNs, is more widely deployed than the transport mode. In order to further de-mystify IPsec and avoid much of its complication, we henceforth focus exclusively on the tunnel mode. Once you have a solid grip on the tunnel mode, you should be able to easily learn about the transport mode on your own.
 
 The packet format of the IPsec datagram is shown in Figure 8.29. You might think that packet formats are boring and insipid, but we will soon see that the IPsec datagram actually looks and tastes like a popular Tex-Mex delicacy! Let’s examine the IPsec fields in the context of Figure 8.28. Suppose router R1 receives an ordinary IPv4 datagram from host 172.16.1.17 (in the headquarters network) which is destined to host 172.16.2.48 (in the branch-office network). Router R1 uses the following recipe to convert this “original IPv4 datagram” into an IPsec datagram:
@@ -690,8 +695,8 @@ There is actually another important subtlety that needs to be addressed. It cent
 
 So what services does IPsec provide, exactly? Let us examine these services from the perspective of an attacker, say Trudy, who is a woman-in-the-middle, sitting somewhere on the path between R1 and R2 in Figure 8.28. Assume throughout this discussion that Trudy does not know the authentication and encryption keys used by the SA. What can and cannot Trudy do? First, Trudy cannot see the original datagram. If fact, not only is the data in the original datagram hidden from Trudy, but so is the protocol number, the source IP address, and the destination IP address. For datagrams sent over the SA, Trudy only knows that the datagram originated from 200.168.1.100 and is destined to 193.68.2.23. She does not know if it is carry- ing TCP, UDP, or ICMP data; she does not know if it is carrying HTTP, SMTP, or some other type of application data. This confidentiality thus goes a lot farther than SSL. Second, suppose Trudy tries to tamper with a datagram in the SA by flipping some of its bits. When this tampered datagram arrives at R2, it will fail the integ- rity check (using the MAC), thwarting Trudy’s vicious attempts once again. Third, suppose Trudy tries to masquerade as R1, creating a IPsec datagram with source 200.168.1.100 and destination 193.68.2.23. Trudy’s attack will be futile, as this datagram will again fail the integrity check at R2. Finally, because IPsec includes sequence numbers, Trudy will not be able create a successful replay attack. In sum- mary, as claimed at the beginning of this section, IPsec provides—between any pair of devices that process packets through the network layer—confidentiality, source authentication, data integrity, and replay-attack prevention.
 
-## IKE: Key Management in IPsec
- When a VPN has a small number of end points (for example, just two routers as in Figure 8.28), the network administrator can manually enter the SA information (encryption/authentication algorithms and keys, and the SPIs) into the SADs of the endpoints. Such “manual keying” is clearly impractical for a large VPN, which may consist of hundreds or even thousands of IPsec routers and hosts. Large, geo- graphically distributed deployments require an automated mechanism for creating the SAs. IPsec does this with the Internet Key Exchange (IKE) protocol, specified in RFC 5996.
+### IKE: Key Management in IPsec
+When a VPN has a small number of end points (for example, just two routers as in Figure 8.28), the network administrator can manually enter the SA information (encryption/authentication algorithms and keys, and the SPIs) into the SADs of the endpoints. Such “manual keying” is clearly impractical for a large VPN, which may consist of hundreds or even thousands of IPsec routers and hosts. Large, geo- graphically distributed deployments require an automated mechanism for creating the SAs. IPsec does this with the Internet Key Exchange (IKE) protocol, specified in RFC 5996.
 
 IKE has some similarities with the handshake in SSL (see Section 8.6). Each IPsec entity has a certificate, which includes the entity’s public key. As with SSL, the IKE protocol has the two entities exchange certificates, negotiate authentication and encryption algorithms, and securely exchange key material for creating session keys in the IPsec SAs. Unlike SSL, IKE employs two phases to carry out these tasks.
 
@@ -807,8 +812,9 @@ In this section, we have only briefly overviewed mutual authentication and key a
 ## Operational Security: Firewalls and Intrusion Detection Systems
 We’ve seen throughout this chapter that the Internet is not a very safe place—bad guys are out there, wreaking all sorts of havoc. Given the hostile nature of the Inter- net, let’s now consider an organization’s network and the network administrator who administers it. From a network administrator’s point of view, the world divides quite neatly into two camps—the good guys (who belong to the organization’s network, and who should be able to access resources inside the organization’s network in a relatively unconstrained manner) and the bad guys (everyone else, whose access to network resources must be carefully scrutinized). In many organizations, ranging from medieval castles to modern corporate office buildings, there is a single point of entry/exit where both good guys and bad guys entering and leaving the organization are security-checked. In a castle, this was done at a gate at one end of the drawbridge; in a corporate building, this is done at the security desk. In a computer network, when traffic entering/leaving a network is security-checked, logged, dropped, or for- warded, it is done by operational devices known as firewalls, intrusion detection systems (IDSs), and intrusion prevention systems (IPSs).
 
-### FirewallsA **firewall
- is a combination of hardware and software that isolates an organization’s internal network from the Internet at large, allowing some packets to pass and block- ing others. A firewall allows a network administrator to control access between the outside world and resources within the administered network by managing the traffic flow to and from these resources. A firewall has three goals:
+### FirewallsA **
+
+A firewall is a combination of hardware and software that isolates an organization’s internal network from the Internet at large, allowing some packets to pass and block- ing others. A firewall allows a network administrator to control access between the outside world and resources within the administered network by managing the traffic flow to and from these resources. A firewall has three goals:
 
 • _All traffic from outside to inside, and vice versa, passes through the firewall_. Figure 8.34 shows a firewall, sitting squarely at the boundary between the admin- istered network and the rest of the Internet. While large organizations may use
 
@@ -883,9 +889,9 @@ To have finer-level security, firewalls must combine packet filters with appli- 
 
 To get some insight into application gateways, let’s design a firewall that allows only a restricted set of internal users to Telnet outside and prevents all external clients from Telneting inside. Such a policy can be accomplished by implementing a com- bination of a packet filter (in a router) and a Telnet application gateway, as shown in Figure 8.35. The router’s filter is configured to block all Telnet connections except those that originate from the IP address of the application gateway. Such a filter configuration forces all outbound Telnet connections to pass through the application gateway. Consider now an internal user who wants to Telnet to the outside world. The user must first set up a Telnet session with the application gateway. An applica- tion running in the gateway, which listens for incoming Telnet sessions, prompts the
 ![Alt text](image-42.png)
-**Figure 8.35**  ♦  Firewall consisting of an application gateway and a filter for a 
+**Figure 8.35**  ♦  Firewall consisting of an application gateway and a filter 
 
-user ID and password. When the user supplies this information, the appli- cation gateway checks to see if the user has permission to Telnet to the outside world. If not, the Telnet connection from the internal user to the gateway is terminated by the gateway. If the user has permission, then the gateway (1) prompts the user for the host name of the external host to which the user wants to connect, (2) sets up a Telnet session between the gateway and the external host, and (3) relays to the external host all data arriving from the user, and relays to the user all data arriving from the exter- nal host. Thus, the Telnet application gateway not only performs user authorization but also acts as a Telnet server and a Telnet client, relaying information between the user and the remote Telnet server. Note that the filter will permit step 2 because the gateway initiates the Telnet connection to the outside world.
+for a user ID and password. When the user supplies this information, the appli- cation gateway checks to see if the user has permission to Telnet to the outside world. If not, the Telnet connection from the internal user to the gateway is terminated by the gateway. If the user has permission, then the gateway (1) prompts the user for the host name of the external host to which the user wants to connect, (2) sets up a Telnet session between the gateway and the external host, and (3) relays to the external host all data arriving from the user, and relays to the user all data arriving from the exter- nal host. Thus, the Telnet application gateway not only performs user authorization but also acts as a Telnet server and a Telnet client, relaying information between the user and the remote Telnet server. Note that the filter will permit step 2 because the gateway initiates the Telnet connection to the outside world.
 
 **CASE HISTORY**
 **ANONYMITY AND PRIVACY**
@@ -907,8 +913,7 @@ Internal networks often have multiple application gateways, for example, gate- w
 Application gateways do not come without their disadvantages. First, a different application gateway is needed for each application. Second, there is a performance penalty to be paid, since all data will be relayed via the gateway. This becomes a concern particularly when multiple users or applications are using the same gateway machine. Finally, the client software must know how to contact the gateway when the user makes a request, and must know how to tell the application gateway what external server to connect to.
 
 ### Intrusion Detection Systems
-We’ve just seen that a packet filter (traditional and stateful) inspects IP, TCP, UDP, and ICMP header fields when deciding which packets to let pass through the firewall. However, to detect many attack types, we need to perform **deep packet inspection**
-, that is, look beyond the header fields and into the actual application data that the packets carry. As we saw in Section 8.9.1, application gateways often do deep packet inspection. But an application gateway only does this for a specific application.
+We’ve just seen that a packet filter (traditional and stateful) inspects IP, TCP, UDP, and ICMP header fields when deciding which packets to let pass through the firewall. However, to detect many attack types, we need to perform **deep packet inspection**, that is, look beyond the header fields and into the actual application data that the packets carry. As we saw in Section 8.9.1, application gateways often do deep packet inspection. But an application gateway only does this for a specific application.
 
 Clearly, there is a niche for yet another device—a device that not only examines the headers of all packets passing through it (like a packet filter), but also performs deep packet inspection (unlike a packet filter). When such a device observes a suspicious packet, or a suspicious series of packets, it could prevent those packets from entering the organizational network. Or, because the activity is only deemed as suspicious, the device could let the packets pass, but send alerts to a network administrator, who can then take a closer look at the traffic and take appropriate actions. A device that generates alerts when it observes potentially malicious traffic is called an **intrusion detection system (IDS)**. A device that filters out suspicious traffic is called an **intrusion prevention system (IPS)**. In this section we study both systems—IDS and IPS—together, since the most interesting technical aspect of these systems is how they detect suspicious traffic (and not whether they send alerts or drop packets). We will henceforth collectively refer to IDS systems and IPS systems as IDS systems.
 
@@ -930,14 +935,14 @@ An anomaly-based IDS creates a traffic profile as it observes traffic in normal 
 
 **Snort**
 
-Snort is a public-domain, open source IDS with hundreds of thousands of existing deployments \[Snort 2012; Koziol 2003\]. It can run on Linux, UNIX, and Windows platforms. It uses the generic sniffing interface libpcap, which is also used by Wire- shark and many other packet sniffers. It can easily handle 100 Mbps of traffic; for installations with gibabit/sec traffic rates, multiple Snort sensors may be needed.
+Snort is a public-domain, open source IDS with hundreds of thousands of existing deployments [Snort 2012; Koziol 2003]. It can run on Linux, UNIX, and Windows platforms. It uses the generic sniffing interface libpcap, which is also used by Wire- shark and many other packet sniffers. It can easily handle 100 Mbps of traffic; for installations with gibabit/sec traffic rates, multiple Snort sensors may be needed.
 
 To gain some insight into Snort, let’s take a look at an example of a Snort signature:
-```
+
 alert icmp $EXTERNAL\_NET any -> $HOME\_NET any 
 (msg:”ICMP PING NMAP”; dsize: 0; itype: 8;)
-```
-This signature is matched by any ICMP packet that enters the organization’s network ($HOME\_NET) from the outside ($EXTERNAL\_NET), is of type 8 (ICMP ping), and has an empty payload (dsize = 0). Since nmap (see Section 1.6) generates ping pack- ets with these specific characteristics, this signature is designed to detect nmap ping sweeps. When a packet matches this signature, Snort generates an alert that includes the message “ICMP PING NMAP”.
+
+This signature is matched by any ICMP packet that enters the organization’s network ($HOME_NET) from the outside ($EXTERNAL_NET), is of type 8 (ICMP ping), and has an empty payload (dsize = 0). Since nmap (see Section 1.6) generates ping pack- ets with these specific characteristics, this signature is designed to detect nmap ping sweeps. When a packet matches this signature, Snort generates an alert that includes the message “ICMP PING NMAP”.
 
 Perhaps what is most impressive about Snort is the vast community of users and security experts that maintain its signature database. Typically within a few hours of a new attack, the Snort community writes and releases an attack signature, which is then downloaded by the hundreds of thousands of Snort deployments distributed around the world. Moreover, using the Snort signature syntax, network administra- tors can tailor the signatures to their own organization’s needs by either modifying existing signatures or creating entirely new ones.
 
@@ -1224,4 +1229,4 @@ do the same for security?
 
 Learning the mechanisms is the easy part. Learning how to “think paranoid” is harder. You 
 have to remember that probability distributions don’t apply—the attackers can and will find 
-improbable conditions. And the details matter—a lot
+improbable conditions. And the details matter—a lot .

@@ -23,7 +23,7 @@ Thus, when developing your new application, you need to write software that will
 ![](1.png)
 
 **Figure 2.1**  ♦   Communication for a network application takes place between end systems at the application layer
-## Network Application Architectures
+### Network Application Architectures
 Before diving into software coding, you should have a broad architectural plan for your application. Keep in mind that an application’s architecture is distinctly differ- ent from the network architecture (e.g., the five-layer Internet architecture discussed in Chapter 1). From the application developer’s perspective, the network architec- ture is fixed and provides a specific set of services to applications. The **application architecture
 , on the other hand, is designed by the application developer and dic- tates how the application is structured over the various end systems. In choosing the application architecture, an application developer will likely draw on one of the two predominant architectural paradigms used in modern network applications: the client-server architecture or the peer-to-peer (P2P) architecture.
 
@@ -172,9 +172,9 @@ The **HyperText Transfer Protocol (HTTP)**
 ,the Web’s application-layer protocol, is at the heart of the Web. It is defined in \[RFC 1945\], \[RFC 7230\] and \[RFC 7540\]. HTTP is implemented in two programs: a client program and a server program. The client program and server program, executing on different end systems, talk to each other by exchanging HTTP messages. HTTP defines the structure of these messages and how the client and server exchange the messages. Before explaining HTTP in detail, we should review some Web terminology.
 
 A **Web page** (also called a document) consists of objects. An **object** is simply a file—such as an HTML file, a JPEG image, a Javascrpt file, a CCS style sheet file, or a video clip—that is addressable by a single URL. Most Web pages consist of a **base HTML file** and several referenced objects. For example, if a Web page contains HTML text and five JPEG images, then the Web page has six objects: the base HTML file plus the five images. The base HTML file refer- ences the other objects in the page with the objects’ URLs. Each URL has two components: the hostname of the server that houses the object and the object’s path name. For example, the URL
-
+```
 http://www.someSchool.edu/someDepartment/picture.gif
-
+```
 has www.someSchool.edu for a hostname and /someDepartment/picture. gif for a path name. Because **Web browsers** (such as Internet Explorer and Chrome) implement the client side of HTTP, in the context of the Web, we will use the words _browser_ and _client_ interchangeably. **Web servers**, which implement the server side of HTTP, house Web objects, each addressable by a URL. Popular Web servers include Apache and Microsoft Internet Information Server.
 
 HTTP defines how Web clients request Web pages from Web servers and how servers transfer Web pages to clients. We discuss the interaction between client and server in detail later, but the general idea is illustrated in Figure 2.6. When a user requests a Web page (for example, clicks on a hyperlink), the browser sends
@@ -242,7 +242,9 @@ Below we provide a typical HTTP request message:
 ```
 GET /somedir/page.html HTTP/1.1 
 Host: www.someschool.edu 
-Connection: close User-agent: Mozilla/5.0 Accept-language: fr
+Connection: close 
+User-agent: Mozilla/5.0 
+Accept-language: fr
 ```
 We can learn a lot by taking a close look at this simple request message. First of all, we see that the message is written in ordinary ASCII text, so that your ordinary computer-literate human being can read it. Second, we see that the message consists of five lines, each followed by a carriage return and a line feed. The last line is fol- lowed by an additional carriage return and line feed. Although this particular request message has five lines, a request message can have many more lines or as few as one line. The first line of an HTTP request message is called the **request line**; the subsequent lines are called the **header lines**. The request line has three fields: the method field, the URL field, and the HTTP version field. The method field can take on several different values, including GET, POST, HEAD, PUT, and DELETE.The great majority of HTTP request messages use the GET method. The GET method is used when the browser requests an object, with the requested object identified in the URL field. In this example, the browser is requesting the object /somedir/ page.html. The version is self-explanatory; in this example, the browser imple- ments version HTTP/1.1.
 
@@ -359,13 +361,16 @@ The total response time—that is, the time from the browser’s request of an o
 
 a very crude calculation to estimate this delay. The traffic intensity on the LAN (see Section 1.4.2) is
 
-(15 requests/sec) # (1 Mbits/request)/(100 Mbps) = 0.15
+
+(15 requests/sec) . (1 Mbits/request)/(100 Mbps) = 0.15
 
 whereas the traffic intensity on the access link (from the Internet router to institution router) is
 
-(15 requests/sec) # (1 Mbits/request)/(15 Mbps) = 1
+(15 requests/sec) . (1 Mbits/request)/(15 Mbps) = 1
 
-A traffic intensity of 0.15 on a LAN typically results in, at most, tens of millisec- onds of delay; hence, we can neglect the LAN delay. However, as discussed in Section 1.4.2, as the traffic intensity approaches 1 (as is the case of the access link in Figure 2.12), the delay on a link becomes very large and grows without bound. Thus, the average response time to satisfy requests is going to be on the order of minutes, if not more, which is unacceptable for the institution’s users. Clearly something must be done.One possible solution is to increase the access rate from 15 Mbps to, say, 100 Mbps. This will lower the traffic intensity on the access link to 0.15, which translates to neg- ligible delays between the two routers. In this case, the total response time will roughly be two seconds, that is, the Internet delay. But this solution also means that the institu- tion must upgrade its access link from 15 Mbps to 100 Mbps, a costly proposition.
+A traffic intensity of 0.15 on a LAN typically results in, at most, tens of millisec- onds of delay; hence, we can neglect the LAN delay. However, as discussed in Section 1.4.2, as the traffic intensity approaches 1 (as is the case of the access link in Figure 2.12), the delay on a link becomes very large and grows without bound. Thus, the average response time to satisfy requests is going to be on the order of minutes, if not more, which is unacceptable for the institution’s users. Clearly something must be done.
+
+One possible solution is to increase the access rate from 15 Mbps to, say, 100 Mbps. This will lower the traffic intensity on the access link to 0.15, which translates to neg- ligible delays between the two routers. In this case, the total response time will roughly be two seconds, that is, the Internet delay. But this solution also means that the institu- tion must upgrade its access link from 15 Mbps to 100 Mbps, a costly proposition.
 
 Now consider the alternative solution of not upgrading the access link but instead installing a Web cache in the institutional network. This solution is illustrated in Figure 2.13. Hit rates—the fraction of requests that are satisfied by a cache— typically range from 0.2 to 0.7 in practice. For illustrative purposes, let’s suppose that the cache provides a hit rate of 0.4 for this institution. Because the clients and the cache are connected to the same high-speed LAN, 40 percent of the requests will be satisfied almost immediately, say, within 10 milliseconds, by the cache. Neverthe- less, the remaining 60 percent of the requests still need to be satisfied by the origin servers. But with only 60 percent of the requested objects passing through the access link, the traffic intensity on the access link is reduced from 1.0 to 0.6. Typically, a
 
@@ -373,6 +378,7 @@ Now consider the alternative solution of not upgrading the access link but inste
 **Figure 2.13**  ♦  Adding a cache to the institutional network
 
 traffic intensity less than 0.8 corresponds to a small delay, say, tens of milliseconds, on a 15 Mbps link. This delay is negligible compared with the two-second Internet delay. Given these considerations, average delay therefore is
+
 0.4.(0.01 seconds) + 0.6.(2.01 seconds)
 
 which is just slightly greater than 1.2 seconds. Thus, this second solution provides an even lower response time than the first solution, and it doesn’t require the institution to upgrade its link to the Internet. The institution does, of course, have to purchase and install a Web cache. But this cost is low—many caches use public-domain soft- ware that runs on inexpensive PCs.
@@ -381,8 +387,11 @@ Through the use of **Content Distribution Networks (CDNs)**, Web caches are incr
 
 **The Conditional GET**
 
-Although caching can reduce user-perceived response times, it introduces a new problem—the copy of an object residing in the cache may be stale. In other words, the object housed in the Web server may have been modified since the copy was cached at the client. Fortunately, HTTP has a mechanism that allows a cache to verify that its objects are up to date. This mechanism is called the **conditional GET** \[RFC 7232\]. An HTTP request message is a so-called conditional GET message if (1) the request message uses the GET method and (2) the request message includes an If-Modified-Since: header line.
+Although caching can reduce user-perceived response times, it introduces a new problem—the copy of an object residing in the cache may be stale. In other words, the object housed in the Web server may have been modified since the copy was cached at the client. Fortunately, HTTP has a mechanism that allows a cache to verify that its objects are up to date. This mechanism is called the **conditional GET** \[RFC 7232\]. An HTTP request message is a so-called conditional GET message if (1) the request message uses the GET method and (2) the request message includes an 
 
+```
+If-Modified-Since: header line.
+```
 To illustrate how the conditional GET operates, let’s walk through an example. First, on the behalf of a requesting browser, a proxy cache sends a request message to a Web server:
 ```
 GET /fruit/kiwi.gif HTTP/1.1
@@ -414,9 +423,10 @@ Server: Apache/1.3.0 (Unix)
 We see that in response to the conditional GET, the Web server still sends a response message but does not include the requested object in the response message. Including the requested object would only waste bandwidth and increase user- perceived response time, particularly if the object is large. Note that this last response message has 304 Not Modified in the status line, which tells the cache that it can go ahead and forward its (the proxy cache’s) cached copy of the object to the requesting browser.
 
 ### HTTP/2
- HTTP/2 \[RFC 7540\], standardized in 2015, was the first new version of HTTP since HTTP/1.1, which was standardized in 1997. Since standardization, HTTP/2 has taken off, with over 40% of the top 10 million websites supporting HTTP/2 in 2020 \[W3Techs\]. Most browsers—including Google Chrome, Internet Explorer, Safari, Opera, and Firefox—also support HTTP/2.
 
-The primary goals for HTTP/2 are to reduce perceived latency by enabling request and response multiplexing over a _single_ TCP connection, provide request prioritization and server push, and provide efficient compression of HTTP header fields. HTTP/2 does not change HTTP methods, status codes, URLs, or header fields. Instead, HTTP/2 changes how the data is formatted and transported between the client and server.To motivate the need for HTTP/2, recall that HTTP/1.1 uses persistent TCP connections, allowing a Web page to be sent from server to client over a single TCP connection. By having only one TCP connection per Web page, the number of sock- ets at the server is reduced and each transported Web page gets a fair share of the network bandwidth (as discussed below). But developers of Web browsers quickly discovered that sending all the objects in a Web page over a single TCP connec- tion has a **Head of Line (HOL) blocking** problem. To understand HOL blocking, consider a Web page that includes an HTML base page, a large video clip near the top of Web page, and many small objects below the video. Further suppose there is a low-to-medium speed bottleneck link (for example, a low-speed wireless link) on the path between server and client. Using a single TCP connection, the video clip will take a long time to pass through the bottleneck link, while the small objects are delayed as they wait behind the video clip; that is, the video clip at the head of the line blocks the small objects behind it. HTTP/1.1 browsers typically work around this problem by opening multiple parallel TCP connections, thereby having objects in the same web page sent in parallel to the browser. This way, the small objects can arrive at and be rendered in the browser much faster, thereby reducing user-perceived delay.
+HTTP/2 \[RFC 7540\], standardized in 2015, was the first new version of HTTP since HTTP/1.1, which was standardized in 1997. Since standardization, HTTP/2 has taken off, with over 40% of the top 10 million websites supporting HTTP/2 in 2020 \[W3Techs\]. Most browsers—including Google Chrome, Internet Explorer, Safari, Opera, and Firefox—also support HTTP/2.
+
+The primary goals for HTTP/2 are to reduce perceived latency by enabling request and response multiplexing over a _single_ TCP connection, provide request prioritization and server push, and provide efficient compression of HTTP header fields. HTTP/2 does not change HTTP methods, status codes, URLs, or header fields. Instead, HTTP/2 changes how the data is formatted and transported between the client and server.To motivate the need for HTTP/2, recall that HTTP/1.1 uses persistent TCP connections, allowing a Web page to be sent from server to client over a single TCP connection. By having only one TCP connection per Web page, the number of sockets at the server is reduced and each transported Web page gets a fair share of the network bandwidth (as discussed below). But developers of Web browsers quickly discovered that sending all the objects in a Web page over a single TCP connec- tion has a **Head of Line (HOL) blocking** problem. To understand HOL blocking, consider a Web page that includes an HTML base page, a large video clip near the top of Web page, and many small objects below the video. Further suppose there is a low-to-medium speed bottleneck link (for example, a low-speed wireless link) on the path between server and client. Using a single TCP connection, the video clip will take a long time to pass through the bottleneck link, while the small objects are delayed as they wait behind the video clip; that is, the video clip at the head of the line blocks the small objects behind it. HTTP/1.1 browsers typically work around this problem by opening multiple parallel TCP connections, thereby having objects in the same web page sent in parallel to the browser. This way, the small objects can arrive at and be rendered in the browser much faster, thereby reducing user-perceived delay.
 
 TCP congestion control, discussed in detail in Chapter 3, also provides brows- ers an unintended incentive to use multiple parallel TCP connections rather than a single persistent connection. Very roughly speaking, TCP congestion control aims to give each TCP connection sharing a bottleneck link an equal share of the available bandwidth of that link; so if there are _n_ TCP connections operating over a bottleneck link, then each connection approximately gets _1/n_th of the bandwidth. By opening multiple parallel TCP connections to transport a single Web page, the browser can “cheat” and grab a larger portion of the link bandwidth. Many HTTP/1.1 browsers open up to six parallel TCP connections not only to circumvent HOL blocking but also to obtain more bandwidth.
 
@@ -579,7 +589,7 @@ The DNS is specified in RFC 1034 and RFC 1035, and updated in several addi- tion
 
 ### Overview of How DNS Works
 
- We now present a high-level overview of how DNS works. Our discussion will focus on the hostname-to-IP-address translation service.
+We now present a high-level overview of how DNS works. Our discussion will focus on the hostname-to-IP-address translation service.
 
 Suppose that some application (such as a Web browser or a mail client) running in a user’s host needs to translate a hostname to an IP address. The application will invoke the client side of DNS, specifying the hostname that needs to be translated. (On many UNIX-based machines, ```gethostbyname()``` is the function call that an application calls in order to perform the translation.) DNS in the user’s host then
 takes over, sending a query message into the network. All DNS query and reply mes- sages are sent within UDP datagrams to port 53. After a delay, ranging from millisec- onds to seconds, DNS in the user’s host receives a DNS reply message that provides the desired mapping. This mapping is then passed to the invoking application. Thus, from the perspective of the invoking application in the user’s host, DNS is a black box providing a simple, straightforward translation service. But in fact, the black box that implements the service is complex, consisting of a large number of DNS servers distributed around the globe, as well as an application-layer protocol that specifies how the DNS servers and querying hosts communicate.
@@ -693,7 +703,9 @@ The first type of attack that comes to mind is a DDoS bandwidth-flooding attack 
 
 A potentially more effective DDoS attack against DNS is send a deluge of DNS queries to top-level-domain servers, for example, to top-level-domain servers that handle the .com domain. It is harder to filter DNS queries directed to DNS servers; and top-level-domain servers are not as easily bypassed as are root servers. Such an attack took place against the top-level-domain service provider Dyn on October 21, 2016. This DDoS attack was accomplished through a large number of DNS lookup requests from a botnet consisting of about one hundred thousand IoT devices such as printers, IP cameras, residential gateways and baby monitors that had been infected with Mirai malware. For almost a full day, Amazon, Twitter, Netflix, Github and Spotify were disturbed.
 
-DNS could potentially be attacked in other ways. In a man-in-the-middle attack, the attacker intercepts queries from hosts and returns bogus replies. In the DNS poi- soning attack, the attacker sends bogus replies to a DNS server, tricking the server into accepting bogus records into its cache. Either of these attacks could be used, for example, to redirect an unsuspecting Web user to the attacker’s Web site. The DNS Security Extensions (DNSSEC \[Gieben 2004; RFC 4033\] have been designed and deployed to protect against such exploits. DNSSEC, a secured version of DNS, addresses many of these possible attacks and is gaining popularity in the Internet.servers, the registrar would then make sure that a Type NS and a Type A record are entered into the TLD com servers. Specifically, for the primary authoritative server for ```networkutopia.com```, the registrar would insert the following two resource records into the DNS system:
+DNS could potentially be attacked in other ways. In a man-in-the-middle attack, the attacker intercepts queries from hosts and returns bogus replies. In the DNS poi- soning attack, the attacker sends bogus replies to a DNS server, tricking the server into accepting bogus records into its cache. Either of these attacks could be used, for example, to redirect an unsuspecting Web user to the attacker’s Web site. The DNS Security Extensions (DNSSEC \[Gieben 2004; RFC 4033\] have been designed and deployed to protect against such exploits. DNSSEC, a secured version of DNS, addresses many of these possible attacks and is gaining popularity in the Internet.
+
+servers, the registrar would then make sure that a Type NS and a Type A record are entered into the TLD com servers. Specifically, for the primary authoritative server for ```networkutopia.com```, the registrar would insert the following two resource records into the DNS system:
 ```
 (networkutopia.com, dns1.networkutopia.com, NS) (dns1.networkutopia.com, 212.212.212.1, A)
 ```
@@ -702,6 +714,7 @@ You’ll also have to make sure that the Type A resource record for your Web ser
 Once all of these steps are completed, people will be able to visit your Web site and send e-mail to the employees at your company. Let’s conclude our discussion of DNS by verifying that this statement is true. This verification also helps to solidify what we have learned about DNS. Suppose Alice in Australia wants to view the Web page www.networkutopia.com. As discussed earlier, her host will first send a DNS query to her local DNS server. The local DNS server will then contact a TLD com server. (The local DNS server will also have to contact a root DNS server if the address of a TLD com server is not cached.) This TLD server contains the Type NS and Type A resource records listed above, because the registrar had these resource records inserted into all of the TLD com servers. The TLD com server sends a reply to Alice’s local DNS server, with the reply containing the two resource records. The local DNS server then sends a DNS query to 212.212.212.1, asking for the Type A record corresponding to www.networkutopia.com. This record provides the IP address of the desired Web server, say, 212.212.71.4, which the local DNS server passes back to Alice’s host. Alice’s browser can now initiate a TCP connec- tion to the host 212.212.71.4 and send an HTTP request over the connection. Whew! There’s a lot more going on than what meets the eye when one surfs the Web!
 
 ## Peer-to-Peer File Distribution
+
 The applications described in this chapter thus far—including the Web, e-mail, and DNS—all employ client-server architectures with significant reliance on always-on infrastructure servers. Recall from Section 2.1.1 that with a P2P architecture, there is minimal (or no) reliance on always-on infrastructure servers. Instead, pairs of intermittently connected hosts, called peers, communicate directly with each other. The peers are not owned by a service provider, but are instead PCs, laptops, and smartpones controlled by users.In this Section, we consider a very natural P2P application, namely, distributing a large file from a single server to a large number of hosts (called peers). The file might be a new version of the Linux operating system, a software patch for an existing operating system or an MPEG video file. In client-server file distribution, the server must send a copy of the file to each of the peers—placing an enormous burden on the server and consuming a large amount of server bandwidth. In P2P file distribution, each peer can redistribute any portion of the file it has received to any other peers, thereby assisting the server in the distribution process. As of 2020, the most popular P2P file distribution protocol is BitTorrent. Originally developed by Bram Cohen, there are now many different independent BitTorrent clients conforming to the Bit- Torrent protocol, just as there are a number of Web browser clients that conform to the HTTP protocol. In this subSection, we first examine the self-scalability of P2P architectures in the context of file distribution. We then describe BitTorrent in some detail, highlighting its most important characteristics and features.
 
 **Scalability of P2P Architectures**
@@ -711,21 +724,17 @@ To compare client-server architectures with peer-to-peer architectures, and illu
 ![](22.png)
 **Figure 2.22**  ♦  An illustrative file distribution problem
 
-links. Denote the upload rate of the server’s access link by _us_, the upload rate of the _i_th peer’s access link by _ui_, and the download rate of the _i_th peer’s access link by _di_. Also denote the size of the file to be distributed (in bits) by _F_ and the number of peers that want to obtain a copy of the file by _N_. The **distribution time** is the time it takes to get a copy of the file to all _N_ peers. In our analysis of the distribution time below, for both client-server and P2P architectures, we make the simplifying (and generally accurate \[Akella 2003\]) assumption that the Internet core has abundant bandwidth, implying that all of the bottlenecks are in access networks. We also sup- pose that the server and clients are not participating in any other network applica- tions, so that all of their upload and download access bandwidth can be fully devoted to distributing this file.
+links. Denote the upload rate of the server’s access link by _us_, the upload rate of the _i_th peer’s access link by _ui_, and the download rate of the _i_th peer’s access link by _di_. Also denote the size of the file to be distributed (in bits) by _F_ and the number of peers that want to obtain a copy of the file by _N_. The **distribution time** is the time it takes to get a copy of the file to all _N_ peers. In our analysis of the distribution time below, for both client-server and P2P architectures, we make the simplifying and generally accurate Akella 2003 assumption that the Internet core has abundant bandwidth, implying that all of the bottlenecks are in access networks. We also sup- pose that the server and clients are not participating in any other network applica- tions, so that all of their upload and download access bandwidth can be fully devoted to distributing this file.
 
 Let’s first determine the distribution time for the client-server architecture, which we denote by _Dcs_. In the client-server architecture, none of the peers aids in distributing the file. We make the following observations:
 
 • The server must transmit one copy of the file to each of the _N_ peers. Thus, the server must transmit _NF_ bits. Since the server’s upload rate is _us_, the time to dis- tribute the file must be at least _NF_/_us_.
 
-• Let _d_min denote the download rate of the peer with the lowest download rate, that is, _d_min = min5_d_1, _d_p, . . . , _dN_6 . The peer with the lowest download rate cannot obtain all _F_ bits of the file in less than _F_/_d_min seconds. Thus, the minimum distri- bution time is at least _F_/_d_min.
+• Let dmin denote the download rate of the peer with the lowest download rate, that is, _d_min = min5_d_1, _d_p, . . . , _dN_6 . The peer with the lowest download rate cannot obtain all _F_ bits of the file in less than _F_/_d_min seconds. Thus, the minimum distri- bution time is at least _F_/_d_min.
 
 Putting these two observations together, we obtain
 
-_Dcs_ Ú maxb _NF us_
-
-, _F_
-
-_d_min r .
+Dcs >-max '\sum'
 
 This provides a lower bound on the minimum distribution time for the client-server architecture. In the homework problems, you will be asked to show that the server can schedule its transmissions so that the lower bound is actually achieved. So let’s take this lower bound provided above as the actual distribution time, that is,
 
