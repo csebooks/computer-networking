@@ -55,12 +55,12 @@ As a simple exercise, try finding the least-cost path from node _u_ to _z_ in Fi
 
 A second broad way to classify routing algorithms is according to whether they are static or dynamic. In **static routing algorithms**, routes change very slowly over time, often as a result of human intervention (for example, a human manually editing a link costs). **Dynamic routing algorithms** change the routing paths as the network traffic loads or topology change. A dynamic algorithm can be run either periodically or in direct response to topology or link cost changes. While dynamic algorithms are more responsive to network changes, they are also more susceptible to problems such as routing loops and route oscillation.
 
-A third way to classify routing algorithms is according to whether they are load- sensitive or load-insensitive. In a **load-sensitive algorithm**, link costs vary dynami- cally to reflect the current level of congestion in the underlying link. If a high cost is associated with a link that is currently congested, a routing algorithm will tend to choose routes around such a congested link. While early ARPAnet routing algo- rithms were load-sensitive \[McQuillan 1980\], a number of difficulties were encoun- tered \[Huitema 1998\]. Today’s Internet routing algorithms (such as RIP, OSPF, and BGP) are **load-insensitive**, as a link’s cost does not explicitly reflect its current (or recent past) level of congestion.
+A third way to classify routing algorithms is according to whether they are load- sensitive or load-insensitive. In a **load-sensitive algorithm**, link costs vary dynami- cally to reflect the current level of congestion in the underlying link. If a high cost is associated with a link that is currently congested, a routing algorithm will tend to choose routes around such a congested link. While early ARPAnet routing algo- rithms were load-sensitive [McQuillan 1980], a number of difficulties were encoun- tered [Huitema 1998]. Today’s Internet routing algorithms (such as RIP, OSPF, and BGP) are **load-insensitive**, as a link’s cost does not explicitly reflect its current (or recent past) level of congestion.
 
 ### The Link-State (LS) Routing Algorithm
-Recall that in a link-state algorithm, the network topology and all link costs are known, that is, available as input to the LS algorithm. In practice, this is accom- plished by having each node broadcast link-state packets to _all_ other nodes in the network, with each link-state packet containing the identities and costs of its attached links. In practice (for example, with the Internet’s OSPF routing protocol, discussed in Section 5.3), this is often accomplished by a **link-state broadcast algorithm \[Perlman 1999\]. The result of the nodes’ broadcast is that all nodes have an identical and complete view of the network. Each node can then run the LS algorithm and compute the same set of least-cost paths as every other node.
+Recall that in a link-state algorithm, the network topology and all link costs are known, that is, available as input to the LS algorithm. In practice, this is accom- plished by having each node broadcast link-state packets to _all_ other nodes in the network, with each link-state packet containing the identities and costs of its attached links. In practice (for example, with the Internet’s OSPF routing protocol, discussed in Section 5.3), this is often accomplished by a **link-state broadcast algorithm [Perlman 1999]. The result of the nodes’ broadcast is that all nodes have an identical and complete view of the network. Each node can then run the LS algorithm and compute the same set of least-cost paths as every other node.
 
-The link-state routing algorithm we present below is known as _Dijkstra’s algorithm_, named after its inventor. A closely related algorithm is Prim’s algo- rithm; see \[Cormen 2001\] for a general discussion of graph algorithms. Dijkstra’s algorithm computes the least-cost path from one node (the source, which we will refer to as _u_) to all other nodes in the network. Dijkstra’s algorithm is iterative and has the property that after the _k_th iteration of the algorithm, the least-cost paths are known to _k_ destination nodes, and among the least-cost paths to all destinationnodes, these _k_ paths will have the _k_ smallest costs. Let us define the following notation:
+The link-state routing algorithm we present below is known as _Dijkstra’s algorithm_, named after its inventor. A closely related algorithm is Prim’s algo- rithm; see [Cormen 2001] for a general discussion of graph algorithms. Dijkstra’s algorithm computes the least-cost path from one node (the source, which we will refer to as _u_) to all other nodes in the network. Dijkstra’s algorithm is iterative and has the property that after the _k_th iteration of the algorithm, the least-cost paths are known to _k_ destination nodes, and among the least-cost paths to all destinationnodes, these _k_ paths will have the _k_ smallest costs. Let us define the following notation:
 
 • _D_(_v_): cost of the least-cost path from the source node to destination _v_ as of this iteration of the algorithm.
 
@@ -141,19 +141,19 @@ But for those who might be skeptical about the validity of the equation, let’s
 
 The Bellman-Ford equation is not just an intellectual curiosity. It actually has signif- icant practical importance: the solution to the Bellman-Ford equation provides the entries in node _x_’s forwarding table. To see this, let _v\*_ be any neighboring node that achieves the minimum in Equation 5.1. Then, if node _x_ wants to send a packet to node _y_ along a least-cost path, it should first forward the packet to node _v\*_. Thus, node _x_’s forwarding table would specify node _v\*_ as the next-hop router for the ultimate destination _y_. Another important practical contribution of the Bellman-Ford equation is that it suggests the form of the neighbor-to-neighbor communication that will take place in the DV algorithm.
 
-The basic idea is as follows. Each node _x_ begins with _Dx_(_y_), an estimate of the cost of the least-cost path from itself to node _y_, for all nodes, _y_, in _N_. Let **_D_**_x_ \= \[_Dx_(_y_): _y_ in _N_\] be node _x_’s distance vector, which is the vector of cost estimates from _x_ to all other nodes, _y_, in _N._ With the DV algorithm, each node _x_ maintains the following routing information:
+The basic idea is as follows. Each node _x_ begins with _Dx_(_y_), an estimate of the cost of the least-cost path from itself to node _y_, for all nodes, _y_, in _N_. Let **_D_**_x_ \= [_Dx_(_y_): _y_ in _N_] be node _x_’s distance vector, which is the vector of cost estimates from _x_ to all other nodes, _y_, in _N._ With the DV algorithm, each node _x_ maintains the following routing information:
 
 • For each neighbor _v_, the cost _c_(_x,v_) from _x_ to directly attached neighbor, _v_
 
-• Node _x_’s distance vector, that is, **_D_**_x_ \= \[_Dx_(_y_): _y_ in _N_\], containing _x_’s estimate of its cost to all destinations, _y_, in _N_
+• Node _x_’s distance vector, that is, **_D_**_x_ \= [_Dx_(_y_): _y_ in _N_], containing _x_’s estimate of its cost to all destinations, _y_, in _N_
 
-• The distance vectors of each of its neighbors, that is, **_D_**_v_ \= \[_Dv_(_y_): _y_ in _N_\] for each neighbor _v_ of _x_
+• The distance vectors of each of its neighbors, that is, **_D_**_v_ \= [_Dv_(_y_): _y_ in _N_] for each neighbor _v_ of _x_
 
 In the distributed, asynchronous algorithm, from time to time, each node sends a copy of its distance vector to each of its neighbors. When a node _x_ receives a new distance vector from any of its neighbors _w_, it saves _w_’s distance vector, and then uses the Bellman-Ford equation to update its own distance vector as follows:
 
 _Dx_(_y_) = min_v_5_c_(_x_, _v_) + _Dv_(_y_)6 for each node _y_ in _N_
 
-If node _x_’s distance vector has changed as a result of this update step, node _x_ will then send its updated distance vector to each of its neighbors, which can in turn update their own distance vectors. Miraculously enough, as long as all the nodes continue to exchange their distance vectors in an asynchronous fashion, each cost estimate _Dx_(_y_) converges to _dx_(_y_), the actual cost of the least-cost path from node _x_ to node _y_ \[Bertsekas 1991\]!
+If node _x_’s distance vector has changed as a result of this update step, node _x_ will then send its updated distance vector to each of its neighbors, which can in turn update their own distance vectors. Miraculously enough, as long as all the nodes continue to exchange their distance vectors in an asynchronous fashion, each cost estimate _Dx_(_y_) converges to _dx_(_y_), the actual cost of the least-cost path from node _x_ to node _y_ [Bertsekas 1991]!
 
 **Distance-Vector (DV) Algorithm**
 
@@ -165,8 +165,8 @@ At each node, _x_:
 4 for each neighbor w 
 5 Dw(y) = ? for all destinations y in N 
 6 for each neighbor w 
-7 send distance vector **D**x = \[Dx(y): y in 
-N\] to w # loop** 
+7 send distance vector **D**x = [Dx(y): y in 
+N] to w # loop** 
 
 10 **wait** (until I see a link cost change to some neighbor w or 
 11 until I receive a distance vector from some neighbor w) 
@@ -175,7 +175,7 @@ N\] to w # loop**
 14 Dx(y) = minv{c(x,v) + Dv(y)} 
 15 
 16 **if** Dx(y) changed for any destination y 
-17 send distance vector **D**x = \[Dx(y): y in N\] to all neighbors 
+17 send distance vector **D**x = [Dx(y): y in N] to all neighbors 
 18 
 19 **forever
 
@@ -185,9 +185,9 @@ Recall that the LS algorithm is a centralized algorithm in the sense that it req
 
 Figure 5.6 illustrates the operation of the DV algorithm for the simple three- node network shown at the top of the figure. The operation of the algorithm is illus- trated in a synchronous manner, where all nodes simultaneously receive distance vectors from their neighbors, compute their new distance vectors, and inform their neighbors if their distance vectors have changed. After studying this example, you should convince yourself that the algorithm operates correctly in an asynchronous manner as well, with node computations and update generation/reception occurring at any time.
 
-The leftmost column of the figure displays three initial **routing tables** for each of the three nodes. For example, the table in the upper-left corner is node _x_’s ini- tial routing table. Within a specific routing table, each row is a distance vector— specifically, each node’s routing table includes its own distance vector and that of each of its neighbors. Thus, the first row in node _x_’s initial routing table is **_D_**_x_ \= \[_Dx_(_x_), _Dx_(_y_), _Dx_(_z_)\] = \[0, 2, 7\]. The second and third rows in this table are the most recently received distance vectors from nodes _y_ and _z_, respectively. Because at initialization node _x_ has not received anything from node _y_ or _z_, the entries in the second and third rows are initialized to infinity.
+The leftmost column of the figure displays three initial **routing tables** for each of the three nodes. For example, the table in the upper-left corner is node _x_’s ini- tial routing table. Within a specific routing table, each row is a distance vector— specifically, each node’s routing table includes its own distance vector and that of each of its neighbors. Thus, the first row in node _x_’s initial routing table is **_D_**_x_ \= [_Dx_(_x_), _Dx_(_y_), _Dx_(_z_)] = [0, 2, 7]. The second and third rows in this table are the most recently received distance vectors from nodes _y_ and _z_, respectively. Because at initialization node _x_ has not received anything from node _y_ or _z_, the entries in the second and third rows are initialized to infinity.
 
-After initialization, each node sends its distance vector to each of its two neigh- bors. This is illustrated in Figure 5.6 by the arrows from the first column of tables to the second column of tables. For example, node _x_ sends its distance vector **_D_**_x_ \= \[0, 2, 7\] to both nodes _y_ and _z_. After receiving the updates, each node recomputes its own distance vector. For example, node _x_ computes_Dx_(_x_) = 0
+After initialization, each node sends its distance vector to each of its two neigh- bors. This is illustrated in Figure 5.6 by the arrows from the first column of tables to the second column of tables. For example, node _x_ sends its distance vector **_D_**_x_ \= [0, 2, 7] to both nodes _y_ and _z_. After receiving the updates, each node recomputes its own distance vector. For example, node _x_ computes_Dx_(_x_) = 0
 
 _Dx_(_y_) = min5_c_(_x_,_y_) + _Dy_(_y_), _c_(_x_,_z_) + _Dz_(_y_)6 = min52 + 0, 7 + 16 = 2
 
@@ -252,7 +252,7 @@ The DV and LS algorithms take complementary approaches toward computing rout- in
 
 • _Speed of convergence._ We have seen that our implementation of LS is an O(|N|2) algorithm requiring O(|N| |E|)) messages. The DV algorithm can converge slowly and can have routing loops while the algorithm is converging. DV also suffers from the count-to-infinity problem.
 
-• _Robustness._ What can happen if a router fails, misbehaves, or is sabotaged? Under LS, a router could broadcast an incorrect cost for one of its attached links (but no others). A node could also corrupt or drop any packets it received as part of an LS broadcast. But an LS node is computing only its own forwarding tables; other nodes are performing similar calculations for themselves. This means route calculations are somewhat separated under LS, providing a degree of robustness. Under DV, a node can advertise incorrect least-cost paths to any or all destina- tions. (Indeed, in 1997, a malfunctioning router in a small ISP provided national backbone routers with erroneous routing information. This caused other routers to flood the malfunctioning router with traffic and caused large portions of the Internet to become disconnected for up to several hours \[Neumann 1997\].) More generally, we note that, at each iteration, a node’s calculation in DV is passed on to its neighbor and then indirectly to its neighbor’s neighbor on the next iteration. In this sense, an incorrect node calculation can be diffused through the entire network under DV.
+• _Robustness._ What can happen if a router fails, misbehaves, or is sabotaged? Under LS, a router could broadcast an incorrect cost for one of its attached links (but no others). A node could also corrupt or drop any packets it received as part of an LS broadcast. But an LS node is computing only its own forwarding tables; other nodes are performing similar calculations for themselves. This means route calculations are somewhat separated under LS, providing a degree of robustness. Under DV, a node can advertise incorrect least-cost paths to any or all destina- tions. (Indeed, in 1997, a malfunctioning router in a small ISP provided national backbone routers with erroneous routing information. This caused other routers to flood the malfunctioning router with traffic and caused large portions of the Internet to become disconnected for up to several hours [Neumann 1997].) More generally, we note that, at each iteration, a node’s calculation in DV is passed on to its neighbor and then indirectly to its neighbor’s neighbor on the next iteration. In this sense, an incorrect node calculation can be diffused through the entire network under DV.
 
 In the end, neither algorithm is an obvious winner over the other; indeed, both algo- rithms are used in the Internet.
 
@@ -379,7 +379,7 @@ In practice, BGP uses an algorithm that is more complicated than hot potato rout
 
 3\. From the remaining routes (all with the same highest local preference value and the same AS-PATH length), hot potato routing is used, that is, the route with the closest NEXT-HOP router is selected.
 
-4\. If more than one route still remains, the router uses BGP identifiers to select the route; see \[Stewart 1999\].
+4\. If more than one route still remains, the router uses BGP identifiers to select the route; see [Stewart 1999].
 
 As an example, let’s again consider router 1b in Figure 5.10. Recall that there are exactly two BGP routes to prefix x, one that passes through AS2 and one that bypasses AS2. Also recall that if hot potato routing on its own were used, then BGP would route packets through AS2 to prefix x. But in the above route-selection algo- rithm, rule 2 is applied before rule 3, causing BGP to select the route that bypasses AS2, since that route has a shorter AS PATH. So we see that with the above route- selection algorithm, BGP is no longer a selfish algorithm—it first looks for routes with short AS paths (thereby likely reducing end-to-end delay).
 
@@ -395,7 +395,7 @@ Although the above CDN example nicely illustrates how IP-anycast can be used, in
 ![Alt text](image-12.png)
 **Figure 5.12**  ♦  Using IP-anycast to bring users to the closest CDN server
 
-over 100 DNS root servers scattered over all corners of the world. When a DNS query is sent to one of these 13 IP addresses, IP anycast is used to route the query to the nearest of the DNS root servers that is responsible for that address. \[Li 2018\] presents recent measurements illustrating Internet anycast, use, performance, and challenges.
+over 100 DNS root servers scattered over all corners of the world. When a DNS query is sent to one of these 13 IP addresses, IP anycast is used to route the query to the nearest of the DNS root servers that is responsible for that address. [Li 2018] presents recent measurements illustrating Internet anycast, use, performance, and challenges.
 
 ### Routing Policy
  When a router selects a route to a destination, the AS routing policy can trump all other considerations, such as shortest AS path or hot potato routing. Indeed, in the route-selection algorithm, routes are first selected according to the local-preference attribute, whose value is fixed by the policy of the local AS.
@@ -437,7 +437,7 @@ Four key characteristics of an SDN architecture can be identified [Kreutz 2015]:
 
 • _Separation of data plane and control plane._ This separation is shown clearly in Figures 5.2 and 5.14. The data plane consists of the network’s switches— relatively simple (but fast) devices that execute the “match plus action” rules in their flow tables. The control plane consists of servers and software that deter- mine and manage the switches’ flow tables.
 
-• _Network control functions: external to data-plane switches._ Given that the “S” in SDN is for “software,” it’s perhaps not surprising that the SDN control plane is implemented in software. Unlike traditional routers, however, this software exe- cutes on servers that are both distinct and remote from the network’s switches. As shown in Figure 5.14, the control plane itself consists of two components—an SDN controller (or network operating system \[Gude 2008\]) and a set of network-control applications. The controller maintains accurate network state information (e.g., the state of remote links, switches, and hosts); provides this information to the network- control applications running in the control plane; and provides the means through which these applications can monitor, program, and control the underlying network devices. Although the controller in Figure 5.14 is shown as a single central server, in practice the controller is only logically centralized; it is typically implemented on several servers that provide coordinated, scalable performance and high availability.
+• _Network control functions: external to data-plane switches._ Given that the “S” in SDN is for “software,” it’s perhaps not surprising that the SDN control plane is implemented in software. Unlike traditional routers, however, this software exe- cutes on servers that are both distinct and remote from the network’s switches. As shown in Figure 5.14, the control plane itself consists of two components—an SDN controller (or network operating system [Gude 2008]) and a set of network-control applications. The controller maintains accurate network state information (e.g., the state of remote links, switches, and hosts); provides this information to the network- control applications running in the control plane; and provides the means through which these applications can monitor, program, and control the underlying network devices. Although the controller in Figure 5.14 is shown as a single central server, in practice the controller is only logically centralized; it is typically implemented on several servers that provide coordinated, scalable performance and high availability.
 
 • _A programmable network._ The network is programmable through the network- control applications running in the control plane. These applications represent the “brains” of the SDN control plane, using the APIs provided by the SDN controller to specify and control the data plane in the network devices. For example, a routing network-control application might determine the end-end paths between sources and destinations (for example, by executing Dijkstra’s algorithm using the node- state and link-state information maintained by the SDN controller). Another net- work application might perform access control, that is, determine which packets are to be blocked at a switch, as in our third example in Section 4.4.3. Yet another application might have switches forward packets in a manner that performs server load balancing (the second example we considered in Section 4.4.3).
 
@@ -639,9 +639,9 @@ managing server/controller and the managed device. CLI commands are vendor- and 
 • _NETCONF/YANG._ The NETCONF/YANG approach takes a more abstract, net- work-wide, and holistic view toward network management, with a much stronger emphasis on configuration management, including specifying correctness con- straints and providing atomic management operations over multiple controlled devices. **YANG** [RFC 6020] is a data modeling language used to model configu- ration and operational data. The **NETCONF** protocol [RFC 6241] is used to com- municate YANG-compatible actions and data to/from/among remote devices. We briefly encountered NETCONF and YANG in our case study of OpenDaylight Controller in Figure 5.17 and will study them in Section 5.7.3 below.
 
 ### The Simple Network Management Protocol (SNMP) and the Management Information Base (MIB)
-The **Simple Network Management Protocol** version 3 (SNMPv3) \[RFC 3410\] is an application-layer protocol used to convey network-management control and information messages between a managing server and an agent executing on behalf of that managing server. The most common usage of SNMP is in a request-response mode in which an SNMP managing server sends a request to an SNMP agent, whoreceives the request, performs some action, and sends a reply to the request. Typi- cally, a request will be used to query (retrieve) or modify (set) MIB object values associated with a managed device. A second common usage of SNMP is for an agent to send an unsolicited message, known as a trap message, to a managing server. Trap messages are used to notify a managing server of an exceptional situation (e.g., a link interface going up or down) that has resulted in changes to MIB object values.
+The **Simple Network Management Protocol** version 3 (SNMPv3) [RFC 3410] is an application-layer protocol used to convey network-management control and information messages between a managing server and an agent executing on behalf of that managing server. The most common usage of SNMP is in a request-response mode in which an SNMP managing server sends a request to an SNMP agent, whoreceives the request, performs some action, and sends a reply to the request. Typi- cally, a request will be used to query (retrieve) or modify (set) MIB object values associated with a managed device. A second common usage of SNMP is for an agent to send an unsolicited message, known as a trap message, to a managing server. Trap messages are used to notify a managing server of an exceptional situation (e.g., a link interface going up or down) that has resulted in changes to MIB object values.
 
-MIB objects are specified in a data description language known as SMI (Structure of Management Information) \[RFC 2578; RFC 2579; RFC 2580\], a rather oddly named component of the network management framework whose name gives no hint of its functionality. A formal definition language is used to ensure that the syntax and seman- tics of the network management data are well defined and unambiguous. Related MIB objects are gathered into MIB modules. As of late 2019, there are more than 400 MIB- related RFCs and a much larger number of vendor-specific (private) MIB modules.
+MIB objects are specified in a data description language known as SMI (Structure of Management Information) [RFC 2578; RFC 2579; RFC 2580], a rather oddly named component of the network management framework whose name gives no hint of its functionality. A formal definition language is used to ensure that the syntax and seman- tics of the network management data are well defined and unambiguous. Related MIB objects are gathered into MIB modules. As of late 2019, there are more than 400 MIB- related RFCs and a much larger number of vendor-specific (private) MIB modules.
 
 SNMPv3 defines seven types of messages, known generically as protocol data units—PDUs—as shown in Table 5.2 and described below. The format of the PDU is shown in Figure 5.21.
 
@@ -664,7 +664,7 @@ MIB objects at the agent’s managed device. The MIB objects whose values are be
 
 Given the request-response nature of SNMP, it is worth noting here that although SNMP PDUs can be carried via many different transport protocols, the SNMP PDU is typically carried in the payload of a UDP datagram. Indeed, RFC 3417 states that UDP is “the preferred transport mapping.” However, since UDP is an unreli- able transport protocol, there is no guarantee that a request, or its response, will be received at the intended destination. The request ID field of the PDU (see Figure 5.21) is used by the managing server to number its requests to an agent; the agent’s response takes its request ID from that of the received request. Thus, the request ID field can be used by the managing server to detect lost requests or replies. It is up to the man- aging server to decide whether to retransmit a request if no corresponding response is received after a given amount of time. In particular, the SNMP standard does not mandate any particular procedure for retransmission, or even if retransmission is to be done in the first place. It only requires that the managing server “needs to act responsibly in respect to the frequency and duration of retransmissions.” This, of course, leads one to wonder how a “responsible” protocol should act!
 
-SNMP has evolved through three versions. The designers of SNMPv3 have said that “SNMPv3 can be thought of as SNMPv2 with additional security and admin- istration capabilities” \[RFC 3410\]. Certainly, there are changes in SNMPv3 over SNMPv2, but nowhere are those changes more evident than in the area of administra- tion and security. The central role of security in SNMPv3 was particularly important, since the lack of adequate security resulted in SNMP being used primarily for moni- toring rather than control (for example, SetRequest is rarely used in SNMPv1). Once again, we see that security—a topic we’ll cover in detail in Chapter 8 — is of critical concern, but once again a concern whose importance had been realized per- haps a bit late and only then “added on.”
+SNMP has evolved through three versions. The designers of SNMPv3 have said that “SNMPv3 can be thought of as SNMPv2 with additional security and admin- istration capabilities” [RFC 3410]. Certainly, there are changes in SNMPv3 over SNMPv2, but nowhere are those changes more evident than in the area of administra- tion and security. The central role of security in SNMPv3 was particularly important, since the lack of adequate security resulted in SNMP being used primarily for moni- toring rather than control (for example, SetRequest is rarely used in SNMPv1). Once again, we see that security—a topic we’ll cover in detail in Chapter 8 — is of critical concern, but once again a concern whose importance had been realized per- haps a bit late and only then “added on.”
 
 **The Management Information Base (MIB)**
 
@@ -689,7 +689,7 @@ The NETCONF protocol operates between the managing server and the man- aged netw
 ![Alt text](image-23.png)
 **Figure 5.22**  ♦   NETCONF session between managing server/controller and managed device
 
-Figure 5.22 shows an example NETCONF session. First, the managing server establishes a secure connection to the managed device. (In NETCONF parlance, the managing server is actually referred to as the “client” and the managed device as the “server,” since the managing server establishes the connection to the managed device. But we’ll ignore that here for consistency with the longer-standing network- management server/client terminology shown in Figure 5.20.) Once a secure con- nection has been established, the managing server and the managed device exchange <hello> messages, declaring their “capabilities”—NETCONF functionality that sup- plements the base NETCONF specification in \[RFC 6241\]. Interactions between the managing server and managed device take the form of a remote procedure call, using the <rpc> and <rpc-response> messages. These messages are used to retrieve, set, query and modify device configurations, operational data and statistics, and to sub- scribe to device notifications. Device notifications themselves are proactively sent from managed device to the managing server using NETCONF <notification> mes- sages. A session is closed with the <session-close message>.
+Figure 5.22 shows an example NETCONF session. First, the managing server establishes a secure connection to the managed device. (In NETCONF parlance, the managing server is actually referred to as the “client” and the managed device as the “server,” since the managing server establishes the connection to the managed device. But we’ll ignore that here for consistency with the longer-standing network- management server/client terminology shown in Figure 5.20.) Once a secure con- nection has been established, the managing server and the managed device exchange <hello> messages, declaring their “capabilities”—NETCONF functionality that sup- plements the base NETCONF specification in [RFC 6241]. Interactions between the managing server and managed device take the form of a remote procedure call, using the <rpc> and <rpc-response> messages. These messages are used to retrieve, set, query and modify device configurations, operational data and statistics, and to sub- scribe to device notifications. Device notifications themselves are proactively sent from managed device to the managing server using NETCONF <notification> mes- sages. A session is closed with the <session-close message>.
 
 Table 5.3 shows a number of the important NETCONF operations that a man- aging server can perform at a managed device. As in the case of SNMP, we see operations for retrieving operational state data (<get>), and for event notification. However, the <get-config>, <edit-config>, <lock> and <unlock> operation demon- strate NETCONF’s particular emphasis on device configuration. Using the basic operations shown in Table 5.3, it is also possible to create a _set_ of more sophisticated network management transactions that either complete atomically (i.e., as a group) and successfully on a _set_ of devices, or are fully reversed and leave the devices in their pre-transaction state. Such multi-device transactions—“enabl[ing] operators to concentrate on the _configuration_ of the network as a whole rather than individual devices” was an important operator requirement put forth in [RFC 3535].
 
@@ -707,14 +707,14 @@ and operational data. With this command, the server can learn about the device�
 01 <?xml version=”1.0” encoding=”UTF-8”?> 02 <rpc message-id=”101” 03 xmlns=”urn:ietf:params:xml:ns:netconf:base:1.0”> 04 <get/> 05 </rpc>
 
 Although few people can completely parse XML directly, we see that the NET- CONF command is relatively human-readable, and is much more reminiscent of HTTP and HTML than the protocol message formats that we saw for SNMP PDU format in Figure 5.21. The RPC message itself spans lines 02–05 (we have added line numbers here for pedagogical purposes). The RPC has a message ID value of 101, declared in line 02, and contains a single NETCONF <get> command. The reply from the device contains a matching ID number (101), and all of the device’s configuration data (in XML format, of course), starting in line 04, ultimately with a closing </rpc-reply>.
-
+```
 01 <?xml version=”1.0” encoding=”UTF-8”?> 
 02 <rpc-reply message-id=”101” 
 03 xmlns=”urn:ietf:params:xml:ns:netconf:base:1.0”>
- 04 <!-- . . . all configuration data returned... --> . . . </rpc-reply>
-
-In the second example below, adapted from \[RFC 6241\], the XML document sent from the managing server to the managed device sets the Maximum Transmis- sion Unit (MTU) of an interface named “Ethernet0/0” to 1500 bytes:
-
+04 <!-- . . . all configuration data returned... --> . . . </rpc-reply>
+```
+In the second example below, adapted from [RFC 6241], the XML document sent from the managing server to the managed device sets the Maximum Transmis- sion Unit (MTU) of an interface named “Ethernet0/0” to 1500 bytes:
+```
 01 <?xml version=”1.0” encoding=”UTF-8”?> 
 02 <rpc message-id=”101” 
 03 xmlns=”urn:ietf:params:xml:ns:netconf:base:1.0”> 
@@ -732,17 +732,17 @@ In the second example below, adapted from \[RFC 6241\], the XML document sent fr
 15 </config> 
 16 </edit-config> 
 17 </rpc>
-
+```
 The RPC message itself spans lines 02–17, has a message ID value of 101, and contains a single NETCONF <edit-config> command, spanning lines 04–15. Line 06 indicates that the running device configuration at the managed device will be changed. Lines 11 and 12 specify the MTU size to be set of the Ethernet0/0 interface.
 
 Once the managed device has changed the interface’s MTU size in the configu- ration, it responds back to the managing server with an OK reply (line 04 below), again within an XML document:
-
+```
 01 <?xml version=”1.0” encoding=”UTF-8”?> 
 02 <rpc-reply message-id=”101” 
 03 xmlns=”urn:ietf:params:xml:ns:netconf:base:1.0”> 
 04 <ok/> 
 05 </rpc-reply>
-
+```
 **YANG**
 
 YANG is the data modeling language used to precisely specify the structure, syntax, and semantics of network management data used by NETCONF, in much the same way that the SMI is used to specify MIBs in SNMP. All YANG definitions are con- tained in modules, and an XML document describing a device and its capabilities can be generated from a YANG module.
