@@ -1,7 +1,7 @@
 # hugo server --minify --themesDir ... --baseURL=http://0.0.0.0:1313/theme/hugo-book/
 
 baseURL = 'https://example.com/'
-title = 'Computer Networks'
+title = 'Java Programming'
 theme = 'gurukulams-book'
 
 # Book configuration
@@ -30,7 +30,10 @@ enableGitInfo = true
 [languages.ta]
   languageName = 'தமிழ்'
   contentDir = 'content.ta'
-  weight = 3[params]
+  weight = 3
+
+
+[params]
   # (Optional, default light) Sets color theme: light, dark or auto.
   # Theme 'auto' switches between dark and light modes based on browser/os preferences
   BookTheme = 'light'
