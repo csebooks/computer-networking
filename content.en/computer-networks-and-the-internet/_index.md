@@ -1,6 +1,7 @@
 ---
 title: 'Computer Networks and the Internet'
 weight: 1
+extention: katex
 ---
 # Computer Networks and the Internet
 
