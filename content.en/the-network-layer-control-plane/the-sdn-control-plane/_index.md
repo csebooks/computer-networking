@@ -69,7 +69,6 @@ Among the messages flowing from the SDN-controlled switch to the controller are 
 
 Additional OpenFlow messages are defined in [OpenFlow 2009, ONF 2020].
 
-![Alt text](image-36.png)
 
 
 ### Data and Control Plane Interaction: An Example

@@ -48,7 +48,6 @@ Finally, let us consider the case that the sender may time out prematurely and r
 **Scenario 3: Four Senders, Routers with Finite Buffers, and Multihop Paths**
 
 In our final congestion scenario, four hosts transmit packets, each over overlap- ping two-hop paths, as shown in Figure 3.47. We again assume that each host uses a timeout/retransmission mechanism to implement a reliable data transfer service, that all hosts have the same value of lin, and that all router links have capacity _R_ bytes/sec.
-![Alt text](image-67.png)
 **Figure 3.47** ♦ Four senders, routers with finite buffers, and multihop paths
 
 Let’s consider the connection from Host A to Host C, passing through routers R1 and R2. The A–C connection shares router R1 with the D–B connection and shares router R2 with the B–D connection. For extremely small values of lin, buffer overflows are rare (as in congestion scenarios 1 and 2), and the throughput approxi- mately equals the offered load. For slightly larger values of lin, the corresponding throughput is also larger, since more original data is being transmitted into the net- work and delivered to the destination, and overflows are still rare. Thus, for small values of lin, an increase in lin results in an increase in lout.

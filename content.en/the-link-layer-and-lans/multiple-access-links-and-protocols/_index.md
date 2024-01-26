@@ -112,7 +112,6 @@ In both slotted and pure ALOHA, a node’s decision to transmit is made indepen-
 
 These two rules are embodied in the family of **carrier sense multiple access (CSMA)** and **CSMA with collision detection (CSMA/CD)** protocols [Kleinrock 1975b; Metcalfe 1976; Lam 1980; Rom 1990]. Many variations on CSMA and
 
-![Alt text](image-33.png)
 
 CSMA/CD have been proposed. Here, we’ll consider a few of the most important, and fundamental, characteristics of CSMA and CSMA/CD.
 

@@ -79,8 +79,6 @@ A circuit in a link is implemented with either **frequency-division multiplexing
 
 For a TDM link, time is divided into frames of fixed duration, and each frame is divided into a fixed number of time slots. When the network establishes a connection across a link, the network dedicates one time slot in every frame to this connection. These slots are dedicated for the sole use of that connection, with one time slot avail- able for use (in every frame) to transmit the connection’s data.
 
-![Alt text](image-6.png)
-
 **Figure 1.14**  ♦ With FDM, each circuit continuously gets a fraction of the 
 bandwidth. With TDM, each circuit gets all of the bandwidth 
 periodically during brief intervals of time (that is, during slots)

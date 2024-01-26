@@ -141,10 +141,8 @@ The FIFO (also known as first-come-first-served, or FCFS) scheduling discipline 
 **Priority Queuing**
 
 Under priority queuing, packets arriving at the output link are classified into prior- ity classes upon arrival at the queue, as shown in Figure 4.13. In practice, a network operator may configure a queue so that packets carrying network management infor- mation (for example, as indicated by the source or destination TCP/UDP port num- ber) receive priority over user traffic; additionally, real-time voice-over-IP packets might receive priority over non-real-time traffic such e-mail packets. Each priority class typically has its own queue. When choosing a packet to transmit, the priority
-![Alt text](image-45.png)
 **Figure 4.13**  ♦  The priority queuing model
 
-![Alt text](image-46.png)
 Figure 4.14  ♦  The priority queue in operation
 
 queuing discipline will transmit a packet from the highest priority class that has a nonempty queue (that is, has packets waiting for transmission). The choice among packets in the same priority class is typically done in a FIFO manner.

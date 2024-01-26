@@ -231,7 +231,6 @@ The SR receiver will acknowledge a correctly received packet whether or not it i
 ![Alt text](image-24.png)
 **Figure 3.25**  ♦  SR receiver events and actions
 It is important to note that in Step 2 in Figure 3.25, the receiver reacknowledges (rather than ignores) already received packets with certain sequence numbers _below_ the current window base. You should convince yourself that this reacknowledgment is indeed needed. Given the sender and receiver sequence number spaces in Fig- ure 3.23, for example, if there is no ACK for packet send\_base propagating from
-![Alt text](image-65.png)
 **Figure 3.26** ♦ SR operation
 
 the receiver to the sender, the sender will eventually retransmit packet send\_base, even though it is clear (to us, not the sender!) that the receiver has already received that packet. If the receiver were not to acknowledge this packet, the sender’s win- dow would never move forward! This example illustrates an important aspect of SR protocols (and many other protocols as well). The sender and receiver will not always have an identical view of what has been received correctly and what has not. For SR protocols, this means that the sender and receiver windows will not always coincide.

@@ -90,7 +90,7 @@ Telnet, defined in RFC 854, is a popular application-layer protocol used for rem
 Suppose Host A initiates a Telnet session with Host B. Because Host A initiates the session, it is labeled the client, and Host B is labeled the server. Each character typed by the user (at the client) will be sent to the remote host; the remote host will send back a copy of each character, which will be displayed on the Telnet user’s screen. This “echo back” is used to ensure that characters seen by the Telnet user have already been received and processed at the remote site. Each character thus traverses the network twice between the time the user hits the key and the time the character is displayed on the user’s monitor.
 
 Now suppose the user types a single letter, ‘C,’ and then grabs a coffee. Let’s examine the TCP segments that are sent between the client and server. As shown in Figure 3.31, we suppose the starting sequence numbers are 42 and 79 for the client and server, respectively. Recall that the sequence number of a segment is the sequence 
-![Alt text](image-66.png)
+
 **Figure 3.31** ♦ Sequence and acknowledgment numbers for a simple Telnet application over TCP
 
 number of the first byte in the data field. Thus, the first segment sent from the client will have sequence number 42; the first segment sent from the server will have sequence number 79. Recall that the acknowledgment number is the sequencenumber of the next byte of data that the host is waiting for. After the TCP connec- tion is established but before any data is sent, the client is waiting for byte 79 and the server is waiting for byte 42.
