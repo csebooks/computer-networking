@@ -1,6 +1,20 @@
 ---
 title: 'Networks Under Attack'
 weight: 6
+references:
+    videos:
+        - youytube:yukwBqSwAkg
+        - youytube:_zq4qTc9Jmg
+    links:
+        - https://www.geeksforgeeks.org/basic-network-attacks-in-computer-network/
+        - https://www.forcepoint.com/cyber-edu/network-attack
+    books:
+        - b1:
+            title: Network Attacks and Exploitation
+            url: https://www.google.co.in/books/edition/Network_Attacks_and_Exploitation/RxgWCgAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Network Security Attacks and Countermeasures
+            url: https://www.google.co.in/books/edition/Network_Security_Attacks_and_Countermeas/hOJmCwAAQBAJ?hl=en&gbpv=0
 ---
 ## Networks Under Attack
 
