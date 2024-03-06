@@ -1,6 +1,20 @@
 ---
 title: 'The Network Edge'
 weight: 4
+references:
+    videos:
+        - youytube:D3rYDmCU3xE
+        - youytube:nzjqCxdGu8
+    links:
+        - https://www.fortinet.com/resources/cyberglossary/network-edge
+        - https://www.cloudwards.net/what-is-edge-computing/
+    books:
+        - b1:
+            title: Multi-access Edge Computing:Software Development at the Network Edge
+            url: https://www.google.co.in/books/edition/Multi_access_Edge_Computing_Software_Dev/gOc-EAAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Network Management in Cloud and Edge Computing
+            url: https://www.google.co.in/books/edition/Network_Management_in_Cloud_and_Edge_Com/QkHVDwAAQBAJ?hl=en&gbpv=0
 ---
 
 ## Mobility Management: Principles
