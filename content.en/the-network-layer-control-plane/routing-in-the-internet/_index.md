@@ -1,6 +1,20 @@
 ---
 title: 'Intra-AS Routing in the Internet: OSPF'
 weight: 2
+references:
+    videos:
+        - youytube:yMJBeC_9g2k
+        - youytube:iUQmn3nNjaI
+    links:
+        - https://www.quora.com/How-is-Intra-AS-routing-in-the-Internet-OSPF-used-in-the-context-of-the-network-layer-with-respect-to-the-control-plane
+        - https://www.javatpoint.com/ospf-protocol
+    books:
+        - b1:
+            title: Routing in the Internet 
+            url: https://www.google.co.in/books/edition/Routing_in_the_Internet/ye5SAAAAMAAJ?hl=en&gbpv=0&bsq=Intra-AS%20Routing%20in%20the%20Internet:%20OSPF
+        - b2:
+            title: OSPF Anatomy of an Internet Routing Protoco 
+            url: https://www.google.co.in/books/edition/OSPF/YXUWsqVhx60C?hl=en&gbpv=0
 ---
 ## Intra-AS Routing in the Internet: OSPF
 In our study of routing algorithms so far, we’ve viewed the network simply as a collection of interconnected routers. One router was indistinguishable from another in the sense that all routers executed the same routing algorithm to compute routing paths through the entire network. In practice, this model and its view of a homog- enous set of routers all executing the same routing algorithm is simplistic for two important reasons:
