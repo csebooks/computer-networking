@@ -1,6 +1,20 @@
 ---
 title: 'Routing Algorithms'
 weight: 1
+references:
+    videos:
+        - youytube:1KGC7Tp6HGo
+        - youytube:0BSD8rUe2Ts
+    links:
+        - https://www.geeksforgeeks.org/classification-of-routing-algorithms/
+        - https://www.javatpoint.com/computer-network-routing-algorithm
+    books:
+        - b1:
+            title: Routing Algorithms in Networks-on-Chip 
+            url: https://www.google.co.in/books/edition/Routing_Algorithms_in_Networks_on_Chip/hr68BAAAQBAJ?hl=en&gbpv=1&dq=Routing+Algorithms+books&printsec=frontcover
+        - b2:
+            title: Network Routing 
+            url: https://www.google.co.in/books/edition/Network_Routing/5OCcBAAAQBAJ?hl=en&gbpv=0
 ---
 
 
