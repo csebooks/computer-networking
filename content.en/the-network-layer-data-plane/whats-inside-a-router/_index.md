@@ -1,9 +1,9 @@
 ---
-title: 'What’s Inside a Router?'
+title: 'What’s Inside a Router'
 weight: 2
 ---
 
-## What’s Inside a Router?
+## What’s Inside a Router
 
 Now that we’ve overviewed the data and control planes within the network layer, the important distinction between forwarding and routing, and the services and functions of the network layer, let’s turn our attention to its forwarding function—the actual transfer of packets from a router’s incoming links to the appropriate outgoing links at that router.
 
