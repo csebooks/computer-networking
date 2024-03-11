@@ -1,6 +1,20 @@
 ---
 title: 'End-Point Authentication'
 weight: 4
+references:
+    videos:
+        - youytube:91GMK_k7HUM
+        - youytube:DeiX19SIPh8
+    links:
+        - https://www.techopedia.com/definition/23918/endpoint-authentication
+        - https://www.spiceworks.com/it-security/network-security/articles/what-is-endpoint-encryption/
+    books:
+        - b1:
+            title: Endpoint Security
+            url: https://www.google.co.in/books/edition/Endpoint_Security/oBgNPOk2kw8C?hl=en&gbpv=0
+        - b2:
+            title: Emerging Technologies for Authorization and Authentication
+            url: https://www.google.co.in/books/edition/Emerging_Technologies_for_Authorization/0DZZEAAAQBAJ?hl=en&gbpv=0
 ---
 
 ## End-Point Authentication
