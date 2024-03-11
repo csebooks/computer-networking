@@ -1,6 +1,20 @@
 ---
 title: 'Principles of Cryptography'
 weight: 2
+references:
+    videos:
+        - youytube:6_Cxj5WKpIw
+        - youytube:wDK33UnN_bE
+    links:
+        - https://www.geeksforgeeks.org/cryptography-and-network-security-principles/
+        - https://www.baeldung.com/cs/introduction-to-cryptography
+    books:
+        - b1:
+            title: Cryptography and Network Security
+            url: https://www.google.co.in/books/edition/Cryptography_and_Network_Security/v8nCCwAAQBAJ?hl=en
+        - b2:
+            title: Introduction to Cryptography
+            url: https://www.google.co.in/books/edition/Introduction_to_Cryptography/Nnvhz_VqAS4C?hl=en&gbpv=0
 ---
 
 
