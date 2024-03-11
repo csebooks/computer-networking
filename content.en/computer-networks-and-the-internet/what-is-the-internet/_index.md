@@ -1,5 +1,5 @@
 ---
-title: 'What Is the Internet?'
+title: 'What Is the Internet'
 weight: 1
 references:
     videos:
@@ -18,7 +18,7 @@ references:
 ---
 
 
-## What Is the Internet?
+## What Is the Internet
 In this book, we’ll use the public Internet, a specific computer network, as our prin- cipal vehicle for discussing computer networks and their protocols. But what _is_ the Internet? There are a couple of ways to answer this question. First, we can describe the nuts and bolts of the Internet, that is, the basic hardware and software components that make up the Internet. Second, we can describe the Internet in terms of a network- ing infrastructure that provides services to distributed applications. Let’s begin with the nuts-and-bolts description, using 
 
 Figure 1.1 to illustrate our discussion.
