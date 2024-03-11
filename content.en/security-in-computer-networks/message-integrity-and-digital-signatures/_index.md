@@ -1,6 +1,20 @@
 ---
 title: 'Message Integrity and Digital Signatures'
 weight: 3
+references:
+    videos:
+        - youytube:xPRdrzo46HI
+        - youytube:AYdikYrLKRc
+    links:
+        - https://www.geeksforgeeks.org/digital-signatures-certificates/
+        - https://security.stackexchange.com/questions/183408/how-does-digital-signatures-provide-integrity
+    books:
+        - b1:
+            title: Digital Signatures
+            url: https://www.google.co.in/books/edition/Digital_Signatures_for_Dummies_Cryptomat/32aWzgEACAAJ?hl=en
+        - b2:
+            title: Digital Signature Schemes
+            url: https://www.google.co.in/books/edition/Digital_Signature_Schemes/R-wAswEACAAJ?hl=en
 ---
 
 ## Message Integrity and Digital Signatures
