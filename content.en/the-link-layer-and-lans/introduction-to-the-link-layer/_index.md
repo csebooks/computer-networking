@@ -1,6 +1,20 @@
 ---
 title: 'Introduction to the Link Layer'
 weight: 1
+references:
+    videos:
+        - youytube:Tr2y2xs2Crg
+        - youytube:lMGWJZLTulY
+    links:
+        - https://en.wikipedia.org/wiki/Link_layer#:~:text=The%20link%20layer%20includes%20the,specific%20to%20the%20link%20types.
+        - https://www.geeksforgeeks.org/data-link-layer/
+    books:
+        - b1:
+            title: Fundamentals of Data Communication Networks
+            url: https://www.google.co.in/books/edition/Fundamentals_of_Data_Communication_Netwo/ZsQ8DwAAQBAJ?hl=en&gbpv=0
+        - b2:
+           title: An Introduction to Computer Networks
+            url: https://www.google.co.in/books/edition/An_Introduction_to_Computer_Networks/Hn9PYgEACAAJ?hl=en
 ---
 
 ## Introduction to the Link Layer
