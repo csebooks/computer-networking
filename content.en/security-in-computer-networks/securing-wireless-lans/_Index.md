@@ -1,6 +1,20 @@
 ---
 title: 'Securing Wireless LANs and 4G/5G Cellular Networks'
 weight: 8
+references:
+    videos:
+        - youytube:2sJOEJxCbi0
+        - youytube:WI4uPZN0E4s
+    links:
+        - https://www.sciencedirect.com/science/article/abs/pii/S1361372315300361
+        - https://www.techtarget.com/searchNetworking/tip/5G-security-Everything-you-should-know-for-a-secure-network
+    books:
+        - b1:
+            title: 5G Enabled Secure Wireless Networks
+            url: https://www.google.co.in/books/edition/5G_Enabled_Secure_Wireless_Networks/-nyGDwAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: A Comprehensive Guide to 5G Security
+            url: https://www.google.co.in/books/edition/A_Comprehensive_Guide_to_5G_Security/HoFSDwAAQBAJ?hl=en&gbpv=0
 ---
 
 ## Securing Wireless LANs and 4G/5G Cellular Networks

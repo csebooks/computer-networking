@@ -1,6 +1,20 @@
 ---
 title: 'Mobility Management in Practice'
 weight: 5
+references:
+    videos:
+        - youytube:k4ePvUwfneE
+        - youytube:2f4CLaoTT4k
+    links:
+        - https://urban-mobility-observatory.transport.ec.europa.eu/resources/case-studies/mobility-management-insights-and-examples-successful-implementation_en
+        - https://link.springer.com/book/10.1007/978-3-662-52726-9
+    books:
+        - b1:
+            title: Global Mobility Management for Next Generation Networks
+            url: https://www.google.co.in/books/edition/Global_Mobility_Management_for_Next_Gene/w7_9DwAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Mobility Management and Quality-Of-Service for Heterogeneous Networks
+            url: https://www.google.co.in/books/edition/Mobility_Management_and_Quality_Of_Servi/0_yGEAAAQBAJ?hl=en&gbpv=0
 ---
 
 

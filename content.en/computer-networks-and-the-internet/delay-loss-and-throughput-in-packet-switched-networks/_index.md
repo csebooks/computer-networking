@@ -1,6 +1,20 @@
 ---
 title: 'Delay, Loss, and Throughput in Packet-Switched Networks'
 weight: 4
+references:
+    videos:
+        - youytube:mglvoDay3Ko
+        - youytube:9PVGuC5hxPM
+    links:
+        - https://electronicspost.com/delay-loss-and-throughput-in-packet-switched-networks/
+        - https://www.geeksforgeeks.org/packet-switching-and-delays-in-computer-network/
+    books:
+        - b1:
+            title: Computer Networking
+            url: https://www.google.co.in/books/edition/Computer_Networking/6RoORAAACAAJ?hl=en
+        - b2:
+            title: Quality of Service in Optical Packet Switched Networks
+            url: https://www.google.co.in/books/edition/Quality_of_Service_in_Optical_Packet_Swi/9OdpBgAAQBAJ?hl=en&gbpv=0
 ---
 ## Delay, Loss, and Throughput in Packet-Switched Networks
 

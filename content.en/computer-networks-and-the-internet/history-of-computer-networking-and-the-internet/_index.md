@@ -1,6 +1,20 @@
 ---
 title: 'History of Computer Networking and the Internet'
 weight: 7
+references:
+    videos:
+        - youytube:TGe51oT6iK4
+        - youytube:m7WTcB0-g5Q
+    links:
+        - https://www.javatpoint.com/history-of-computer-networking
+        - https://www.geeksforgeeks.org/history-of-internet/
+    books:
+        - b1:
+            title: Computer Networking With Internet Protocols And Technology
+            url: https://www.google.co.in/books/edition/Computer_Networking_With_Internet_Protoc/018z0Gdxl38C?hl=en&gbpv=0
+        - b2:
+            title: Computer Networks
+            url: https://www.google.co.in/books/edition/Computer_Networks/BvaFreun1W8C?hl=en&gbpv=0
 ---
 
 ## History of Computer Networking and the Internet

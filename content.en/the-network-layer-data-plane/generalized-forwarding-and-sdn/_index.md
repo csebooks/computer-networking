@@ -1,6 +1,20 @@
 ---
 title: 'Generalized Forwarding and SDN'
 weight: 4
+references:
+    videos:
+        - youytube:HIPVDxTrHqI
+        - youytube:zjNpU6la_pw
+    links:
+        - https://www.geeksforgeeks.org/software-defined-networking/
+        - https://www.inf.ed.ac.uk/teaching/courses/comn/lecture-notes/sdn.pdf
+    books:
+        - b1:
+            title: SDN:Software Defined Networks
+            url: https://www.google.co.in/books/edition/SDN_Software_Defined_Networks/Bc1qAAAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Foundations of Modern Networking
+            url: https://www.google.co.in/books/edition/Foundations_of_Modern_Networking/nL_QCgAAQBAJ?hl=en&gbpv=0
 ---
 
 

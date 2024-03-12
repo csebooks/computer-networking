@@ -1,6 +1,20 @@
 ---
 title: 'The Internet Protocol (IP): IPv4, Addressing, IPv6, and More'
 weight: 3
+references:
+    videos:
+        - youytube:JiaL5A3qezg
+        - youytube:8npT9AALbrI
+    links:
+        - https://www.geeksforgeeks.org/differences-between-ipv4-and-ipv6/
+        - https://www.hostinger.com/tutorials/ipv4-vs-ipv6
+    books:
+        - b1:
+            title: IPv6 Introduction and Configuration
+            url: https://www.google.co.in/books/edition/IPv6_Introduction_and_Configuration/EwKlAgAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Encyclopedia of Distance Learning
+            url: https://www.google.co.in/books/edition/Encyclopedia_of_Distance_Learning/t8stnmdXS0wC?hl=en&gbpv=0&kptab=overview
 ---
 
 

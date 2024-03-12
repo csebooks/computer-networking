@@ -1,6 +1,20 @@
 ---
 title: 'Middleboxes'
 weight: 5
+references:
+    videos:
+        - youytube:kKZlPeyef0k
+        - youytube:BBzO9TeHuKE
+    links:
+        - https://ieeexplore.ieee.org/document/8002906
+        - https://www.icsi.berkeley.edu/icsi/projects/networking/middleboxes
+    books:
+        - b1:
+            title: Wired/Wireless Internet Communications
+            url: https://www.google.co.in/books/edition/Wired_Wireless_Internet_Communications/U_ZrCgAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Security in Network Functions Virtualization 
+            url: https://www.google.co.in/books/edition/Security_in_Network_Functions_Virtualiza/as8mDwAAQBAJ?hl=en&gbpv=0
 ---
 
 ## Middleboxes

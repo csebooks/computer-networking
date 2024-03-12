@@ -1,6 +1,20 @@
 ---
 title: 'WiFi: 802.11 Wireless LANs'
 weight: 2
+references:
+    videos:
+        - youytube:t3FVP5wuG4g
+        - youytube:2slukwJzw9w
+    links:
+        - https://www.tutorialspoint.com/Wireless-LAN-and-IEEE-802-11
+        - https://www.tutorialspoint.com/Wireless-LAN-and-IEEE-802-11
+    books:
+        - b1:
+            title: The WiFi Networking Book
+            url: https://www.google.co.in/books/edition/The_WiFi_Networking_Book/QO6xxgEACAAJ?hl=en
+        - b2:
+            title: 802.11 Wireless Networks
+            url: https://www.google.co.in/books/edition/802_11_Wireless_Networks_The_Definitive/lX3WatnVUe4C?hl=en&gbpv=0
 ---
 
 

@@ -1,6 +1,20 @@
 ---
 title: 'The Network Core'
 weight: 3
+references:
+    videos:
+        - youytube:f1nUcCdQJ8Y
+        - youytube:hpUPJFv-DzI
+    links:
+        - https://drivenets.com/resources/education-center/what-is-a-core-network/
+        - https://www.techopedia.com/definition/6641/core-network
+    books:
+        - b1:
+            title: Packet Guide to Core Network Protocols 
+            url: https://www.google.co.in/books/edition/Packet_Guide_to_Core_Network_Protocols/hBCNtQx5rx0C?hl=en&gbpv=0
+        - b2:
+            title: Computer Networking Essentials
+            url: https://www.google.co.in/books/edition/Computer_Networking_Essentials/ZMizSUW7XF4C?hl=en&gbpv=0
 ---
 
 ## The Network Core

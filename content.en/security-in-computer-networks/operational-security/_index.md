@@ -1,6 +1,20 @@
 ---
 title: 'Operational Security: Firewalls and Intrusion Detection Systems'
 weight: 9
+references:
+    videos:
+        - youytube:9GZlVOafYTg
+        - youytube:msBV_TGLRDQ
+    links:
+        - https://www.fortinet.com/solutions/industries/scada-industrial-control-systems/what-is-ot-security
+        - https://www.geeksforgeeks.org/intrusion-detection-system-ids/
+    books:
+        - b1:
+            title: The InfoSec Handbook
+            url: https://www.google.co.in/books/edition/The_InfoSec_Handbook/Qe9lBAAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Intrusion Detection and Correlation
+            url: https://www.google.co.in/books/edition/Intrusion_Detection_and_Correlation/1R0YVf5VwS8C?hl=en&gbpv=0
 ---
 
 ## Operational Security: Firewalls and Intrusion Detection Systems

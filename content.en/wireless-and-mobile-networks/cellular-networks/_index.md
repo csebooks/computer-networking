@@ -1,6 +1,20 @@
 ---
 title: 'Cellular Networks: 4G and 5G'
 weight: 3
+references:
+    videos:
+        - youytube:NZtMrEPjpQ4
+        - youytube:kxOUCDjHg_Q
+    links:
+        - https://www.techtarget.com/searchnetworking/feature/A-deep-dive-into-the-differences-between-4G-and-5G-networks
+        - https://www.geeksforgeeks.org/difference-between-4g-and-5g/
+    books:
+        - b1:
+            title: 4G:LTE/LTE-Advanced for Mobile Broadband
+            url: https://www.google.co.in/books/edition/4G_LTE_LTE_Advanced_for_Mobile_Broadband/AbkPAAAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: From GSM to LTE-Advanced Pro and 5G
+            url: https://www.google.co.in/books/edition/From_GSM_to_LTE_Advanced_Pro_and_5G/_EkzDwAAQBAJ?hl=en&gbpv=0
 ---
 
 ## Cellular Networks: 4G and 5G
