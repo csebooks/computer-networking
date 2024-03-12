@@ -1,6 +1,20 @@
 ---
 title: 'Principles of Reliable Data Transfer'
 weight: 4
+references:
+    videos:
+        - youytube:nyUHUtmxWg0
+        - youytube:vxgH6r-II2Q
+    links:
+        - https://www.geeksforgeeks.org/principle-of-reliable-data-transfer-protocol/
+        - https://www.geeksforgeeks.org/reliable-data-transfer-rdt-1-0/
+    books:
+        - b1:
+            title: Computer Networking
+            url: https://www.google.co.in/books/edition/Computer_Networking/LqzPMQEACAAJ?hl=en
+        - b2:
+            title: Computer Networking
+            url: https://www.google.co.in/books/edition/Computer_Networking/0LrBwAEACAAJ?hl=en
 ---
 
 ## Principles of Reliable Data Transfer

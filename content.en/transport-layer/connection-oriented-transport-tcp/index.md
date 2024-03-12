@@ -1,6 +1,20 @@
 ---
 title: 'Connection-Oriented Transport: TCP'
 weight: 5
+references:
+    videos:
+        - youytube:UYJP-6mhF6E
+        - youytube:DYb2JzkJfMw
+    links:
+        - https://www.geeksforgeeks.org/what-is-transmission-control-protocol-tcp/
+        - https://www.javatpoint.com/tcp
+    books:
+        - b1:
+            title: Windows NT TCP/IP Network Administration
+            url: https://www.google.co.in/books/edition/Windows_NT_TCP_IP_Network_Administration/6hlNFc7drzEC?hl=en&gbpv=0
+        - b2:
+            title: The TCP/IP Guide 
+            url:  https://www.google.co.in/books/edition/The_TCP_IP_Guide/Pm4RgYV2w4YC?hl=en&gbpv=1&dq=Connection-Oriented+Transport:+TCP&printsec=frontcover
 ---
 
 ## Connection-Oriented Transport: TCP

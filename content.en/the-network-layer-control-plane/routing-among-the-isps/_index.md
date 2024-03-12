@@ -1,6 +1,20 @@
 ---
 title: 'Routing Among the ISPs: BGP'
 weight: 3
+references:
+    videos:
+        - youytube:2rV4tJkP-CQ
+        - youytube:9qlHxFV1mok
+    links:
+        - https://www.techtarget.com/searchnetworking/feature/BGP-tutorial-The-routing-protocol-that-makes-the-Internet-work#:~:text=BGP%20is%20always%20used%20as,which%20is%20called%20internal%20BGP.
+        - https://www.cloudflare.com/learning/security/glossary/what-is-bgp/
+    books:
+        - b1:
+            title: BGP Building Reliable Networks with the Border Gateway Protocol 
+            url:  https://www.google.co.in/books/edition/BGP/9zZShNhlB6oC?hl=en&gbpv=0
+        - b2:
+            title: BGP Building Reliable Networks with the Border Gateway Protocol 
+            url:  https://www.google.co.in/books/edition/BGP/p-tmPgAACAAJ?hl=en
 ---
 
 ## Routing Among the ISPs: BGP

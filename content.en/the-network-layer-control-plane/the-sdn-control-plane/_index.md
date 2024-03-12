@@ -1,6 +1,20 @@
 ---
 title: 'The SDN Control Plane'
 weight: 4
+references:
+    videos:
+        - youytube:iTjMc201GK0
+        - youytube:lfqQhRkL4Vo
+    links:
+        - https://www.geeksforgeeks.org/software-defined-networking-sdn-controller/
+        - https://www.sdxcentral.com/networking/sdn/definitions/what-the-definition-of-software-defined-networking-sdn/inside-sdn-architecture/
+    books:
+        - b1:
+            title: SDN: Software Defined Networks An Authoritative Review of Network Programmability
+            url: https://www.google.co.in/books/edition/SDN_Software_Defined_Networks/Bc1qAAAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Software-Defined Networking 2 Extending SDN Control to Large-Scale Networks 
+            url:  https://www.google.co.in/books/edition/Software_Defined_Networking_2/pbSgEAAAQBAJ?hl=en&gbpv=0
 ---
 
 

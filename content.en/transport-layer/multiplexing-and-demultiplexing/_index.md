@@ -1,6 +1,20 @@
 ---
 title: 'Multiplexing and Demultiplexing'
 weight: 2
+references:
+    videos:
+        - youytube:CekW6ipRrGA
+        - youytube:4Ak-hdPE_oE
+    links:
+        - https://www.geeksforgeeks.org/multiplexing-and-demultiplexing-in-transport-layer/
+        - https://www.baeldung.com/cs/transport-layer-multiplexing-vs-demultiplexing
+    books:
+        - b1:
+            title: Multiplexing 
+            url:  https://www.google.co.in/books/edition/Multiplexing/pyJ-EAAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: Coarse Wavelength Division Multiplexing
+            url: link:https://www.google.co.in/books/edition/Coarse_Wavelength_Division_Multiplexing/5BgSzW8QLloC?hl=en&gbpv=0
 ---
 
 

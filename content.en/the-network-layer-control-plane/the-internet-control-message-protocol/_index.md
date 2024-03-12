@@ -1,6 +1,20 @@
 ---
 title: 'ICMP: The Internet Control Message Protocol'
 weight: 5
+references:
+    videos:
+        - youytube:xTqtm7-k25o
+        - youytube:x91Hq3D1uAQ
+    links:
+        - https://www.geeksforgeeks.org/internet-control-message-protocol-icmp/
+        - https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
+    books:
+        - b1:
+            title: Packet Guide to Core Network Protocols
+            url:  https://www.google.co.in/books/edition/Packet_Guide_to_Core_Network_Protocols/hBCNtQx5rx0C?hl=en&gbpv=0
+        - b2:
+            title: Understanding Linux Network Internals  
+            url: https://www.google.co.in/books/edition/Understanding_Linux_Network_Internals/ALapr7CvAKkC?hl=en&gbpv=0
 ---
 
 

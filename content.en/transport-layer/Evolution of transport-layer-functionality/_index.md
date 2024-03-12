@@ -1,6 +1,20 @@
 ---
 title: 'Evolution of Transport-Layer Functionality'
 weight: 8
+references:
+    videos:
+        - youytube:oRUIEmpzk0Y
+        - youytube:dXh5mN59wL0
+    links:
+        - https://notes.bweston.uk/comp211/lectures/2021/11/10/3.html
+        - https://en.wikipedia.org/wiki/Transport_layer
+    books:
+        - b1:
+            title: Advanced Transport Protocols
+            url: https://www.google.co.in/books/edition/Advanced_Transport_Protocols/bgvfooFV9nEC?hl=en&gbpv=0
+        - b2:
+            title: Evolution of Wireless Communication Ecosystems
+            url: https://www.google.co.in/books/edition/Evolution_of_Wireless_Communication_Ecos/xS3BEAAAQBAJ?hl=en&gbpv=0
 ---
 
 ## Evolution of Transport-Layer Functionality

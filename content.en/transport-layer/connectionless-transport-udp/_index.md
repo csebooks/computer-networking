@@ -1,6 +1,20 @@
 ---
 title: 'Connectionless Transport: UDP'
 weight: 3
+references:
+    videos:
+        - youytube:rih2IV-BZdQ
+        - youytube:ToLao3kSBFA
+    links:
+        - https://www.geeksforgeeks.org/user-datagram-protocol-udp/
+        - https://www.javatpoint.com/udp-protocol
+    books:
+        - b1:
+            title: Computer Networking 
+            url: https://www.google.co.in/books/edition/Computer_Networking/LqzPMQEACAAJ?hl=en
+        - b2:
+            title: Windows NT TCP/IP Network Administration
+            url: https://www.google.co.in/books/edition/Windows_NT_TCP_IP_Network_Administration/6hlNFc7drzEC?hl=en&gbpv=0
 ---
 
 
