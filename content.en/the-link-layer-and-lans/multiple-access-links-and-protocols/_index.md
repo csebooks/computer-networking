@@ -1,6 +1,20 @@
 ---
 title: 'Multiple Access Links and Protocols'
 weight: 3
+references:
+    videos:
+        - youytube:YAjfUc7Tt24
+        - youytube:T0aZ0APuYzE
+    links:
+        - https://www.geeksforgeeks.org/multiple-access-protocols-in-computer-network/
+        - https://www.javatpoint.com/multiple-access-protocols
+    books:
+        - b1:
+            title: Multiple Access Protocols
+            url: https://www.google.co.in/books/edition/Multiple_Access_Protocols/YIXTBwAAQBAJ?hl=en&gbpv=0
+        - b2:
+           title: Performance Analysis of Multiple Access Protocols
+            url: https://www.google.co.in/books/edition/Performance_Analysis_of_Multiple_Access/PMRY3J0a5UYC?hl=en&gbpv=0
 ---
 
 ## Multiple Access Links and Protocols
