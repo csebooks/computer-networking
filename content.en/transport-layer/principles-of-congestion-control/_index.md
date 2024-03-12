@@ -1,20 +1,6 @@
 ---
 title: 'Principles of Congestion Control'
-weight: 6
-references:
-    videos:
-        - youytube:Fm92xvIp6JY
-        - youytube:Ycy4VWr3-24&t=21s
-    links:
-        - https://cs.newpaltz.edu/~easwarac/CCN/Week9/tcpCongestion1.pdf
-        - https://www.geeksforgeeks.org/congestion-control-techniques-in-computer-networks/
-    books:
-        - b1:
-            title: Congestion Control 
-            url:  https://www.google.co.in/books/edition/Congestion_Control/L1ZzzgEACAAJ?hl=en
-        - b2:
-            title: Congestion Control in Data Transmission Networks 
-            url: https://www.google.co.in/books/edition/Congestion_Control_in_Data_Transmission/xnl3Mkr7Eo0C?hl=en&gbpv=0
+weight: 2
 ---
 
 ## Principles of Congestion Control
