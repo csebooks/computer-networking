@@ -1,6 +1,20 @@
 ---
 title: 'Principles of Network Applications'
 weight: 1
+references:
+    videos:
+        - youytube:ZJFP4u-IOeI
+        - youytube:abeupgK5z48
+    links:
+        - https://www.geeksforgeeks.org/principles-of-network-applications/
+        - https://andreasjj.gitbooks.io/ttm4100-kommunikasjon-tjenester-og-nett/content/chapter_2__application_layer/21__principles_of_network_applications.html
+    books:
+        - b1:
+            title: DNS in Action 
+            url: https://www.google.co.in/books/edition/Computer_Networking/0LrBwAEACAAJ?hl=en
+        - b2:
+           title: Autonomic Network Management Principles
+            url: https://www.google.co.in/books/edition/Autonomic_Network_Management_Principles/9kdHCjEDO5AC?hl=en&gbpv=0
 ---
 ## Principles of Network Applications
 Suppose you have an idea for a new network application. Perhaps this application will be a great service to humanity, or will please your professor, or will bring you great wealth, or will simply be fun to develop. Whatever the motivation may be, let’s now examine how you transform the idea into a real-world network application.

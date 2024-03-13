@@ -1,6 +1,20 @@
 ---
 title: 'Video Streaming and Content Distribution Networks'
 weight: 6
+references:
+    videos:
+        - youytube:ak5bbb-xHLI
+        - youytube:7RW3ddZRlEM
+    links:
+        - https://www.geeksforgeeks.org/what-is-a-content-distribution-network-and-how-does-it-work/
+        - https://www.cloudflare.com/learning/video/what-is-video-cdn/
+    books:
+        - b1:
+            title: Content Delivery Networks
+            url: https://www.google.co.in/books/edition/Content_Delivery_Networks/gRArDwAAQBAJ?hl=en&gbpv=0
+        - b2:
+           title: Next Generation Content Delivery Infrastructures 
+            url:https://www.google.co.in/books/edition/Next_Generation_Content_Delivery_Infrast/NpAa-g0r2VgC?hl=en&gbpv=0
 ---
 ## Video Streaming and Content Distribution Networks
 

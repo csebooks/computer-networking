@@ -1,6 +1,20 @@
 ---
 title: 'Retrospective: A Day in the Life of a Web Page Request'
 weight: 7
+references:
+    videos:
+        - youytube:paT7cVt-ySQ
+        - youytube:MKlCX2jwqvs
+    links:
+        - https://www.geeksforgeeks.org/working-of-web-request/
+        - https://en.wikipedia.org/wiki/HTTP
+    books:
+        - b1:
+            title: Agile Retrospectives
+            url: https://www.google.co.in/books/edition/Agile_Retrospectives/zA5QDwAAQBAJ?hl=en&gbpv=0
+        - b2:
+           title: Computer Networking
+            url: https://www.google.co.in/books/edition/Computer_Networking/6RoORAAACAAJ?hl=en
 ---
 
 ## Retrospective: A Day in the Life of a Web Page Request

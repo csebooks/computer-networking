@@ -1,6 +1,20 @@
 ---
 title: 'Peer-to-Peer File Distribution'
 weight: 5
+references:
+    videos:
+        - youytube:raiKzCpAjI
+        - youytube:zzMd19puxwg
+    links:
+        - https://www.geeksforgeeks.org/p2p-peer-to-peer-file-sharing/
+        - https://en.wikipedia.org/wiki/Peer-to-peer_file_sharing
+    books:
+        - b1:
+            title: P2P Networking and Applications
+            url: https://www.google.co.in/books/edition/P2P_Networking_and_Applications/O9NkAaY9YxMC?hl=en&gbpv=0
+        - b2:
+           title: Peer-to-Peer Systems and Applications
+            url: https://www.google.co.in/books/edition/Peer_to_Peer_Systems_and_Applications/A8CLZ1FB4qoC?hl=en&gbpv=0
 ---
 ## Peer-to-Peer File Distribution
 

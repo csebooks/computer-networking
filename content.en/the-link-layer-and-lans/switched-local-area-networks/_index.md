@@ -1,6 +1,20 @@
 ---
 title: 'Switched Local Area Networks'
 weight: 4
+references:
+    videos:
+        - youytube:yHPpohgUz4M
+        - youytube:xjVO5xBEB28
+    links:
+        - https://www.geeksforgeeks.org/lan-switching/
+        - https://encyclopedia.pub/entry/34513
+    books:
+        - b1:
+            title: THE ALL-NEW SWITCH BOOK
+            url: https://www.google.co.in/books/edition/THE_ALL_NEW_SWITCH_BOOK_THE_COMPLETE_GUI/WxL11w8yAdcC?hl=en&gbpv=0
+        - b2:
+           title: The Switch Book
+            url: https://www.google.co.in/books/edition/The_Switch_Book/z_lSAAAAMAAJ?hl=en&gbpv=0&bsq=switched%20local%20area%20networks%20books
 ---
 
 ## Switched Local Area Networks

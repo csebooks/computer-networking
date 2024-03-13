@@ -1,6 +1,20 @@
 ---
 title: 'Error-Detection and Correction Techniques'
 weight: 2
+references:
+    videos:
+        - youytube:EMrY-8m8D1E
+        - youytube:crrdZx6u6MQ
+    links:
+        - https://en.wikipedia.org/wiki/Error_detection_and_correction
+        - https://www.geeksforgeeks.org/error-detection-in-computer-networks/
+    books:
+        - b1:
+            title: Error Correction Coding 
+            url: https://www.google.co.in/books/edition/Error_Correction_Coding/X6TADZB7vokC?hl=en
+        - b2:
+           title: Codes For Error Detection
+            url: https://www.google.co.in/books/edition/Codes_For_Error_Detection/amXICgAAQBAJ?hl=en&gbpv=0
 ---
 
 ## Error-Detection and Correction Techniques

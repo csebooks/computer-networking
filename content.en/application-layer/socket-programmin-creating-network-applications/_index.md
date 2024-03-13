@@ -1,6 +1,21 @@
 ---
 title: 'Socket Programming: Creating Network Applications'
 weight: 7
+references:
+    videos:
+        - youytube:_iHMMo7SDfQ
+        - youytube:EfvhZkX7VHo
+    links:
+        - https://www.ibm.com/docs/en/i/7.1?topic=communications-socket-programming
+        - https://mechomotive.com/socket-programming-creating-network-applications/
+    books:
+        - b1:
+            title: Network Programming with Perl
+            url: https://www.google.co.in/books/edition/Network_Programming_with_Perl/lzSa6LVV4tcC?hl=en&gbpv=0
+        - b2:
+           title: Hands-On Network Programming with C 
+            url: https://www.google.co.in/books/edition/Hands_On_Network_Programming_with_C/gc6XDwAAQBAJ?hl=en&gbpv=0
+            
 ---
 ## Socket Programming: Creating Network Applications
 
