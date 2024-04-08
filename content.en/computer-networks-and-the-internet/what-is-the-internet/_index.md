@@ -46,7 +46,7 @@ Now that we’ve got a bit of a feel for what the Internet is, let’s consider 
 
 It is probably easiest to understand the notion of a computer network protocol by first considering some human analogies, since we humans execute protocols all of the time. Consider what you do when you want to ask someone for the time of day. A typical exchange is shown in Figure 1.2. Human protocol (or good manners, at
 
-![A human protocol and a computer network protocol](2.png)
+![A human protocol and a computer network protocol](image2.png)
 
 **Figure 1.2**  ♦  A human protocol and a computer network protocol
 
