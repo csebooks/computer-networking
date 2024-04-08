@@ -1,6 +1,20 @@
 ---
 title: 'The Web and HTTP'
 weight: 2
+references:
+    videos:
+        - youytube:7weD5Ik7mL8
+        - youytube:S9GEPaQ1lFs
+    links:
+        - https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview
+        - https://www.javatpoint.com/computer-network-http
+    books:
+        - b1:
+            title: Building the Web of Things
+            url: https://www.google.co.in/books/edition/Building_the_Web_of_Things/yzczEAAAQBAJ?hl=en&gbpv=0
+        - b2:
+           title: HTTP Pocket Reference
+            url: https://www.google.co.in/books/edition/HTTP_Pocket_Reference/dOIlEeG1v4UC?hl=en&gbpv=0
 ---
 ## The Web and HTTP
 Until the early 1990s, the Internet was used primarily by researchers, academics, and university students to log in to remote hosts, to transfer files from local hosts to remote hosts and vice versa, to receive and send news, and to receive and send elec- tronic mail. Although these applications were (and continue to be) extremely useful, the Internet was essentially unknown outside of the academic and research commu- nities. Then, in the early 1990s, a major new application arrived on the scene—the World Wide Web [Berners-Lee 1994]. The Web was the first Internet application that caught the general public’s eye. It dramatically changed how people interact inside and outside their work environments. It elevated the Internet from just one of many data networks to essentially the one and only data network.

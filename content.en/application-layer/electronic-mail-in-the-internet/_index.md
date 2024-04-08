@@ -1,6 +1,20 @@
 ---
 title: 'Electronic Mail in the Internet'
 weight: 3
+references:
+    videos:
+        - youytube:chzCgHdr6G4
+        - youytube:P8ncj4X9JkU
+    links:
+        - https://www.geeksforgeeks.org/introduction-to-electronic-mail/
+        - https://www.codingninjas.com/studio/library/electronic-mail-in-computer-networks
+    books:
+        - b1:
+            title: Computer Networking
+            url: https://www.google.co.in/books/edition/Computer_Networking/0LrBwAEACAAJ?hl=en
+        - b2:
+           title: How Best to Use Internet and Email 
+            url: https://www.google.co.in/books/edition/How_Best_to_Use_Internet_and_Email/ucbdC7qkH30C?hl=en&gbpv=0
 ---
 ## Electronic Mail in the Internet
 Electronic mail has been around since the beginning of the Internet. It was the most popular application when the Internet was in its infancy [Segaller 1998], and has become more elaborate and powerful over the years. It remains one of the Internet’s most important and utilized applications.

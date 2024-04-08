@@ -1,6 +1,20 @@
 ---
 title: 'Data Center Networking'
 weight: 6
+references:
+    videos:
+        - youytube:6-66D9J5PkY
+        - youytube:9wPCQNE0Xx4
+    links:
+        - https://www.g2.com/articles/data-center-networking-dcn
+        - https://www.juniper.net/us/en/research-topics/what-is-a-data-center-network.html
+    books:
+        - b1:
+            title: Data Center Fundamentals
+            url: https://www.google.co.in/books/edition/Data_Center_Fundamentals/IcoqBXbG9IsC?hl=en&gbpv=0
+        - b2:
+           title: Cloud Native Data Center Networking
+            url: https://www.google.co.in/books/edition/Cloud_Native_Data_Center_Networking/7di_DwAAQBAJ?hl=en&gbpv=0
 ---
 
 
