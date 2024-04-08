@@ -13,7 +13,7 @@ references:
             title: Fundamentals of Data Communication Networks
             url: https://www.google.co.in/books/edition/Fundamentals_of_Data_Communication_Netwo/ZsQ8DwAAQBAJ?hl=en&gbpv=0
         - b2:
-           title: An Introduction to Computer Networks
+            title: An Introduction to Computer Networks
             url: https://www.google.co.in/books/edition/An_Introduction_to_Computer_Networks/Hn9PYgEACAAJ?hl=en
 ---
 

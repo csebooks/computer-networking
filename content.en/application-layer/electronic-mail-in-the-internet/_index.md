@@ -13,7 +13,7 @@ references:
             title: Computer Networking
             url: https://www.google.co.in/books/edition/Computer_Networking/0LrBwAEACAAJ?hl=en
         - b2:
-           title: How Best to Use Internet and Email 
+            title: How Best to Use Internet and Email 
             url: https://www.google.co.in/books/edition/How_Best_to_Use_Internet_and_Email/ucbdC7qkH30C?hl=en&gbpv=0
 ---
 ## Electronic Mail in the Internet

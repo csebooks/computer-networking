@@ -13,7 +13,7 @@ references:
             title: DNS in Action 
             url: https://www.google.co.in/books/edition/Computer_Networking/0LrBwAEACAAJ?hl=en
         - b2:
-           title: Autonomic Network Management Principles
+            title: Autonomic Network Management Principles
             url: https://www.google.co.in/books/edition/Autonomic_Network_Management_Principles/9kdHCjEDO5AC?hl=en&gbpv=0
 ---
 ## Principles of Network Applications

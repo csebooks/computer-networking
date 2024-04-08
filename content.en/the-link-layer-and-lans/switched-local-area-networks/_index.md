@@ -13,7 +13,7 @@ references:
             title: THE ALL-NEW SWITCH BOOK
             url: https://www.google.co.in/books/edition/THE_ALL_NEW_SWITCH_BOOK_THE_COMPLETE_GUI/WxL11w8yAdcC?hl=en&gbpv=0
         - b2:
-           title: The Switch Book
+            title: The Switch Book
             url: https://www.google.co.in/books/edition/The_Switch_Book/z_lSAAAAMAAJ?hl=en&gbpv=0&bsq=switched%20local%20area%20networks%20books
 ---
 

@@ -13,7 +13,7 @@ references:
             title: Data Center Fundamentals
             url: https://www.google.co.in/books/edition/Data_Center_Fundamentals/IcoqBXbG9IsC?hl=en&gbpv=0
         - b2:
-           title: Cloud Native Data Center Networking
+            title: Cloud Native Data Center Networking
             url: https://www.google.co.in/books/edition/Cloud_Native_Data_Center_Networking/7di_DwAAQBAJ?hl=en&gbpv=0
 ---
 

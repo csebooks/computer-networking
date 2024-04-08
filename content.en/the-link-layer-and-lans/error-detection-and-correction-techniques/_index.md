@@ -13,7 +13,7 @@ references:
             title: Error Correction Coding 
             url: https://www.google.co.in/books/edition/Error_Correction_Coding/X6TADZB7vokC?hl=en
         - b2:
-           title: Codes For Error Detection
+            title: Codes For Error Detection
             url: https://www.google.co.in/books/edition/Codes_For_Error_Detection/amXICgAAQBAJ?hl=en&gbpv=0
 ---
 

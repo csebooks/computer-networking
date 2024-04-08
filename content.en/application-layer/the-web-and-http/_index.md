@@ -13,7 +13,7 @@ references:
             title: Building the Web of Things
             url: https://www.google.co.in/books/edition/Building_the_Web_of_Things/yzczEAAAQBAJ?hl=en&gbpv=0
         - b2:
-           title: HTTP Pocket Reference
+            title: HTTP Pocket Reference
             url: https://www.google.co.in/books/edition/HTTP_Pocket_Reference/dOIlEeG1v4UC?hl=en&gbpv=0
 ---
 ## The Web and HTTP

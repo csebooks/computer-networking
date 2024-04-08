@@ -13,7 +13,7 @@ references:
             title: Multi-access Edge Computing 
             url: https://www.google.co.in/books/edition/Multi_access_Edge_Computing_Software_Dev/gOc-EAAAQBAJ?hl=en&gbpv=0
         - b2:
-           title: The Introvert’s Edge to Networking
+            title: The Introvert’s Edge to Networking
             url: https://www.google.co.in/books/edition/The_Introvert_s_Edge_to_Networking/H73WDwAAQBAJ?hl=en&gbpv=0
 ---
 

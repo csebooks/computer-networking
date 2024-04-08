@@ -13,7 +13,7 @@ references:
             title: Agile Retrospectives
             url: https://www.google.co.in/books/edition/Agile_Retrospectives/zA5QDwAAQBAJ?hl=en&gbpv=0
         - b2:
-           title: Computer Networking
+            title: Computer Networking
             url: https://www.google.co.in/books/edition/Computer_Networking/6RoORAAACAAJ?hl=en
 ---
 

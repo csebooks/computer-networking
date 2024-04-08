@@ -13,7 +13,7 @@ references:
             title: Network Programming with Perl
             url: https://www.google.co.in/books/edition/Network_Programming_with_Perl/lzSa6LVV4tcC?hl=en&gbpv=0
         - b2:
-           title: Hands-On Network Programming with C 
+            title: Hands-On Network Programming with C 
             url: https://www.google.co.in/books/edition/Hands_On_Network_Programming_with_C/gc6XDwAAQBAJ?hl=en&gbpv=0
             
 ---
