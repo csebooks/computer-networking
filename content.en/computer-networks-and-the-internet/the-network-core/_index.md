@@ -3,8 +3,8 @@ title: 'The Network Core'
 weight: 3
 references:
     videos:
-        - youytube:f1nUcCdQJ8Y
-        - youytube:hpUPJFv-DzI
+        - youtube:f1nUcCdQJ8Y
+        - youtube:hpUPJFv-DzI
     links:
         - https://drivenets.com/resources/education-center/what-is-a-core-network/
         - https://www.techopedia.com/definition/6641/core-network

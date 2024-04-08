@@ -3,8 +3,8 @@ title: 'Wireless Links and Network Characteristics'
 weight: 1
 references:
     videos:
-        - youytube:jIl1Buu1_rg
-        - youytube:M8w2MzPHarY
+        - youtube:jIl1Buu1_rg
+        - youtube:M8w2MzPHarY
     links:
         - https://www.geeksforgeeks.org/structure-of-wireless-communication-link/
         - https://andreasjj.gitbooks.io/ttm4100-kommunikasjon-tjenester-og-nett/content/chapter_7__wireless_and_mobile_networks/72__wireless_links_and_network_characteristics.html

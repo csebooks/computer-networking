@@ -3,8 +3,8 @@ title: 'Delay, Loss, and Throughput in Packet-Switched Networks'
 weight: 4
 references:
     videos:
-        - youytube:mglvoDay3Ko
-        - youytube:9PVGuC5hxPM
+        - youtube:mglvoDay3Ko
+        - youtube:9PVGuC5hxPM
     links:
         - https://electronicspost.com/delay-loss-and-throughput-in-packet-switched-networks/
         - https://www.geeksforgeeks.org/packet-switching-and-delays-in-computer-network/

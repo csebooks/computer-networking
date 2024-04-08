@@ -3,8 +3,8 @@ title: 'The Internet Protocol (IP): IPv4, Addressing, IPv6, and More'
 weight: 3
 references:
     videos:
-        - youytube:JiaL5A3qezg
-        - youytube:8npT9AALbrI
+        - youtube:JiaL5A3qezg
+        - youtube:8npT9AALbrI
     links:
         - https://www.geeksforgeeks.org/differences-between-ipv4-and-ipv6/
         - https://www.hostinger.com/tutorials/ipv4-vs-ipv6

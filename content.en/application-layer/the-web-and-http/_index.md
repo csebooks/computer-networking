@@ -3,8 +3,8 @@ title: 'The Web and HTTP'
 weight: 2
 references:
     videos:
-        - youytube:7weD5Ik7mL8
-        - youytube:S9GEPaQ1lFs
+        - youtube:7weD5Ik7mL8
+        - youtube:S9GEPaQ1lFs
     links:
         - https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview
         - https://www.javatpoint.com/computer-network-http

@@ -3,8 +3,8 @@ title: 'Intra-AS Routing in the Internet: OSPF'
 weight: 2
 references:
     videos:
-        - youytube:yMJBeC_9g2k
-        - youytube:iUQmn3nNjaI
+        - youtube:yMJBeC_9g2k
+        - youtube:iUQmn3nNjaI
     links:
         - https://www.quora.com/How-is-Intra-AS-routing-in-the-Internet-OSPF-used-in-the-context-of-the-network-layer-with-respect-to-the-control-plane
         - https://www.javatpoint.com/ospf-protocol

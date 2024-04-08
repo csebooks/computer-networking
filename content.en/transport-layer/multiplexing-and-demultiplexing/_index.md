@@ -3,8 +3,8 @@ title: 'Multiplexing and Demultiplexing'
 weight: 2
 references:
     videos:
-        - youytube:CekW6ipRrGA
-        - youytube:4Ak-hdPE_oE
+        - youtube:CekW6ipRrGA
+        - youtube:4Ak-hdPE_oE
     links:
         - https://www.geeksforgeeks.org/multiplexing-and-demultiplexing-in-transport-layer/
         - https://www.baeldung.com/cs/transport-layer-multiplexing-vs-demultiplexing

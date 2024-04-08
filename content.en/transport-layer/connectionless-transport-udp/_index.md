@@ -3,8 +3,8 @@ title: 'Connectionless Transport: UDP'
 weight: 3
 references:
     videos:
-        - youytube:rih2IV-BZdQ
-        - youytube:ToLao3kSBFA
+        - youtube:rih2IV-BZdQ
+        - youtube:ToLao3kSBFA
     links:
         - https://www.geeksforgeeks.org/user-datagram-protocol-udp/
         - https://www.javatpoint.com/udp-protocol

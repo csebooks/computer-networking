@@ -3,8 +3,8 @@ title: 'Mobility Management in Practice'
 weight: 5
 references:
     videos:
-        - youytube:k4ePvUwfneE
-        - youytube:2f4CLaoTT4k
+        - youtube:k4ePvUwfneE
+        - youtube:2f4CLaoTT4k
     links:
         - https://urban-mobility-observatory.transport.ec.europa.eu/resources/case-studies/mobility-management-insights-and-examples-successful-implementation_en
         - https://link.springer.com/book/10.1007/978-3-662-52726-9

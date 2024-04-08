@@ -3,8 +3,8 @@ title: 'The Network Edge'
 weight: 5
 references:
     videos:
-        - youytube:k8NmM-hImBU
-        - youytube:i71p_v83_eQ
+        - youtube:k8NmM-hImBU
+        - youtube:i71p_v83_eQ
     links:
         - https://www.fortinet.com/resources/cyberglossary/network-edge
         - https://www.intel.com/content/www/us/en/edge-computing/what-is-the-network-edge.html

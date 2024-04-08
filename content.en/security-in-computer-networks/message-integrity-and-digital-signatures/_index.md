@@ -3,8 +3,8 @@ title: 'Message Integrity and Digital Signatures'
 weight: 3
 references:
     videos:
-        - youytube:xPRdrzo46HI
-        - youytube:AYdikYrLKRc
+        - youtube:xPRdrzo46HI
+        - youtube:AYdikYrLKRc
     links:
         - https://www.geeksforgeeks.org/digital-signatures-certificates/
         - https://security.stackexchange.com/questions/183408/how-does-digital-signatures-provide-integrity

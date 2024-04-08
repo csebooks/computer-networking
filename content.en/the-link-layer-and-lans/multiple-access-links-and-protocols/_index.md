@@ -3,8 +3,8 @@ title: 'Multiple Access Links and Protocols'
 weight: 3
 references:
     videos:
-        - youytube:YAjfUc7Tt24
-        - youytube:T0aZ0APuYzE
+        - youtube:YAjfUc7Tt24
+        - youtube:T0aZ0APuYzE
     links:
         - https://www.geeksforgeeks.org/multiple-access-protocols-in-computer-network/
         - https://www.javatpoint.com/multiple-access-protocols

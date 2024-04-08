@@ -3,8 +3,8 @@ title: 'History of Computer Networking and the Internet'
 weight: 7
 references:
     videos:
-        - youytube:TGe51oT6iK4
-        - youytube:m7WTcB0-g5Q
+        - youtube:TGe51oT6iK4
+        - youtube:m7WTcB0-g5Q
     links:
         - https://www.javatpoint.com/history-of-computer-networking
         - https://www.geeksforgeeks.org/history-of-internet/

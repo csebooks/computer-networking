@@ -3,8 +3,8 @@ title: 'Securing Wireless LANs and 4G/5G Cellular Networks'
 weight: 8
 references:
     videos:
-        - youytube:2sJOEJxCbi0
-        - youytube:WI4uPZN0E4s
+        - youtube:2sJOEJxCbi0
+        - youtube:WI4uPZN0E4s
     links:
         - https://www.sciencedirect.com/science/article/abs/pii/S1361372315300361
         - https://www.techtarget.com/searchNetworking/tip/5G-security-Everything-you-should-know-for-a-secure-network

@@ -3,8 +3,8 @@ title: 'Routing Algorithms'
 weight: 1
 references:
     videos:
-        - youytube:1KGC7Tp6HGo
-        - youytube:0BSD8rUe2Ts
+        - youtube:1KGC7Tp6HGo
+        - youtube:0BSD8rUe2Ts
     links:
         - https://www.geeksforgeeks.org/classification-of-routing-algorithms/
         - https://www.javatpoint.com/computer-network-routing-algorithm

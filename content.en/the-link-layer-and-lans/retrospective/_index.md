@@ -3,8 +3,8 @@ title: 'Retrospective: A Day in the Life of a Web Page Request'
 weight: 7
 references:
     videos:
-        - youytube:paT7cVt-ySQ
-        - youytube:MKlCX2jwqvs
+        - youtube:paT7cVt-ySQ
+        - youtube:MKlCX2jwqvs
     links:
         - https://www.geeksforgeeks.org/working-of-web-request/
         - https://en.wikipedia.org/wiki/HTTP

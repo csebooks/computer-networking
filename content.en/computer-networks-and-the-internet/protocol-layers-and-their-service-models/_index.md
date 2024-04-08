@@ -3,8 +3,8 @@ title: 'Protocol Layers and Their Service Models'
 weight: 5
 references:
     videos:
-        - youytube:PCIMyw_xQtg
-        - youytube:I7zm69r9gRI
+        - youtube:PCIMyw_xQtg
+        - youtube:I7zm69r9gRI
     links:
         - https://jerry4013.github.io/Github-blog/2019/09/18/Network-7.html
         - https://andreasjj.gitbooks.io/ttm4100-kommunikasjon-tjenester-og-nett/content/chapter_1__computer_networks_and_the_internet/15__protocol_layers_and_their_service_models.html

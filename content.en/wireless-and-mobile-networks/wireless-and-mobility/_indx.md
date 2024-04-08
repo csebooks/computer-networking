@@ -3,8 +3,8 @@ title: 'Wireless and Mobility: Impact on Higher-Layer Protocols'
 weight: 6
 references:
     videos:
-        - youytube:bGi63kFrKO4
-        - youytube:8IR_IRZXzMk
+        - youtube:bGi63kFrKO4
+        - youtube:8IR_IRZXzMk
     links:
         - https://www.academia.edu/4860417/Cross_layer_Analysis_of_Mobility_Impact_on_TCP_Protocols_in_IEEE_802_11_Wireless_Networks
         - https://www.numerade.com/ask/question/please-help-with-this-what-is-an-impact-of-wireless-and-mobility-on-higher-layer-transport-and-application-protocols-choosethe-best-answer-o-packet-loss-from-base-station-handoff-can-initiat-89354/

@@ -3,8 +3,8 @@ title: 'TCP Congestion Control'
 weight: 7
 references:
     videos:
-        - youytube:cIHiSR4j3g4
-        - youytube:Ycy4VWr3-24
+        - youtube:cIHiSR4j3g4
+        - youtube:Ycy4VWr3-24
     links:
         - https://www.geeksforgeeks.org/tcp-congestion-control/
         - https://en.wikipedia.org/wiki/TCP_congestion_control

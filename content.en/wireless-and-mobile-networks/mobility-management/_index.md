@@ -3,8 +3,8 @@ title: 'The Network Edge'
 weight: 4
 references:
     videos:
-        - youytube:D3rYDmCU3xE
-        - youytube:nzjqCxdGu8
+        - youtube:D3rYDmCU3xE
+        - youtube:nzjqCxdGu8
     links:
         - https://www.fortinet.com/resources/cyberglossary/network-edge
         - https://www.cloudwards.net/what-is-edge-computing/

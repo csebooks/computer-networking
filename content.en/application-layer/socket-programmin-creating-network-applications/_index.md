@@ -3,8 +3,8 @@ title: 'Socket Programming: Creating Network Applications'
 weight: 7
 references:
     videos:
-        - youytube:_iHMMo7SDfQ
-        - youytube:EfvhZkX7VHo
+        - youtube:_iHMMo7SDfQ
+        - youtube:EfvhZkX7VHo
     links:
         - https://www.ibm.com/docs/en/i/7.1?topic=communications-socket-programming
         - https://mechomotive.com/socket-programming-creating-network-applications/

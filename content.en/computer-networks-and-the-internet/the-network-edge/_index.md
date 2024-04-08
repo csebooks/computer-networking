@@ -3,8 +3,8 @@ title: 'The Network Edge'
 weight: 2
 references:
     videos:
-        - youytube:k8NmM-hImBU
-        - youytube:i71p_v83_eQ
+        - youtube:k8NmM-hImBU
+        - youtube:i71p_v83_eQ
     links:
         - https://www.fortinet.com/resources/cyberglossary/network-edge
         - https://drivenets.com/resources/education-center/what-is-network-edge/

@@ -3,8 +3,8 @@ title: 'Video Streaming and Content Distribution Networks'
 weight: 6
 references:
     videos:
-        - youytube:ak5bbb-xHLI
-        - youytube:7RW3ddZRlEM
+        - youtube:ak5bbb-xHLI
+        - youtube:7RW3ddZRlEM
     links:
         - https://www.geeksforgeeks.org/what-is-a-content-distribution-network-and-how-does-it-work/
         - https://www.cloudflare.com/learning/video/what-is-video-cdn/

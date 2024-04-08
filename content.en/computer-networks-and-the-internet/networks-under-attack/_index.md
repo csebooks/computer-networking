@@ -3,8 +3,8 @@ title: 'Networks Under Attack'
 weight: 6
 references:
     videos:
-        - youytube:yukwBqSwAkg
-        - youytube:_zq4qTc9Jmg
+        - youtube:yukwBqSwAkg
+        - youtube:_zq4qTc9Jmg
     links:
         - https://www.geeksforgeeks.org/basic-network-attacks-in-computer-network/
         - https://www.forcepoint.com/cyber-edu/network-attack

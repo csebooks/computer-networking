@@ -3,8 +3,8 @@ title: 'Connection-Oriented Transport: TCP'
 weight: 5
 references:
     videos:
-        - youytube:UYJP-6mhF6E
-        - youytube:DYb2JzkJfMw
+        - youtube:UYJP-6mhF6E
+        - youtube:DYb2JzkJfMw
     links:
         - https://www.geeksforgeeks.org/what-is-transmission-control-protocol-tcp/
         - https://www.javatpoint.com/tcp

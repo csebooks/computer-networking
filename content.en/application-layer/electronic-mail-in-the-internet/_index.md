@@ -3,8 +3,8 @@ title: 'Electronic Mail in the Internet'
 weight: 3
 references:
     videos:
-        - youytube:chzCgHdr6G4
-        - youytube:P8ncj4X9JkU
+        - youtube:chzCgHdr6G4
+        - youtube:P8ncj4X9JkU
     links:
         - https://www.geeksforgeeks.org/introduction-to-electronic-mail/
         - https://www.codingninjas.com/studio/library/electronic-mail-in-computer-networks

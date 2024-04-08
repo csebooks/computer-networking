@@ -3,8 +3,8 @@ title: 'Principles of Network Applications'
 weight: 1
 references:
     videos:
-        - youytube:ZJFP4u-IOeI
-        - youytube:abeupgK5z48
+        - youtube:ZJFP4u-IOeI
+        - youtube:abeupgK5z48
     links:
         - https://www.geeksforgeeks.org/principles-of-network-applications/
         - https://andreasjj.gitbooks.io/ttm4100-kommunikasjon-tjenester-og-nett/content/chapter_2__application_layer/21__principles_of_network_applications.html

@@ -3,8 +3,8 @@ title: 'What Is the Internet'
 weight: 1
 references:
     videos:
-        - youytube:jVDBsPZDpMs
-        - youytube:Dxcc6ycZ73M
+        - youtube:jVDBsPZDpMs
+        - youtube:Dxcc6ycZ73M
     links:
         - https://www.techopedia.com/definition/2419/internet
         - https://edu.gcfglobal.org/en/internetbasics/what-is-the-internet/1/

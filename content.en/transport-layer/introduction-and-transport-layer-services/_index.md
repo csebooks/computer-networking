@@ -3,8 +3,8 @@ title: 'Introduction and Transport-Layer Services'
 weight: 1
 references:
     videos:
-        - youytube:wTNVM7WrJpc
-        - youytube:lAvhH0XJLNE
+        - youtube:wTNVM7WrJpc
+        - youtube:lAvhH0XJLNE
     links:
         - https://www.javatpoint.com/computer-network-transport-layer
         - https://www.geeksforgeeks.org/transport-layer-responsibilities/

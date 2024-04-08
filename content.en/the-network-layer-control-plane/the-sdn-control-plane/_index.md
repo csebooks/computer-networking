@@ -3,8 +3,8 @@ title: 'The SDN Control Plane'
 weight: 4
 references:
     videos:
-        - youytube:iTjMc201GK0
-        - youytube:lfqQhRkL4Vo
+        - youtube:iTjMc201GK0
+        - youtube:lfqQhRkL4Vo
     links:
         - https://www.geeksforgeeks.org/software-defined-networking-sdn-controller/
         - https://www.sdxcentral.com/networking/sdn/definitions/what-the-definition-of-software-defined-networking-sdn/inside-sdn-architecture/

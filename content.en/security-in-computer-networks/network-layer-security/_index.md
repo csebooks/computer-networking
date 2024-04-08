@@ -3,8 +3,8 @@ title: 'Network-Layer Security: IPsec and Virtual Private Networks'
 weight: 7
 references:
     videos:
-        - youytube:fWqHtKchfGU
-        - youytube:B5JwGnn2GRY
+        - youtube:fWqHtKchfGU
+        - youtube:B5JwGnn2GRY
     links:
         - https://www.geeksforgeeks.org/ip-security-ipsec/
         - https://www.cloudflare.com/learning/network-layer/what-is-ipsec/

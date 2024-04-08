@@ -3,8 +3,8 @@ title: 'Introduction to the Link Layer'
 weight: 1
 references:
     videos:
-        - youytube:Tr2y2xs2Crg
-        - youytube:lMGWJZLTulY
+        - youtube:Tr2y2xs2Crg
+        - youtube:lMGWJZLTulY
     links:
         - https://en.wikipedia.org/wiki/Link_layer#:~:text=The%20link%20layer%20includes%20the,specific%20to%20the%20link%20types.
         - https://www.geeksforgeeks.org/data-link-layer/

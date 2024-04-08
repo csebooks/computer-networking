@@ -3,8 +3,8 @@ title: 'Principles of Cryptography'
 weight: 2
 references:
     videos:
-        - youytube:6_Cxj5WKpIw
-        - youytube:wDK33UnN_bE
+        - youtube:6_Cxj5WKpIw
+        - youtube:wDK33UnN_bE
     links:
         - https://www.geeksforgeeks.org/cryptography-and-network-security-principles/
         - https://www.baeldung.com/cs/introduction-to-cryptography

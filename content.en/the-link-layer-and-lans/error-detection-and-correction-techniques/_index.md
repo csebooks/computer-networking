@@ -3,8 +3,8 @@ title: 'Error-Detection and Correction Techniques'
 weight: 2
 references:
     videos:
-        - youytube:EMrY-8m8D1E
-        - youytube:crrdZx6u6MQ
+        - youtube:EMrY-8m8D1E
+        - youtube:crrdZx6u6MQ
     links:
         - https://en.wikipedia.org/wiki/Error_detection_and_correction
         - https://www.geeksforgeeks.org/error-detection-in-computer-networks/

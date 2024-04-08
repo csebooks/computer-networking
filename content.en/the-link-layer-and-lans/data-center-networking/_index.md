@@ -3,8 +3,8 @@ title: 'Data Center Networking'
 weight: 6
 references:
     videos:
-        - youytube:6-66D9J5PkY
-        - youytube:9wPCQNE0Xx4
+        - youtube:6-66D9J5PkY
+        - youtube:9wPCQNE0Xx4
     links:
         - https://www.g2.com/articles/data-center-networking-dcn
         - https://www.juniper.net/us/en/research-topics/what-is-a-data-center-network.html

@@ -3,8 +3,8 @@ title: 'ICMP: The Internet Control Message Protocol'
 weight: 5
 references:
     videos:
-        - youytube:xTqtm7-k25o
-        - youytube:x91Hq3D1uAQ
+        - youtube:xTqtm7-k25o
+        - youtube:x91Hq3D1uAQ
     links:
         - https://www.geeksforgeeks.org/internet-control-message-protocol-icmp/
         - https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol

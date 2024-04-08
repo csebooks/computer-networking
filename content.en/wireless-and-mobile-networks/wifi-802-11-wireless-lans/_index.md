@@ -3,8 +3,8 @@ title: 'WiFi: 802.11 Wireless LANs'
 weight: 2
 references:
     videos:
-        - youytube:t3FVP5wuG4g
-        - youytube:2slukwJzw9w
+        - youtube:t3FVP5wuG4g
+        - youtube:2slukwJzw9w
     links:
         - https://www.tutorialspoint.com/Wireless-LAN-and-IEEE-802-11
         - https://www.tutorialspoint.com/Wireless-LAN-and-IEEE-802-11

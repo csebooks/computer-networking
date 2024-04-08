@@ -3,8 +3,8 @@ title: 'Cellular Networks: 4G and 5G'
 weight: 3
 references:
     videos:
-        - youytube:NZtMrEPjpQ4
-        - youytube:kxOUCDjHg_Q
+        - youtube:NZtMrEPjpQ4
+        - youtube:kxOUCDjHg_Q
     links:
         - https://www.techtarget.com/searchnetworking/feature/A-deep-dive-into-the-differences-between-4G-and-5G-networks
         - https://www.geeksforgeeks.org/difference-between-4g-and-5g/

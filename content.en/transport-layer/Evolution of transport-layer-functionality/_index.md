@@ -3,8 +3,8 @@ title: 'Evolution of Transport-Layer Functionality'
 weight: 8
 references:
     videos:
-        - youytube:oRUIEmpzk0Y
-        - youytube:dXh5mN59wL0
+        - youtube:oRUIEmpzk0Y
+        - youtube:dXh5mN59wL0
     links:
         - https://notes.bweston.uk/comp211/lectures/2021/11/10/3.html
         - https://en.wikipedia.org/wiki/Transport_layer

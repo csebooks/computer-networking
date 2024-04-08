@@ -3,8 +3,8 @@ title: 'Securing TCP Connections: TLS'
 weight: 6
 references:
     videos:
-        - youytube:DBQBC34p35g
-        - youytube:j9QmMEWmcfo
+        - youtube:DBQBC34p35g
+        - youtube:j9QmMEWmcfo
     links:
         - https://www.cloudflare.com/learning/ssl/transport-layer-security-tls/
         - https://www.geeksforgeeks.org/transport-layer-security-tls/

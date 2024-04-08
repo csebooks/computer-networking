@@ -3,8 +3,8 @@ title: 'Switched Local Area Networks'
 weight: 4
 references:
     videos:
-        - youytube:yHPpohgUz4M
-        - youytube:xjVO5xBEB28
+        - youtube:yHPpohgUz4M
+        - youtube:xjVO5xBEB28
     links:
         - https://www.geeksforgeeks.org/lan-switching/
         - https://encyclopedia.pub/entry/34513

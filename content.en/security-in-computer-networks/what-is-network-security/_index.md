@@ -3,8 +3,8 @@ title: 'What Is Network Security?'
 weight: 1
 references:
     videos:
-        - youytube:NQ1cvwEvh44
-        - youytube:JoeiLuFNBc4
+        - youtube:NQ1cvwEvh44
+        - youtube:JoeiLuFNBc4
     links:
         - https://www.ibm.com/topics/network-security
         - https://www.geeksforgeeks.org/network-security/

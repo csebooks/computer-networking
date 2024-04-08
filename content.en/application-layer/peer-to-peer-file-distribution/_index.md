@@ -3,8 +3,8 @@ title: 'Peer-to-Peer File Distribution'
 weight: 5
 references:
     videos:
-        - youytube:raiKzCpAjI
-        - youytube:zzMd19puxwg
+        - youtube:raiKzCpAjI
+        - youtube:zzMd19puxwg
     links:
         - https://www.geeksforgeeks.org/p2p-peer-to-peer-file-sharing/
         - https://en.wikipedia.org/wiki/Peer-to-peer_file_sharing

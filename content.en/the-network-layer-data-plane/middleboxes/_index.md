@@ -3,8 +3,8 @@ title: 'Middleboxes'
 weight: 5
 references:
     videos:
-        - youytube:kKZlPeyef0k
-        - youytube:BBzO9TeHuKE
+        - youtube:kKZlPeyef0k
+        - youtube:BBzO9TeHuKE
     links:
         - https://ieeexplore.ieee.org/document/8002906
         - https://www.icsi.berkeley.edu/icsi/projects/networking/middleboxes

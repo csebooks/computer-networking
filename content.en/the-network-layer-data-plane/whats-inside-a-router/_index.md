@@ -3,8 +3,8 @@ title: 'What’s Inside a Router'
 weight: 2
 references:
     videos:
-        - youytube:NfHR94JAO-s
-        - youytube:tGd_R5ErtGA
+        - youtube:NfHR94JAO-s
+        - youtube:tGd_R5ErtGA
     links:
         - https://www.geeksforgeeks.org/internal-components-of-router/
         - https://www.cloudflare.com/learning/network-layer/what-is-a-router/

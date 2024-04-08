@@ -3,8 +3,8 @@ title: 'Generalized Forwarding and SDN'
 weight: 4
 references:
     videos:
-        - youytube:HIPVDxTrHqI
-        - youytube:zjNpU6la_pw
+        - youtube:HIPVDxTrHqI
+        - youtube:zjNpU6la_pw
     links:
         - https://www.geeksforgeeks.org/software-defined-networking/
         - https://www.inf.ed.ac.uk/teaching/courses/comn/lecture-notes/sdn.pdf

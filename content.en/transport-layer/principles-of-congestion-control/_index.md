@@ -3,8 +3,8 @@ title: 'Principles of Congestion Control'
 weight: 6
 references:
     videos:
-        - youytube:Fm92xvIp6JY
-        - youytube:Ycy4VWr3-24&t=21s
+        - youtube:Fm92xvIp6JY
+        - youtube:Ycy4VWr3-24&t=21s
     links:
         - https://www.geeksforgeeks.org/congestion-control-techniques-in-computer-networks/
         - https://cs.newpaltz.edu/~easwarac/CCN/Week9/tcpCongestion1.pdf

@@ -3,8 +3,8 @@ title: 'DNS—The Internet’s Directory Service'
 weight: 4
 references:
     videos:
-        - youytube:gLxLusySaZo
-        - youytube:9f1AW2it2WY
+        - youtube:gLxLusySaZo
+        - youtube:9f1AW2it2WY
     links:
         - https://www.javatpoint.com/computer-network-dns#:~:text=DNS%20is%20a%20directory%20service,of%20symbols%20specified%20by%20dots
         - https://www.geeksforgeeks.org/domain-name-system-dns-in-application-layer/

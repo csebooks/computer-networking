@@ -3,8 +3,8 @@ title: 'End-Point Authentication'
 weight: 4
 references:
     videos:
-        - youytube:91GMK_k7HUM
-        - youytube:DeiX19SIPh8
+        - youtube:91GMK_k7HUM
+        - youtube:DeiX19SIPh8
     links:
         - https://www.techopedia.com/definition/23918/endpoint-authentication
         - https://www.spiceworks.com/it-security/network-security/articles/what-is-endpoint-encryption/
