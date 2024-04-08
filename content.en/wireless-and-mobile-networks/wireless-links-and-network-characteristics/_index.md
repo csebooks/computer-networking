@@ -1,6 +1,20 @@
 ---
 title: 'Wireless Links and Network Characteristics'
 weight: 1
+references:
+    videos:
+        - youytube:jIl1Buu1_rg
+        - youytube:M8w2MzPHarY
+    links:
+        - https://www.geeksforgeeks.org/structure-of-wireless-communication-link/
+        - https://andreasjj.gitbooks.io/ttm4100-kommunikasjon-tjenester-og-nett/content/chapter_7__wireless_and_mobile_networks/72__wireless_links_and_network_characteristics.html
+    books:
+        - b1:
+            title: Wireless Communications & Networking
+            url: https://www.google.co.in/books/edition/Wireless_Communications_Networking/UE2wEc9NfB8C?hl=en&gbpv=0
+        - b2:
+            title: Fundamentals of wireless communication
+            url: https://www.google.co.in/books/edition/Fundamentals_of_Wireless_Communication/66XBb5tZX6EC?hl=en&gbpv=0
 ---
 
 ## Wireless Links and Network Characteristics

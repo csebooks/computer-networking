@@ -1,6 +1,20 @@
 ---
 title: 'Securing E-Mail'
 weight: 5
+references:
+    videos:
+        - youytube:dLR3GTOBKww
+        - youytube:8Jd5GQ6oSZo
+    links:
+        - https://sectigostore.com/blog/email-security-how-to-secure-email-communication/
+        - https://www.microsoft.com/en-us/security/business/security-101/what-is-email-security
+    books:
+        - b1:
+            title: Securing E-Business Applications and Communications 
+            url: https://www.google.co.in/books/edition/Securing_E_Business_Applications_and_Com/limgm8N4Td0C?hl=en&gbpv=0
+        - b2:
+            title: E-mail Security
+            url: https://www.google.co.in/books/edition/E_mail_Security/lDwfAQAAIAAJ?hl=en&gbpv=0&bsq=Securing%20E-Mail
 ---
 
 

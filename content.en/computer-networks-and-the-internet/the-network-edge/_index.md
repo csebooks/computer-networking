@@ -1,6 +1,20 @@
 ---
 title: 'The Network Edge'
 weight: 2
+references:
+    videos:
+        - youytube:k8NmM-hImBU
+        - youytube:i71p_v83_eQ
+    links:
+        - https://www.fortinet.com/resources/cyberglossary/network-edge
+        - https://drivenets.com/resources/education-center/what-is-network-edge/
+    books:
+        - b1:
+            title: Edge Computing
+            url: https://www.google.co.in/books/edition/Edge_Computing/F_5VEAAAQBAJ?hl=en
+        - b2:
+            title: Multi-access Edge Computing
+            url: https://www.google.co.in/books/edition/Multi_access_Edge_Computing_Software_Dev/gOc-EAAAQBAJ?hl=en&gbpv=0
 ---
 
 ## The Network Edge

@@ -1,6 +1,20 @@
 ---
 title: 'Protocol Layers and Their Service Models'
 weight: 5
+references:
+    videos:
+        - youytube:PCIMyw_xQtg
+        - youytube:I7zm69r9gRI
+    links:
+        - https://jerry4013.github.io/Github-blog/2019/09/18/Network-7.html
+        - https://andreasjj.gitbooks.io/ttm4100-kommunikasjon-tjenester-og-nett/content/chapter_1__computer_networks_and_the_internet/15__protocol_layers_and_their_service_models.html
+    books:
+        - b1:
+            title: Guide to OSI and TCP/IP Models
+            url: https://www.google.co.in/books/edition/The_OSI_Model/en_XmAEACAAJ?hl=en
+        - b2:
+            title: The OSI Model 
+            url: https://www.google.co.in/books/edition/The_OSI_Model/en_XmAEACAAJ?hl=en
 ---
 
 ## Protocol Layers and Their Service Models

@@ -1,6 +1,20 @@
 ---
 title: 'What Is the Internet'
 weight: 1
+references:
+    videos:
+        - youytube:jVDBsPZDpMs
+        - youytube:Dxcc6ycZ73M
+    links:
+        - https://www.techopedia.com/definition/2419/internet
+        - https://edu.gcfglobal.org/en/internetbasics/what-is-the-internet/1/
+    books:
+        - b1:
+            title: The Internet Book
+            url: https://www.google.co.in/books/edition/The_Internet_Book/FQprDwAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: THE INTERNET
+            url: https://www.google.co.in/books/edition/THE_INTERNET/XzQ4uZAklEsC?hl=en&gbpv=0
 ---
 
 

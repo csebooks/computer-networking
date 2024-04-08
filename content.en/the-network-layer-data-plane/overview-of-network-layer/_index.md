@@ -1,6 +1,20 @@
 ---
 title: 'Overview of Network Layer'
 weight: 1
+references:
+    videos:
+        - youytube:aqtd8iZlSAA
+        - youytube:1lzIgFci4zM
+    links:
+        - https://www.geeksforgeeks.org/network-layer-in-osi-model/
+        - https://www.javatpoint.com/network-layer
+    books:
+        - b1:
+            title: Networking Explained
+            url: https://www.google.co.in/books/edition/Networking_Explained/L3Leb1RcwJAC?hl=en&gbpv=0
+        - b2:
+            title: Computer Networks
+            url: https://www.google.co.in/books/edition/Computer_Networks/BvaFreun1W8C?hl=en&gbpv=0
 ---
 
 
