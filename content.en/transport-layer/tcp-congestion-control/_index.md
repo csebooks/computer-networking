@@ -1,6 +1,20 @@
 ---
 title: 'TCP Congestion Control'
 weight: 7
+references:
+    videos:
+        - youytube:cIHiSR4j3g4
+        - youytube:Ycy4VWr3-24
+    links:
+        - https://www.geeksforgeeks.org/tcp-congestion-control/
+        - https://en.wikipedia.org/wiki/TCP_congestion_control
+    books:
+        - b1:
+            title: End-to-End Adaptive Congestion Control in TCP/IP Networks 
+            url: https://www.google.co.in/books/edition/End_to_End_Adaptive_Congestion_Control_i/YglEDwAAQBAJ?hl=en&gbpv=0
+        - b2:
+            title: TCP Congestion Control
+            url: https://www.google.co.in/books/edition/TCP_Congestion_Control/8uI4zwEACAAJ?hl=en
 ---
 
 

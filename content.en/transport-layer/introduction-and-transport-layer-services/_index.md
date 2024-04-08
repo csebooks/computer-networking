@@ -1,6 +1,20 @@
 ---
 title: 'Introduction and Transport-Layer Services'
 weight: 1
+references:
+    videos:
+        - youytube:wTNVM7WrJpc
+        - youytube:lAvhH0XJLNE
+    links:
+        - https://www.javatpoint.com/computer-network-transport-layer
+        - https://www.geeksforgeeks.org/transport-layer-responsibilities/
+    books:
+        - b1:
+            title: Computer Networking 
+            url: link:https://www.google.co.in/books/edition/Computer_Networking/LqzPMQEACAAJ?hl=en
+        - b2:
+            title: TCP/IP Network Administration 
+            url: https://www.google.co.in/books/edition/TCP_IP_Network_Administration/A_LL2LQASdoC?hl=en&gbpv=1&dq=Introduction+and+Transport-Layer+Services&printsec=frontcover
 ---
 
 ## Introduction and Transport-Layer Services
